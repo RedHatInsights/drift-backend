@@ -1,2 +1,2 @@
-# drift_service
+# drift-service
 host drift analysis service
