@@ -33,7 +33,7 @@ def compare():
 
 @app.route("/status")
 def status():
-    return "application is running"
+    return jsonify({'status': "running"})
 
 
 if __name__ == "__main__":
