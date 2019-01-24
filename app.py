@@ -30,12 +30,12 @@ PHONY_DATA = {'packages': [{'name': 'gcc',
                          'hosts': [{'host1.example.com': '1'}, {'host2.example.com': '1'}]}]}
 
 
-@app.route("/compare")
+@app.route("/r/insights/platform/drift/compare")
 def compare():
     return jsonify(PHONY_DATA)
 
 
-@app.route("/status")
+@app.route("/r/insights/platform/drift/status")
 def status():
     return jsonify({'status': "running"})
 
