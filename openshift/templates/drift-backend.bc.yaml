@@ -1,0 +1,33 @@
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: drift-backend
+  name: drift-backend
+  namespace: {{ project }}
+spec:
+  source:
+    git:
+      ref: master
+      uri: 'https://github.com/RedHatInsights/drift-backend.git'
+    type: Git
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'python:3.6'
+        namespace: openshift
+    type: Source
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'drift-backend:latest'
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChange: {}
+    - type: GitHub
+      github:
+        secretReference:
+          name: github-webhook-secret

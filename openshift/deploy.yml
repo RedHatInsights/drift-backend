@@ -1,0 +1,22 @@
+---
+- name: Deploy drift-backend to Openshift
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars_files:
+    - vars/secrets.yml
+  vars:
+    deployment_state: present
+    project: drift-ci
+  tasks:
+    - name: drift secret
+      k8s:
+        state: "{{ deployment_state }}"
+        definition: "{{ lookup('template', 'templates/drift-backend.secret.yaml') | from_yaml }}"
+        host: "{{ openshift_host }}"
+
+    - name: drift build config
+      k8s:
+        state: "{{ deployment_state }}"
+        definition: "{{ lookup('template', 'templates/drift-backend.bc.yaml') | from_yaml }}"
+        host: "{{ openshift_host }}"
