@@ -2,6 +2,7 @@ language: python
 
 script:
   - flake8
+  - nosetests --with-coverage --cover-package drift  --cover-min-percentage 95 --cover-erase
 
 install:
   - pip install -r requirements.txt
