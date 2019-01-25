@@ -21,4 +21,10 @@ PHONY_DATA = {'packages': [{'name': 'gcc',
                                    {'host2.example.com': '4.19.9-300.fc29.x86_64'}]},
                         {'name': 'lscpu.socket(s)',
                          'status': 'SAME',
-                         'hosts': [{'host1.example.com': '1'}, {'host2.example.com': '1'}]}]}
+                         'hosts': [{'host1.example.com': '1'}, {'host2.example.com': '1'}]}
+                        ],
+              'last_updated': [{'name': 'last_updated',
+                                'status': None,
+                                'hosts': [{'host1.example.com': '2019-01-25T19:14:09+00:00'},
+                                          {'host2.example.com': '2019-01-25T15:12:55+00:00'}]}
+                               ]}
