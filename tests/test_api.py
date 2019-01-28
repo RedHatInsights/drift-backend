@@ -7,8 +7,9 @@ import unittest
 class ApiTests(unittest.TestCase):
 
     def setUp(self):
-        test_app = app.create_app()
-        self.client = test_app.test_client()
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
 
     def test_status_api(self):
         response = self.client.get("r/insights/platform/drift/v0/status")
