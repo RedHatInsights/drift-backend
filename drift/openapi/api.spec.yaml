@@ -1,0 +1,36 @@
+---
+openapi: 3.0.1
+info:
+  version: "0.1"
+  title: Drift Backend Service
+  description: Service that returns differences between systems.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: /r/insights/platform/drift/v0
+
+paths:
+  /status:
+    get:
+      summary: health check call
+      operationId: drift.views.v0.status
+      tags:
+        - status
+      responses:
+        '200':
+          description: a small JSON indicating the application is deployed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+
+components:
+  schemas:
+    Status:
+      required:
+        - status
+      properties:
+        status:
+          type: string

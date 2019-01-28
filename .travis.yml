@@ -2,6 +2,7 @@ language: python
 
 script:
   - flake8
+  - yamllint drift/openapi/api.spec.yaml
   - nosetests --with-coverage --cover-package drift  --cover-min-percentage 95 --cover-erase
 
 install:
