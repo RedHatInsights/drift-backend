@@ -1,0 +1,46 @@
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: drift-backend
+  name: drift-backend
+  namespace: {{ project }}
+spec:
+  replicas: 1
+  selector:
+    deploymentconfig: drift-backend
+  strategy:
+    type: Rolling
+    activeDeadlineSeconds: 21600
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+  template:
+    metadata:
+      labels:
+        app: drift-backend
+        deploymentconfig: drift-backend
+    spec:
+      restartPolicy: Always
+      containers:
+        - image: {{ project }}/drift-backend:latest
+          imagePullPolicy: Always
+          name: drift-backend
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - drift-backend
+        from:
+          kind: ImageStreamTag
+          name: 'drift-backend:latest'
+          namespace: {{ project }}
