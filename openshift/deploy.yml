@@ -20,3 +20,15 @@
         state: "{{ deployment_state }}"
         definition: "{{ lookup('template', 'templates/drift-backend.bc.yaml') | from_yaml }}"
         host: "{{ openshift_host }}"
+
+    - name: drift deployment config
+      k8s:
+        state: "{{ deployment_state }}"
+        definition: "{{ lookup('template', 'templates/drift-backend.dc.yaml') | from_yaml }}"
+        host: "{{ openshift_host }}"
+
+    - name: drift service
+      k8s:
+        state: "{{ deployment_state }}"
+        definition: "{{ lookup('template', 'templates/drift-backend.service.yaml') | from_yaml }}"
+        host: "{{ openshift_host }}"
