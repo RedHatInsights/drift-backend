@@ -1,5 +1,8 @@
 language: python
 
+python:
+ - "3.6"
+
 script:
   - flake8
   - yamllint drift/openapi/api.spec.yaml

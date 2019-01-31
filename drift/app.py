@@ -2,6 +2,8 @@ import connexion
 from flask_cors import CORS
 
 from drift.views import v0
+from drift.error import handle_http_error
+from drift.exceptions import HTTPError
 
 
 def create_app():
@@ -15,4 +17,5 @@ def create_app():
     flask_app = connexion_app.app
     CORS(flask_app)
     flask_app.register_blueprint(v0.section)
+    flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app

@@ -1,4 +1,4 @@
 Flask>=0.9
-flask-cors
 connexion
 connexion[swagger-ui]
+flask-cors
