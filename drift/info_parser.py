@@ -34,7 +34,7 @@ def _select_applicable_info(info_keys, hosts):
 def _create_comparison(hosts, info_name):
     """
     Take an individual fact, search for it across all hosts, and create a dict
-    of each host's ID and fact value. Additionally, add a "status" field that
+    of each host's ID and fact value. Additionally, add a "state" field that
     says if all hosts have the same values or different values.
 
     Note that when passing in "hosts" to this method, the ID needs to be listed
@@ -48,7 +48,7 @@ def _create_comparison(hosts, info_name):
     if len({x[info_name] for x in hosts}) == 1:
         info_comparison = 'SAME'
 
-    return {'name': info_name, 'status': info_comparison, 'hosts': host_values}
+    return {'name': info_name, 'state': info_comparison, 'hosts': host_values}
 
 
 def _host_metadata(host):
