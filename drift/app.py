@@ -1,9 +1,12 @@
 import connexion
 from flask_cors import CORS
+import os
 
 from drift.views import v0
 from drift.error import handle_http_error
 from drift.exceptions import HTTPError
+
+LOG_LEVEL = os.getenv('LOG_LEVEL', "INFO")
 
 
 def create_app():
@@ -18,4 +21,5 @@ def create_app():
     CORS(flask_app)
     flask_app.register_blueprint(v0.section)
     flask_app.register_error_handler(HTTPError, handle_http_error)
+    flask_app.logger.setLevel(LOG_LEVEL)
     return connexion_app

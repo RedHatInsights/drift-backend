@@ -1,4 +1,12 @@
-AUTH_HEADER = {'X-RH-IDENTITY': 'VGhlIEZhc3QgYW5kIHRoZSBGdXJpb3VzOiBUb2t5byBEcmlmdAo='}
+AUTH_HEADER = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6Ij'
+                                'EyMzQiLCJ0eXBlIjoiVXNlciIsInVzZXIiOnsidXNl'
+                                'cm5hbWUiOiJ0ZXN0X3VzZXJuYW1lIiwiZW1haWwiOi'
+                                'J0ZXN0QGV4YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6'
+                                'IkZpcnN0bmFtZSIsImxhc3RfbmFtZSI6Ikxhc3RuYW'
+                                '1lIiwiaXNfYWN0aXZlIjp0cnVlLCJpc19vcmdfYWRt'
+                                'aW4iOmZhbHNlLCJpc19pbnRlcm5hbCI6dHJ1ZSwibG'
+                                '9jYWxlIjoiZW5fVVMifSwiaW50ZXJuYWwiOnsib3Jn'
+                                'X2lkIjoiNTY3OCJ9fX0KCg=='}
 
 FETCH_HOSTS_RESULT = [
     {

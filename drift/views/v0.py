@@ -1,5 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from http import HTTPStatus
+import logging
+import json
+import base64
 
 from drift import info_parser
 from drift.exceptions import HTTPError
@@ -29,3 +32,15 @@ def compare():
 @section.route("/status")
 def status():
     return jsonify({'status': "running"})
+
+
+@section.before_app_request
+def log_username():
+    if current_app.logger.level == logging.DEBUG:
+        auth_key = get_key_from_headers(request.headers)
+        if auth_key:
+            identity = json.loads(base64.b64decode(auth_key))['identity']
+            current_app.logger.debug("username from identity header: %s" %
+                                     identity['user']['username'])
+        else:
+            current_app.logger.debug("identity header not sent for request")

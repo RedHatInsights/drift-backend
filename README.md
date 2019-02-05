@@ -5,11 +5,9 @@ this is a flask app that provides api for drift-frontend. It listens on port 808
 
 To run:
 
-`python3 app.py`
+`INVENTORY_SVC_URL=<inventory service url> python3 app.py`
 
 
-To enable debug mode (DO NOT USE THIS IN PRODUCTION, stack traces will be shown to the user when uncaught exceptions are raised):
+To set the debug level (`INFO` by default):
 
-`DRIFT_DEBUG=1 python3 app.py`
-
-We recommend simply not defining `DRIFT_DEBUG` if you don't want debug mode enabled.
+`LOG_LEVEL=DEBUG INVENTORY_SVC_URL=<inventory service url> python3 app.py`
