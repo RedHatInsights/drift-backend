@@ -1,5 +1,7 @@
 from drift import app
+import logging
 import json
+from io import StringIO
 
 from . import fixtures
 import mock
@@ -36,3 +38,32 @@ class ApiTests(unittest.TestCase):
                                    "host_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
+
+
+class DebugLoggingApiTests(unittest.TestCase):
+
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+
+        self.stream = StringIO()
+        self.handler = logging.StreamHandler(self.stream)
+        test_flask_app.logger.addHandler(self.handler)
+        test_flask_app.logger.setLevel(logging.DEBUG)
+
+    @mock.patch('drift.views.v0.get_key_from_headers')
+    def test_username_logging_on_debug_no_key(self, mock_get_key):
+        mock_get_key.return_value = None
+        self.client.get("r/insights/platform/drift/v0/status")
+        self.handler.flush()
+        self.assertIn("identity header not sent for request", self.stream.getvalue())
+        self.assertNotIn("username from identity header", self.stream.getvalue())
+
+    @mock.patch('drift.views.v0.get_key_from_headers')
+    def test_username_logging_on_debug_with_key(self, mock_get_key):
+        mock_get_key.return_value = fixtures.AUTH_HEADER['X-RH-IDENTITY']
+        self.client.get("r/insights/platform/drift/v0/status")
+        self.handler.flush()
+        self.assertNotIn("identity header not sent for request", self.stream.getvalue())
+        self.assertIn("username from identity header: test_user", self.stream.getvalue())
