@@ -64,3 +64,13 @@ HOST_TEMPLATE = '''
       "tags": [],
       "updated": "2018-12-31T12:00:00.000000Z"
     }]}'''
+
+HOST_NOT_FOUND_TEMPLATE = '''
+    {
+      "count": 0,
+      "page": 1,
+      "per_page": 50,
+      "results": [],
+      "total": 0
+    }
+    '''
