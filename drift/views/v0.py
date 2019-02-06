@@ -5,7 +5,7 @@ import json
 import base64
 
 from drift import info_parser
-from drift.exceptions import HTTPError
+from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_hosts, get_key_from_headers
 
 APP_URL_PREFIX = "/r/insights/platform/drift"
@@ -25,8 +25,11 @@ def compare():
     if auth_key is None:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="auth header not specified")
 
-    comparisons = info_parser.build_comparisons(fetch_hosts(host_ids, auth_key))
-    return jsonify(comparisons)
+    try:
+        comparisons = info_parser.build_comparisons(fetch_hosts(host_ids, auth_key))
+        return jsonify(comparisons)
+    except SystemNotReturned as error:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
 
 
 @section.route("/status")

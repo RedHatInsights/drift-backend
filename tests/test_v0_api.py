@@ -1,7 +1,9 @@
-from drift import app
 import logging
 import json
 from io import StringIO
+
+from drift import app
+from drift.exceptions import SystemNotReturned
 
 from . import fixtures
 import mock
@@ -38,6 +40,15 @@ class ApiTests(unittest.TestCase):
                                    "host_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
+
+    @mock.patch('drift.views.v0.fetch_hosts')
+    def test_compare_api_missing_system_uuid(self, mock_fetch_hosts):
+        mock_fetch_hosts.side_effect = SystemNotReturned("oops")
+        response = self.client.get("r/insights/platform/drift/v0/compare?"
+                                   "host_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                                   "host_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 400)
 
 
 class DebugLoggingApiTests(unittest.TestCase):

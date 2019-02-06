@@ -15,3 +15,12 @@ class HTTPError(Exception):
         super(HTTPError, self).__init__()
         self.message = message
         self.status_code = status_code
+
+
+class SystemNotReturned(Exception):
+    def __init__(self, message):
+        """
+        Raise this exception if a system was not returned by inventory service
+        """
+        super(SystemNotReturned, self).__init__()
+        self.message = message
