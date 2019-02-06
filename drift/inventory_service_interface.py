@@ -14,17 +14,17 @@ def get_key_from_headers(incoming_headers):
     return incoming_headers.get(AUTH_HEADER_NAME)
 
 
-def fetch_hosts(host_ids, service_auth_key):
+def fetch_systems(system_ids, service_auth_key):
     auth_header = {AUTH_HEADER_NAME: service_auth_key}
-    hosts = []
+    systems = []
 
     inventory_service_location = urljoin(INVENTORY_SVC_HOSTNAME, INVENTORY_SVC_HOSTS_ENDPOINT)
-    for host_id in host_ids:
-        response = requests.get(inventory_service_location % host_id, headers=auth_header)
+    for system_id in system_ids:
+        response = requests.get(inventory_service_location % system_id, headers=auth_header)
         result = json.loads(response.text)
         if result['count'] == 0:
-            raise SystemNotReturned("System %s not available to display" % host_id)
-        hosts.append(result['results'][0])
+            raise SystemNotReturned("System %s not available to display" % system_id)
+        systems.append(result['results'][0])
 
-    # TODO: see if we need to ensure we got back the number of hosts we expected
-    return hosts
+    # TODO: see if we need to ensure we got back the number of systems we expected
+    return systems
