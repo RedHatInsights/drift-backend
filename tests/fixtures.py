@@ -8,14 +8,14 @@ AUTH_HEADER = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6Ij'
                                 '9jYWxlIjoiZW5fVVMifSwiaW50ZXJuYWwiOnsib3Jn'
                                 'X2lkIjoiNTY3OCJ9fX0KCg=='}
 
-FETCH_HOSTS_RESULT = [
+FETCH_SYSTEMS_RESULT = [
     {
       "account": "9876543",
       "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
       "created": "2019-01-31T13:00:00.100010Z",
       "display_name": None,
       "facts": [],
-      "fqdn": "fake_host_99.example.com",
+      "fqdn": "fake_system_99.example.com",
       "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
       "insights_id": "01791a58-28af-11e9-9ab0-c85b761454fa",
       "ip_addresses": [
@@ -33,7 +33,7 @@ FETCH_HOSTS_RESULT = [
       "updated": "2019-01-31T14:00:00.500000Z"
     }]
 
-HOST_TEMPLATE = '''
+SYSTEM_TEMPLATE = '''
     {
       "count": 1,
       "page": 1,
@@ -43,14 +43,14 @@ HOST_TEMPLATE = '''
       "account": "1234567",
       "bios_uuid": "dc43976c263411e9bcf0c85b761454fa",
       "created": "2018-12-01T12:00:00.000000Z",
-      "display_name": "host1.example.com",
+      "display_name": "system1.example.com",
       "facts": [
         {
           "facts": {},
           "namespace": "string"
         }
       ],
-      "fqdn": "host.example.com",
+      "fqdn": "system.example.com",
       "id": "%s",
       "insights_id": "TEST-ID00-0000-0000",
       "ip_addresses": [
@@ -65,7 +65,7 @@ HOST_TEMPLATE = '''
       "updated": "2018-12-31T12:00:00.000000Z"
     }]}'''
 
-HOST_NOT_FOUND_TEMPLATE = '''
+SYSTEM_NOT_FOUND_TEMPLATE = '''
     {
       "count": 0,
       "page": 1,
