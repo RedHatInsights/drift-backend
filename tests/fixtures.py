@@ -1,3 +1,26 @@
+"""
+decoded AUTH_HEADER (newlines added for readability):
+{
+    "identity": {
+        "account_number": "1234",
+        "internal": {
+            "org_id": "5678"
+        },
+        "type": "User",
+        "user": {
+            "email": "test@example.com",
+            "first_name": "Firstname",
+            "is_active": true,
+            "is_internal": true,
+            "is_org_admin": false,
+            "last_name": "Lastname",
+            "locale": "en_US",
+            "username": "test_username"
+        }
+    }
+}
+"""
+
 AUTH_HEADER = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6Ij'
                                 'EyMzQiLCJ0eXBlIjoiVXNlciIsInVzZXIiOnsidXNl'
                                 'cm5hbWUiOiJ0ZXN0X3VzZXJuYW1lIiwiZW1haWwiOi'
@@ -7,6 +30,35 @@ AUTH_HEADER = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6Ij'
                                 'aW4iOmZhbHNlLCJpc19pbnRlcm5hbCI6dHJ1ZSwibG'
                                 '9jYWxlIjoiZW5fVVMifSwiaW50ZXJuYWwiOnsib3Jn'
                                 'X2lkIjoiNTY3OCJ9fX0KCg=='}
+"""
+decoded AUTH_HEADER_NO_ACCT (newlines added for readablity):
+{
+    "identity": {
+        "internal": {
+            "org_id": "9999"
+        },
+        "type": "User",
+        "user": {
+            "email": "nonumber@example.com",
+            "first_name": "No",
+            "is_active": true,
+            "is_internal": true,
+            "is_org_admin": false,
+            "last_name": "Number",
+            "locale": "en_US",
+            "username": "nonumber"
+        }
+    }
+}
+"""
+
+AUTH_HEADER_NO_ACCT = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJ0eXBlIjoiVXNlciIsInVzZXIiO'
+                                        'nsidXNlcm5hbWUiOiJub251bWJlciIsImVtYWlsIjoibm'
+                                        '9udW1iZXJAZXhhbXBsZS5jb20iLCJmaXJzdF9uYW1lIjo'
+                                        'iTm8iLCJsYXN0X25hbWUiOiJOdW1iZXIiLCJpc19hY3Rp'
+                                        'dmUiOnRydWUsImlzX29yZ19hZG1pbiI6ZmFsc2UsImlzX'
+                                        '2ludGVybmFsIjp0cnVlLCJsb2NhbGUiOiJlbl9VUyJ9LC'
+                                        'JpbnRlcm5hbCI6eyJvcmdfaWQiOiI5OTk5In19fQo='}
 
 FETCH_SYSTEMS_RESULT = [
     {

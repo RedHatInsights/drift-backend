@@ -38,6 +38,17 @@ def status():
 
 
 @section.before_app_request
+def ensure_account_number():
+    auth_key = get_key_from_headers(request.headers)
+    if auth_key:
+        identity = json.loads(base64.b64decode(auth_key))['identity']
+        if 'account_number' not in identity:
+            current_app.logger.debug("account number not found on identity token %s" % auth_key)
+            raise HTTPError(HTTPStatus.BAD_REQUEST,
+                            message="account number not found on identity token")
+
+
+@section.before_app_request
 def log_username():
     if current_app.logger.level == logging.DEBUG:
         auth_key = get_key_from_headers(request.headers)
