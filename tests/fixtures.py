@@ -33,9 +33,9 @@ FETCH_SYSTEMS_RESULT = [
       "updated": "2019-01-31T14:00:00.500000Z"
     }]
 
-SYSTEM_TEMPLATE = '''
+SYSTEMS_TEMPLATE = '''
     {
-      "count": 1,
+      "count": 2,
       "page": 1,
       "per_page": 50,
       "results": [
@@ -51,7 +51,7 @@ SYSTEM_TEMPLATE = '''
         }
       ],
       "fqdn": "system.example.com",
-      "id": "%s",
+      "id": "243926fa-262f-11e9-a632-c85b761454fa",
       "insights_id": "TEST-ID00-0000-0000",
       "ip_addresses": [
         "10.0.0.1",
@@ -63,7 +63,33 @@ SYSTEM_TEMPLATE = '''
       "subscription_manager_id": "1234FAKE1234",
       "tags": [],
       "updated": "2018-12-31T12:00:00.000000Z"
-    }]}'''
+    },
+    {
+      "account": "1234567",
+      "bios_uuid": "ec43976c263411e9bcf0c85b761454fa",
+      "created": "2018-12-01T12:00:00.000000Z",
+      "display_name": "system2.example.com",
+      "facts": [
+        {
+          "facts": {},
+          "namespace": "string"
+        }
+      ],
+      "fqdn": "system2.example.com",
+      "id": "264fb5b2-262f-11e9-9b12-c85b761454fa",
+      "insights_id": "TEST-ID22-2222-2222",
+      "ip_addresses": [
+        "10.0.0.3",
+        "10.0.0.4"
+      ],
+      "mac_addresses": [
+        "ec2:00:d0:c8:00:01"
+      ],
+      "subscription_manager_id": "2222FAKE2222",
+      "tags": [],
+      "updated": "2018-12-31T12:00:00.000000Z"
+    }
+    ]}'''
 
 SYSTEM_NOT_FOUND_TEMPLATE = '''
     {
