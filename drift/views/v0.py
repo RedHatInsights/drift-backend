@@ -14,8 +14,8 @@ API_VERSION_PREFIX = "/v0"
 section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
 
 
-@section.route("/compare")
-def compare():
+@section.route("/comparison_report")
+def comparison_report():
     system_ids = request.args.getlist('system_ids[]')
     auth_key = get_key_from_headers(request.headers)
 
