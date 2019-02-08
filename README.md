@@ -14,7 +14,6 @@ To set the debug level (`INFO` by default):
 `LOG_LEVEL=DEBUG INVENTORY_SVC_URL=<inventory service url> python3 app.py`
 
 If you would like to use this service with insights-proxy, you can use the
-included `local-drift-backend.js` like so, from the `insights-chrome/build`
-dir:
+included `local-drift-backend.js` like so:
 
-`SPANDX_CONFIG=/path/to/drift-backend/local-drift-backend.js bash ../../insights-proxy/scripts/run.sh`
+`SPANDX_CONFIG=drift-backend/local-drift-backend.js bash insights-proxy/scripts/run.sh`
