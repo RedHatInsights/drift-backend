@@ -3,7 +3,7 @@ import json
 from io import StringIO
 
 from drift import app
-from drift.exceptions import SystemNotReturned
+from drift.exceptions import InventoryServiceError, SystemNotReturned
 
 from . import fixtures
 import mock
@@ -19,6 +19,7 @@ class ApiTests(unittest.TestCase):
 
     def test_status_api_pass(self):
         response = self.client.get("r/insights/platform/drift/v0/status")
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.data), {'status': 'running'})
 
@@ -56,6 +57,15 @@ class ApiTests(unittest.TestCase):
                                    "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
+
+    @mock.patch('drift.views.v0.fetch_systems')
+    def test_comparison_report_api_500_backend(self, mock_fetch_systems):
+        mock_fetch_systems.side_effect = InventoryServiceError("oops")
+        response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
+                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 500)
 
 
 class DebugLoggingApiTests(unittest.TestCase):

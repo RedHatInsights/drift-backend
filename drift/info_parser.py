@@ -4,12 +4,13 @@ FACT_NAMESPACE = 'inventory'
 
 def build_comparisons(inventory_service_systems):
     """
-    given a list of system dicts, return a dict of comparisons, along with a dict of metadata.
+    given a list of system dicts, return a dict of comparisons, along with a
+    dict of system data
     """
     fact_comparison = _select_applicable_info(inventory_service_systems)
 
-    metadata = [_system_metadata(system) for system in inventory_service_systems]
-    return {'facts': fact_comparison, 'metadata': metadata}
+    system_mappings = [_system_mapping(system) for system in inventory_service_systems]
+    return {'facts': fact_comparison, 'systems': system_mappings}
 
 
 def _select_applicable_info(systems):
@@ -61,7 +62,7 @@ def _create_comparison(systems, info_name):
     """
     info_comparison = 'DIFFERENT'
 
-    system_values = {x['id']: x[info_name] for x in systems}
+    system_values = [{'id': x['id'], 'value': x[info_name]} for x in systems]
 
     # map the info values down to a set. This lets us check cardinality for sameness.
     if len({system[info_name] for system in systems}) == 1:
@@ -70,8 +71,8 @@ def _create_comparison(systems, info_name):
     return {'name': info_name, 'state': info_comparison, 'systems': system_values}
 
 
-def _system_metadata(system):
+def _system_mapping(system):
     """
-    create a metadata field for one system
+    create a header mapping for one system
     """
     return {'id': system['id'], 'fqdn': system['fqdn'], 'last_updated': system['updated']}
