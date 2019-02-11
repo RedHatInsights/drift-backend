@@ -1,0 +1,57 @@
+{
+    "facts": [
+        {
+            "name": "bios_uuid",
+            "state": "SAME",
+            "systems": [
+                {
+                    "id": "b832eed2-2e66-42ae-8b23-2c58be4f51fb",
+                    "value": null
+                },
+                {
+                    "id": "ed9efc3d-5a3e-4cbc-a502-2b9d03e39c1b",
+                    "value": null
+                },
+                {
+                    "id": "fe7137b4-342c-4e72-8a6f-bcb81b614d4c",
+                    "value": null
+                }
+            ]
+        },
+        {
+            "name": "display_name",
+            "state": "DIFFERENT",
+            "systems": [
+                {
+                    "id": "b832eed2-2e66-42ae-8b23-2c58be4f51fb",
+                    "value": "display1.name"
+                },
+                {
+                    "id": "ed9efc3d-5a3e-4cbc-a502-2b9d03e39c1b",
+                    "value": "helloworld.name"
+                },
+                {
+                    "id": "fe7137b4-342c-4e72-8a6f-bcb81b614d4c",
+                    "value": "display3.name"
+                }
+            ]
+        }
+    ],
+    "header_mappings": [
+        {
+            "fqdn": "display1.example.com",
+            "id": "b832eed2-2e66-42ae-8b23-2c58be4f51fb",
+            "last_updated": "2019-01-19T22:07:03.000000Z"
+        },
+        {
+            "fqdn": "helloworld.example.com",
+            "id": "ed9efc3d-5a3e-4cbc-a502-2b9d03e39c1b",
+            "last_updated": "2019-01-19T22:02:57.000000Z"
+        },
+        {
+            "fqdn": "display3.example.com",
+            "id": "fe7137b4-342c-4e72-8a6f-bcb81b614d4c",
+            "last_updated": "2019-01-19T22:01:01.000000Z"
+        }
+    ]
+}
