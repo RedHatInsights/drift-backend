@@ -3,7 +3,8 @@ import os
 import requests
 from urllib.parse import urljoin
 
-from drift.exceptions import SystemNotReturned
+
+from drift.exceptions import SystemNotReturned, InventoryServiceError
 
 AUTH_HEADER_NAME = 'X-RH-IDENTITY'
 INVENTORY_SVC_HOSTNAME = os.getenv('INVENTORY_SVC_URL', "http://inventory_svc_url_is_not_set")
@@ -16,7 +17,7 @@ def get_key_from_headers(incoming_headers):
     return incoming_headers.get(AUTH_HEADER_NAME)
 
 
-def fetch_systems(system_ids, service_auth_key):
+def fetch_systems(system_ids, service_auth_key, logger):
     if len(system_ids) > MAX_UUID_COUNT:
         raise SystemNotReturned("Too many systems requested, limit is %s" % MAX_UUID_COUNT)
 
@@ -25,6 +26,12 @@ def fetch_systems(system_ids, service_auth_key):
     inventory_service_location = urljoin(INVENTORY_SVC_HOSTNAME, INVENTORY_SVC_HOSTS_ENDPOINT)
     response = requests.get(inventory_service_location % (','.join(system_ids), MAX_UUID_COUNT),
                             headers=auth_header)
+
+    if response.status_code is not requests.codes.ok:
+        logger.warn("%s error received from inventory service: %s" %
+                    (response.status_code, response.text))
+        raise InventoryServiceError("Error received from backend service")
+
     result = json.loads(response.text)
 
     if result['count'] < len(system_ids):

@@ -11,20 +11,52 @@ info:
 servers:
   - url: /r/insights/platform/drift/v0
 
+
 paths:
   /status:
     get:
-      summary: health check call
+      summary: health check liveness call
       operationId: drift.views.v0.status
       tags:
         - status
       responses:
         '200':
-          description: a small JSON indicating the application is deployed
+          description: "A small JSON indicating the application is deployed.
+                        This serves as both the liveness and readiness call."
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Status"
+
+  /comparison_report:
+    parameters:
+      - $ref: '#/components/parameters/rhIdentityHeader'
+    get:
+      summary: fetch comparison report
+      description: "Fetch a comparison report for given system IDs. This will
+                    only fetch the most current system state using data from
+                    inventory service."
+      operationId: drift.views.v0.comparison_report
+      parameters:
+        - name: system_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          required: true
+          description: list of system IDs to generate report for
+      responses:
+        '200':
+          description: a comparison report for the given system IDs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComparisonReport"
+              examples:
+                jsonObject:
+                  summary: A sample comparison report
+                  externalValue: "https://git.io/fhQ00"
 
 components:
   schemas:
@@ -34,3 +66,70 @@ components:
       properties:
         status:
           type: string
+    ComparisonReport:
+      required:
+        - facts
+        - systems
+      properties:
+        facts:
+          type: array
+          items:
+            $ref: "#/components/schemas/FactComparison"
+        systems:
+          type: array
+          items:
+            $ref: "#/components/schemas/System"
+    FactComparison:
+      description: "A list of fact names, states, and systems. This is useful
+                    for displaying rows of facts to compare."
+      required:
+        - name
+        - state
+        - systems
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+          enum: [SAME, DIFFERENT]
+        systems:
+          type: array
+          items:
+            $ref: "#/components/schemas/SystemIdValue"
+    SystemIdValue:
+      required:
+        - id
+        - value
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+    System:
+      description: "The system ID, FQDN, and last updated timestamp for each
+                    system in the report"
+      required:
+        - fqdn
+        - id
+        - last_updated
+      properties:
+        fqdn:
+          type: string
+        id:
+          type: string
+          format: uuid
+        last_updated:
+          type: string
+          format: date-time
+  parameters:
+    rhIdentityHeader:
+      in: header
+      name: x-rh-identity
+      required: true
+      schema:
+        type: string
+      description: "Base64-encoded JSON identity header provided by 3Scale.
+                    Contains an account number of the user issuing the
+                    request. Format of the JSON:
+                    {'identity': {'account_number': '12345678'}}"

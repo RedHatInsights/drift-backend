@@ -14,25 +14,18 @@ API_VERSION_PREFIX = "/v0"
 section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
 
 
-@section.route("/comparison_report")
 def comparison_report():
     system_ids = request.args.getlist('system_ids[]')
     auth_key = get_key_from_headers(request.headers)
 
-    if not system_ids:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message='system_ids[] not specified')
-
-    if auth_key is None:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message="auth header not specified")
-
     try:
-        comparisons = info_parser.build_comparisons(fetch_systems(system_ids, auth_key))
+        comparisons = info_parser.build_comparisons(fetch_systems(system_ids, auth_key,
+                                                                  current_app.logger))
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
 
 
-@section.route("/status")
 def status():
     return jsonify({'status': "running"})
 
