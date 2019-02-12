@@ -31,4 +31,5 @@ def fetch_systems(system_ids, service_auth_key):
         system_ids_returned = {system['id'] for system in result['results']}
         missing_ids = set(system_ids) - system_ids_returned
         raise SystemNotReturned("System(s) %s not available to display" % ','.join(missing_ids))
+
     return result['results']
