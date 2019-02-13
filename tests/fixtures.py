@@ -70,6 +70,10 @@ FETCH_SYSTEMS_RESULT = [
         {
           "facts": {'fqdn': "fake_system_99.example.com"},
           "namespace": "inventory"
+        },
+        {
+          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
+          "namespace": "mockfacts"
         }
       ],
       "fqdn": "fake_system_99.example.com",

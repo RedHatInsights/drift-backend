@@ -4,12 +4,15 @@ import logging
 import json
 import base64
 
-from drift import info_parser
+from drift import config, info_parser
 from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems, get_key_from_headers
 
 APP_URL_PREFIX = "/r/insights/platform/drift"
 API_VERSION_PREFIX = "/v0"
+
+FACT_NAMESPACE = "inventory"
+MOCK_FACT_NAMESPACE = "mockfacts"
 
 section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
 
@@ -18,9 +21,14 @@ def comparison_report():
     system_ids = request.args.getlist('system_ids[]')
     auth_key = get_key_from_headers(request.headers)
 
+    fact_namespace = FACT_NAMESPACE
+    if config.return_mock_data:
+        fact_namespace = MOCK_FACT_NAMESPACE
+
     try:
         comparisons = info_parser.build_comparisons(fetch_systems(system_ids, auth_key,
-                                                                  current_app.logger))
+                                                                  current_app.logger),
+                                                    fact_namespace)
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
