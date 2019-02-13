@@ -44,6 +44,23 @@ class InventoryServiceTests(unittest.TestCase):
         self.assertSetEqual(found_system_ids, set(systems_to_fetch))
 
     @responses.activate
+    @mock.patch('drift.inventory_service_interface.config')
+    def test_fetch_systems_mock_facts(self, mock_config):
+        mock_config.inventory_svc_hostname = "http://inventory_svc_url_is_not_set"
+        mock_config.return_mock_data = True
+        systems_to_fetch = ['243926fa-262f-11e9-a632-c85b761454fa',
+                            '264fb5b2-262f-11e9-9b12-c85b761454fa']
+
+        self._create_response_for_systems('inventory_svc_url_is_not_set',
+                                          ','.join(systems_to_fetch))
+
+        systems = inventory_service_interface.fetch_systems(systems_to_fetch, "my-auth-key",
+                                                            self.mock_logger)
+
+        found_system_ids = {system['id'] for system in systems}
+        self.assertSetEqual(found_system_ids, set(systems_to_fetch))
+
+    @responses.activate
     def test_fetch_systems_missing_system(self):
         systems_to_fetch = ['243926fa-262f-11e9-a632-c85b761454fa',
                             '264fb5b2-262f-11e9-9b12-c85b761454fa',

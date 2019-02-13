@@ -1,29 +1,35 @@
 import json
-import os
 import requests
 from urllib.parse import urljoin
 
-
+from drift import config
 from drift.exceptions import SystemNotReturned, InventoryServiceError
+from drift.mock_data import mock_data
 
 AUTH_HEADER_NAME = 'X-RH-IDENTITY'
-INVENTORY_SVC_HOSTNAME = os.getenv('INVENTORY_SVC_URL', "http://inventory_svc_url_is_not_set")
 INVENTORY_SVC_HOSTS_ENDPOINT = '/r/insights/platform/inventory/api/v1/hosts/%s?per_page=%s'
 
 MAX_UUID_COUNT = 20
 
 
 def get_key_from_headers(incoming_headers):
+    """
+    return auth key from header
+    """
     return incoming_headers.get(AUTH_HEADER_NAME)
 
 
 def fetch_systems(system_ids, service_auth_key, logger):
+    """
+    fetch systems from inventory service
+    """
     if len(system_ids) > MAX_UUID_COUNT:
         raise SystemNotReturned("Too many systems requested, limit is %s" % MAX_UUID_COUNT)
 
     auth_header = {AUTH_HEADER_NAME: service_auth_key}
 
-    inventory_service_location = urljoin(INVENTORY_SVC_HOSTNAME, INVENTORY_SVC_HOSTS_ENDPOINT)
+    inventory_service_location = urljoin(config.inventory_svc_hostname,
+                                         INVENTORY_SVC_HOSTS_ENDPOINT)
     response = requests.get(inventory_service_location % (','.join(system_ids), MAX_UUID_COUNT),
                             headers=auth_header)
 
@@ -38,5 +44,10 @@ def fetch_systems(system_ids, service_auth_key, logger):
         system_ids_returned = {system['id'] for system in result['results']}
         missing_ids = set(system_ids) - system_ids_returned
         raise SystemNotReturned("System(s) %s not available to display" % ','.join(missing_ids))
+
+    if config.return_mock_data:
+        for system in result['results']:
+            mock_facts = mock_data.fetch_mock_facts()
+            system['facts'].append(mock_facts)
 
     return result['results']

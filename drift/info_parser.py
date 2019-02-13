@@ -1,53 +1,52 @@
-SYSTEM_ID = 'id'
-FACT_NAMESPACE = 'inventory'
+SYSTEM_ID_KEY = 'id'
 
 
-def build_comparisons(inventory_service_systems):
+def build_comparisons(inventory_service_systems, fact_namespace):
     """
-    given a list of system dicts, return a dict of comparisons, along with a
+    given a list of system dicts and fact namespace, return a dict of comparisons, along with a
     dict of system data
     """
-    fact_comparison = _select_applicable_info(inventory_service_systems)
+    fact_comparison = _select_applicable_info(inventory_service_systems, fact_namespace)
 
     system_mappings = [_system_mapping(system) for system in inventory_service_systems]
     return {'facts': fact_comparison, 'systems': system_mappings}
 
 
-def _select_applicable_info(systems):
+def _select_applicable_info(systems, fact_namespace):
     """
-    Take a list of systems, and output a "pivoted" list of facts, where each fact
-    key has a dict of systems and their values. This is useful when comparing
-    facts across systems.
+    Take a list of systems with fact namespace, and output a "pivoted" list of
+    facts, where each fact key has a dict of systems and their values. This is
+    useful when comparing facts across systems.
     """
     # create dicts of id + info
-    ids_and_info = [_system_facts_and_id(system) for system in systems]
+    ids_and_info = [_system_facts_and_id(system, fact_namespace) for system in systems]
 
     # TODO: we are assuming all info keys exist for each system. This is not a good assumption
     available_info_names = ids_and_info[0].keys()
 
     info_comparisons = [_create_comparison(ids_and_info, info_name)
                         for info_name in available_info_names
-                        if info_name is not SYSTEM_ID]
+                        if info_name is not SYSTEM_ID_KEY]
     return info_comparisons
 
 
-def _find_facts_for_namespace(system, namespace):
+def _find_facts_for_namespace(system, fact_namespace):
     """
     return the facts for the given namespace
     """
+    # TODO: we are assuming we just need to handle one namespace, and
+    # that the namespace is always present.
     for facts in system['facts']:
-        if facts['namespace'] == namespace:
+        if facts['namespace'] == fact_namespace:
             return facts['facts']
 
 
-def _system_facts_and_id(system):
+def _system_facts_and_id(system, fact_namespace):
     """
     Pull the system facts dict out from a system record and add the ID to the dict
     """
-    # TODO: we are assuming we just need to handle one namespace, and
-    # that the namespace is always present.
-    facts_and_id = _find_facts_for_namespace(system, FACT_NAMESPACE)
-    facts_and_id[SYSTEM_ID] = system[SYSTEM_ID]
+    facts_and_id = _find_facts_for_namespace(system, fact_namespace)
+    facts_and_id[SYSTEM_ID_KEY] = system[SYSTEM_ID_KEY]
     return facts_and_id
 
 
