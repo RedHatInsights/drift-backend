@@ -3,13 +3,9 @@ import requests
 from urllib.parse import urljoin
 
 from drift import config
+from drift.constants import AUTH_HEADER_NAME, INVENTORY_SVC_HOSTS_ENDPOINT, MAX_UUID_COUNT
 from drift.exceptions import SystemNotReturned, InventoryServiceError
 from drift.mock_data import mock_data
-
-AUTH_HEADER_NAME = 'X-RH-IDENTITY'
-INVENTORY_SVC_HOSTS_ENDPOINT = '/r/insights/platform/inventory/api/v1/hosts/%s?per_page=%s'
-
-MAX_UUID_COUNT = 20
 
 
 def get_key_from_headers(incoming_headers):
@@ -47,7 +43,7 @@ def fetch_systems(system_ids, service_auth_key, logger):
 
     if config.return_mock_data:
         for system in result['results']:
-            mock_facts = mock_data.fetch_mock_facts()
+            mock_facts = mock_data.fetch_mock_facts(system['id'])
             system['facts'].append(mock_facts)
 
     return result['results']

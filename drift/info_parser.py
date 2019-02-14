@@ -1,4 +1,5 @@
-SYSTEM_ID_KEY = 'id'
+from drift.constants import SYSTEM_ID_KEY, COMPARISON_SAME
+from drift.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 
 
 def build_comparisons(inventory_service_systems, fact_namespace):
@@ -21,8 +22,10 @@ def _select_applicable_info(systems, fact_namespace):
     # create dicts of id + info
     ids_and_info = [_system_facts_and_id(system, fact_namespace) for system in systems]
 
-    # TODO: we are assuming all info keys exist for each system. This is not a good assumption
-    available_info_names = ids_and_info[0].keys()
+    # union the keys into one big set
+    available_info_names = set()
+    for fact_ids in ids_and_info:
+        available_info_names |= fact_ids.keys()
 
     info_comparisons = [_create_comparison(ids_and_info, info_name)
                         for info_name in available_info_names
@@ -59,15 +62,18 @@ def _create_comparison(systems, info_name):
     Note that when passing in "systems" to this method, the ID needs to be listed
     as a fact key.
     """
-    info_comparison = 'DIFFERENT'
+    info_comparison = COMPARISON_DIFFERENT
 
-    system_values = [{'id': x['id'], 'value': x[info_name]} for x in systems]
+    system_id_values = [{'id': x['id'], 'value': x.get(info_name, "FACT_NOT_SET")} for x in systems]
 
-    # map the info values down to a set. This lets us check cardinality for sameness.
-    if len({system[info_name] for system in systems}) == 1:
-        info_comparison = 'SAME'
+    system_values = {system['value'] for system in system_id_values}
 
-    return {'name': info_name, 'state': info_comparison, 'systems': system_values}
+    if "FACT_NOT_SET" in system_values:
+        info_comparison = COMPARISON_INCOMPLETE_DATA
+    elif len(system_values) == 1:
+        info_comparison = COMPARISON_SAME
+
+    return {'name': info_name, 'state': info_comparison, 'systems': system_id_values}
 
 
 def _system_mapping(system):
