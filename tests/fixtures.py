@@ -92,7 +92,105 @@ FETCH_SYSTEMS_RESULT = [
       "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
       "tags": [],
       "updated": "2019-01-31T14:00:00.500000Z"
-    }]
+    },
+    {
+      "account": "9876543",
+      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
+      "created": "2018-01-31T13:00:00.100010Z",
+      "display_name": None,
+      "facts": [
+        {
+          "facts": {'foo': "bar"},
+          "namespace": "inventory"
+        },
+        {
+          "facts": {'fakefact2': "qux"},
+          "namespace": "mockfacts"
+        }
+      ],
+      "fqdn": "fake_system_99.example.com",
+      "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+      "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
+      "ip_addresses": [
+        "10.0.0.3",
+        "2620:52:0:2598:5054:ff:fecd:ae15"
+      ],
+      "mac_addresses": [
+        "52:54:00:cd:ae:00",
+        "00:00:00:00:00:00"
+      ],
+      "rhel_machine_id": None,
+      "satellite_id": None,
+      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+      "tags": [],
+      "updated": "2018-01-31T14:00:00.500000Z"}
+    ]
+
+FETCH_SYSTEMS_SAME_FACTS_RESULT = [
+    {
+      "account": "9876543",
+      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
+      "created": "2019-01-31T13:00:00.100010Z",
+      "display_name": None,
+      "facts": [
+        {
+          "facts": {'fqdn': "fake_system_99.example.com"},
+          "namespace": "inventory"
+        },
+        {
+          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
+          "namespace": "mockfacts"
+        }
+      ],
+      "fqdn": "fake_system_99.example.com",
+      "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
+      "insights_id": "01791a58-28af-11e9-9ab0-c85b761454fa",
+      "ip_addresses": [
+        "10.0.0.3",
+        "2620:52:0:2598:5054:ff:fecd:ae15"
+      ],
+      "mac_addresses": [
+        "52:54:00:cd:ae:00",
+        "00:00:00:00:00:00"
+      ],
+      "rhel_machine_id": None,
+      "satellite_id": None,
+      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+      "tags": [],
+      "updated": "2019-01-31T14:00:00.500000Z"
+    },
+    {
+      "account": "9876543",
+      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
+      "created": "2018-01-31T13:00:00.100010Z",
+      "display_name": None,
+      "facts": [
+        {
+          "facts": {'fqdn': "fake_system_99.example.com"},
+          "namespace": "inventory"
+        },
+        {
+          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
+          "namespace": "mockfacts"
+        }
+      ],
+      "fqdn": "fake_system_99.example.com",
+      "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+      "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
+      "ip_addresses": [
+        "10.0.0.3",
+        "2620:52:0:2598:5054:ff:fecd:ae15"
+      ],
+      "mac_addresses": [
+        "52:54:00:cd:ae:00",
+        "00:00:00:00:00:00"
+      ],
+      "rhel_machine_id": None,
+      "satellite_id": None,
+      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+      "tags": [],
+      "updated": "2018-01-31T14:00:00.500000Z"}
+    ]
 
 SYSTEMS_TEMPLATE = '''
     {
@@ -107,7 +205,7 @@ SYSTEMS_TEMPLATE = '''
       "display_name": "system1.example.com",
       "facts": [
         {
-          "facts": {},
+          "facts": {"foo": "bar"},
           "namespace": "inventory"
         }
       ],

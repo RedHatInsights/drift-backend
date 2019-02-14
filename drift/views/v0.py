@@ -5,14 +5,10 @@ import json
 import base64
 
 from drift import config, info_parser
+from drift.constants import APP_URL_PREFIX, API_VERSION_PREFIX, FACT_NAMESPACE, MOCK_FACT_NAMESPACE
 from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems, get_key_from_headers
 
-APP_URL_PREFIX = "/r/insights/platform/drift"
-API_VERSION_PREFIX = "/v0"
-
-FACT_NAMESPACE = "inventory"
-MOCK_FACT_NAMESPACE = "mockfacts"
 
 section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
 
