@@ -1,0 +1,51 @@
+---
+openapi: 3.0.1
+info:
+  version: "0.1"
+  title: Drift Backend Service Management Plane
+  description: Management API for Drift Service
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: /mgmt/v0
+
+
+paths:
+  /status:
+    get:
+      summary: health check liveness call
+      operationId: drift.mgmt_views.v0.status
+      tags:
+        - status
+      responses:
+        '200':
+          description: "A small JSON indicating the application is deployed.
+                        This serves as both the liveness and readiness call."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+  /metrics:
+    get:
+      summary: prometheus metrics
+      operationId: drift.mgmt_views.v0.metrics
+      tags:
+        - prometheus
+      responses:
+        '200':
+          description: "Display metrics needed for Prometheus"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    Status:
+      required:
+        - status
+      properties:
+        status:
+          type: string

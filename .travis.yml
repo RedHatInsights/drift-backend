@@ -5,8 +5,9 @@ python:
 
 script:
   - flake8
+  - yamllint drift/openapi/mgmt_api.spec.yaml
   - yamllint drift/openapi/api.spec.yaml
-  - nosetests --with-coverage --cover-package drift  --cover-min-percentage 95 --cover-erase
+  - ./run_unit_tests.sh
 
 install:
   - pip install -r requirements.txt
