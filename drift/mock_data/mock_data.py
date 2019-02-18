@@ -15,7 +15,9 @@ def fetch_mock_facts(seed):
         factdata = f.read()
     static_facts = json.loads(factdata)
     dynamic_facts = generate_additional_facts(seed)
-    return {'facts': {**static_facts, **dynamic_facts}, 'namespace': MOCK_FACT_NAMESPACE}
+    facts = {**static_facts, **dynamic_facts}
+    prefixed_facts = {"MOCK-" + fact_key: facts[fact_key] for fact_key in facts.keys()}
+    return {'facts': prefixed_facts, 'namespace': MOCK_FACT_NAMESPACE}
 
 
 def generate_additional_facts(seed):
