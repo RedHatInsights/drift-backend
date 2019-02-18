@@ -13,21 +13,6 @@ servers:
 
 
 paths:
-  /status:
-    get:
-      summary: health check liveness call
-      operationId: drift.views.v0.status
-      tags:
-        - status
-      responses:
-        '200':
-          description: "A small JSON indicating the application is deployed.
-                        This serves as both the liveness and readiness call."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
-
   /comparison_report:
     parameters:
       - $ref: '#/components/parameters/rhIdentityHeader'
@@ -91,12 +76,6 @@ components:
         title:
           type: string
         type:
-          type: string
-    Status:
-      required:
-        - status
-      properties:
-        status:
           type: string
     ComparisonReport:
       required:

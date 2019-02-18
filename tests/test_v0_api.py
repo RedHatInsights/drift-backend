@@ -1,6 +1,5 @@
-import logging
-import json
 from io import StringIO
+import logging
 
 from drift import app
 from drift.exceptions import InventoryServiceError, SystemNotReturned
@@ -16,12 +15,6 @@ class ApiTests(unittest.TestCase):
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
-
-    def test_status_api_pass(self):
-        response = self.client.get("r/insights/platform/drift/v0/status")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.data), {'status': 'running'})
 
     def test_comparison_report_api_no_args_or_header(self):
         response = self.client.get("r/insights/platform/drift/v0/comparison_report")

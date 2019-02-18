@@ -4,7 +4,8 @@ import logging
 import json
 import base64
 
-from drift import config, info_parser
+
+from drift import config, info_parser, metrics
 from drift.constants import APP_URL_PREFIX, API_VERSION_PREFIX, FACT_NAMESPACE, MOCK_FACT_NAMESPACE
 from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems, get_key_from_headers
@@ -13,6 +14,8 @@ from drift.inventory_service_interface import fetch_systems, get_key_from_header
 section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
 
 
+@metrics.comparison_report_requests.time()
+@metrics.api_exceptions.count_exceptions()
 def comparison_report():
     system_ids = request.args.getlist('system_ids[]')
     auth_key = get_key_from_headers(request.headers)
@@ -28,10 +31,6 @@ def comparison_report():
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
-
-
-def status():
-    return jsonify({'status': "running"})
 
 
 @section.before_app_request

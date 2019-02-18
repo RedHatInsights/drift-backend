@@ -2,7 +2,7 @@ import json
 import requests
 from urllib.parse import urljoin
 
-from drift import config
+from drift import config, metrics
 from drift.constants import AUTH_HEADER_NAME, INVENTORY_SVC_HOSTS_ENDPOINT, MAX_UUID_COUNT
 from drift.exceptions import SystemNotReturned, InventoryServiceError
 from drift.mock_data import mock_data
@@ -26,8 +26,10 @@ def fetch_systems(system_ids, service_auth_key, logger):
 
     inventory_service_location = urljoin(config.inventory_svc_hostname,
                                          INVENTORY_SVC_HOSTS_ENDPOINT)
-    response = requests.get(inventory_service_location % (','.join(system_ids), MAX_UUID_COUNT),
-                            headers=auth_header)
+
+    with metrics.inventory_service_requests.time():
+        response = requests.get(inventory_service_location % (','.join(system_ids), MAX_UUID_COUNT),
+                                headers=auth_header)
 
     if response.status_code is not requests.codes.ok:
         logger.warn("%s error received from inventory service: %s" %

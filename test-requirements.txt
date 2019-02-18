@@ -1,4 +1,6 @@
+coverage
 flake8
 mock
+nose
 responses
 yamllint
