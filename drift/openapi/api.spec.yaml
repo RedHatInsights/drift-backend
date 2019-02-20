@@ -57,9 +57,41 @@ paths:
                 jsonObject:
                   summary: A sample comparison report
                   externalValue: "https://git.io/fhQ00"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
+  responses:
+    InternalServerError:
+      description: "An internal server error has occurred."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: "The server could could not process the current request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
+    Error:
+      required:
+        - detail
+        - status
+        - title
+        - type
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
     Status:
       required:
         - status
