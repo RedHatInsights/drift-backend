@@ -30,6 +30,10 @@ spec:
         - env:
             - name: APP_CONFIG
               value: gunicorn.conf.py
+            - name: PATH_PREFIX
+              value: /r/insights/platform/
+            - name: APP_NAME
+              value: drift
           image: {{ project }}/drift-backend:latest
           imagePullPolicy: Always
           name: drift-backend

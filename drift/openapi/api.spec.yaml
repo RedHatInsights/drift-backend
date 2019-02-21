@@ -9,8 +9,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: /r/insights/platform/drift/v0
-
+  - url: {{ path_prefix }}{{ app_name }}/v0
 
 paths:
   /comparison_report:
