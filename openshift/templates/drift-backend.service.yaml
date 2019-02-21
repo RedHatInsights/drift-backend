@@ -5,7 +5,7 @@ metadata:
   labels:
     app: drift-backend
   name: drift-backend
-  namespace: {{ project }}
+  namespace: "{{ project }}"
 spec:
   type: ClusterIP
   selector:
