@@ -5,7 +5,7 @@ metadata:
   labels:
     app: drift-backend
   name: drift-backend
-  namespace: {{ project }}
+  namespace: "{{ project }}"
 spec:
   replicas: 1
   selector:
@@ -38,7 +38,7 @@ spec:
               value: true
             - name: prometheus_multiproc_dir
               value: /prometheus-data
-          image: {{ project }}/drift-backend:latest
+          image: "{{ project }}/drift-backend:latest"
           imagePullPolicy: Always
           name: drift-backend
           ports:
@@ -60,4 +60,4 @@ spec:
         from:
           kind: ImageStreamTag
           name: 'drift-backend:latest'
-          namespace: {{ project }}
+          namespace: "{{ project }}"
