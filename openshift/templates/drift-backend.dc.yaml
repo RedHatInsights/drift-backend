@@ -36,12 +36,20 @@ spec:
               value: drift
             - name: ENABLE_PIPENV
               value: true
+            - name: prometheus_multiproc_dir
+              value: /prometheus-data
           image: {{ project }}/drift-backend:latest
           imagePullPolicy: Always
           name: drift-backend
           ports:
             - containerPort: 8080
               protocol: TCP
+          volumeMounts:
+            - mountPath: /prometheus-data
+              name: drift-prometheus-data
+      volumes:
+        - emptyDir: {}
+          name: drift-prometheus-data
   triggers:
     - type: ConfigChange
     - type: ImageChange
