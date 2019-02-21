@@ -4,14 +4,13 @@ import logging
 import json
 import base64
 
-
 from drift import config, info_parser, metrics
-from drift.constants import APP_URL_PREFIX, API_VERSION_PREFIX, FACT_NAMESPACE, MOCK_FACT_NAMESPACE
+from drift.constants import FACT_NAMESPACE, MOCK_FACT_NAMESPACE
 from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems, get_key_from_headers
 
 
-section = Blueprint('v0', __name__, url_prefix=APP_URL_PREFIX + API_VERSION_PREFIX)
+section = Blueprint('v0', __name__)
 
 
 @metrics.comparison_report_requests.time()

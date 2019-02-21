@@ -5,8 +5,6 @@ python:
 
 script:
   - flake8
-  - yamllint drift/openapi/mgmt_api.spec.yaml
-  - yamllint drift/openapi/api.spec.yaml
   - ./run_unit_tests.sh
 
 install:
