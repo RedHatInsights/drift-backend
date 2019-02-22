@@ -1,5 +1,0 @@
-Flask>=0.9
-connexion
-connexion[swagger-ui]
-gunicorn
-prometheus-client
