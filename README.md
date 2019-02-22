@@ -5,6 +5,12 @@ This is a flask app that provides an API for drift-frontend. It listens on port
 8080 by default with gunicorn. Prometheus stats will be stored in a temp
 directory.
 
+To set up pipenv:
+```
+yum install -y pipenv
+pipenv install # will pull in deps and create virtualenv, and will print next steps to run
+``
+
 To run:
 
 `prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> run_app.sh`

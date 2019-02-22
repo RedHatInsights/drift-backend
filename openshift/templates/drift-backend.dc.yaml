@@ -34,6 +34,8 @@ spec:
               value: /r/insights/platform/
             - name: APP_NAME
               value: drift
+            - name: ENABLE_PIPENV
+              value: true
           image: {{ project }}/drift-backend:latest
           imagePullPolicy: Always
           name: drift-backend
