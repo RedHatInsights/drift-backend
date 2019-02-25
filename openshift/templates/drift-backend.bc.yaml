@@ -19,6 +19,9 @@ spec:
         name: 'python:3.6'
         namespace: openshift
     type: Source
+  resources:
+    limits:
+      memory: 512Mi
   output:
     to:
       kind: ImageStreamTag
