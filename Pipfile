@@ -13,9 +13,10 @@ yamllint = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}
-gunicorn = "*"
 Flask = "*"
+gunicorn = "*"
 prometheus_client = "*"
+openapi-spec-validator = "==0.2.4"
 
 [requires]
 python_version = "3.7"
