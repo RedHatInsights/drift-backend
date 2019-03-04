@@ -38,6 +38,16 @@ spec:
               value: true
             - name: prometheus_multiproc_dir
               value: /prometheus-data
+          readinessProbe:
+            httpGet:
+              path: /mgmt/v0/status
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /mgmt/v0/status
+              port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
           image: "{{ project }}/drift-backend:latest"
           imagePullPolicy: Always
           name: drift-backend
