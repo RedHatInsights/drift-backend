@@ -1,3 +1,5 @@
+from pandas.io.json import json_normalize
+
 from drift.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from drift.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 
@@ -41,7 +43,8 @@ def _find_facts_for_namespace(system, fact_namespace):
     # that the namespace is always present.
     for facts in system['facts']:
         if facts['namespace'] == fact_namespace:
-            return facts['facts']
+            dataframe = json_normalize(facts['facts'], sep='.')
+            return dataframe.to_dict(orient='records')[0]
 
 
 def _system_facts_and_id(system, fact_namespace):

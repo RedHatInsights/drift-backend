@@ -16,6 +16,7 @@ connexion = {extras = ["swagger-ui"],version = "*"}
 Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
+pandas = "*"
 openapi-spec-validator = "==0.2.4"
 
 [requires]
