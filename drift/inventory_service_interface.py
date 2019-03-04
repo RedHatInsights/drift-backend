@@ -1,5 +1,6 @@
 import json
 import requests
+
 from urllib.parse import urljoin
 
 from drift import config, metrics

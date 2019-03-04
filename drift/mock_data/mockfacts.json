@@ -189,5 +189,15 @@
     "uname.sysname": "Linux",
     "uname.version": "#1 SMP Mon Dec 17 15:34:44 UTC 2018",
     "virt.host_type": "Not Applicable",
-    "virt.is_guest": "False"
+    "virt.is_guest": "False",
+    "configuration.services": {
+        "NetworkManager-dispatcher.service": true,
+        "NetworkManager-wait-online.service": false,
+        "NetworkManager.service": true,
+        "auditd.service": true,
+        "auth-rpcgss-module.service": true,
+        "autovt@.service": false,
+        "blk-availability.service": false,
+        "brandbot.service": true
+    }
 }
