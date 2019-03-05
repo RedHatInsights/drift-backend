@@ -1,6 +1,6 @@
 API_VERSION_PREFIX = "/v0"
 AUTH_HEADER_NAME = 'X-RH-IDENTITY'
-FACT_NAMESPACE = "inventory"
+FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_HOSTS_ENDPOINT = '/r/insights/platform/inventory/api/v1/hosts/%s?per_page=%s'
 MAX_UUID_COUNT = 20
 MOCK_FACT_NAMESPACE = 'mockfacts'

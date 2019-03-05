@@ -35,16 +35,27 @@ def _select_applicable_info(systems, fact_namespace):
     return info_comparisons
 
 
+def _flatten_list_facts(facts):
+    # TODO: this should likely be handled in PUP
+    for fact in facts:
+        if fact in ['os.kernel_modules', 'system_properties.hostnames']:
+            facts[fact] = ', '.join(facts[fact])
+
+    return facts
+
+
 def _find_facts_for_namespace(system, fact_namespace):
     """
     return the facts for the given namespace
     """
-    # TODO: we are assuming we just need to handle one namespace, and
-    # that the namespace is always present.
+    # TODO: we are assuming we just need to handle one namespace
     for facts in system['facts']:
         if facts['namespace'] == fact_namespace:
-            dataframe = json_normalize(facts['facts'], sep='.')
+            dataframe = json_normalize(_flatten_list_facts(facts['facts']), sep='.')
+            # TODO: we should transform this in PUP, not here
+            dataframe = dataframe.replace({True: "enabled", False: "disabled"})
             return dataframe.to_dict(orient='records')[0]
+    return {}
 
 
 def _system_facts_and_id(system, fact_namespace):
