@@ -9,16 +9,21 @@ To set up pipenv:
 ```
 yum install -y pipenv
 pipenv install # will pull in deps and create virtualenv, and will print next steps to run
-``
+```
 
-To run:
+to set up temp directory (command will return a temp dir that you'll use later)
+```
+mktemp -d
+```
 
-`prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> run_app.sh`
+To run (inventory service URL can be obtained from drift or platform team):
+
+`prometheus_multiproc_dir=`mktemp -d` INVENTORY_SVC_URL=<inventory service url> ./run_app.sh`
 
 
 To set the debug level (`info` by default):
 
-`LOG_LEVEL=debug prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> run_app.sh`
+`LOG_LEVEL=debug prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> ./run_app.sh`
 
 You may also set `RETURN_MOCK_DATA` to `true` if you want a large set of mock
 facts returned for each system.
