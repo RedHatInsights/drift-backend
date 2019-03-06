@@ -35,7 +35,7 @@ spec:
             - name: APP_NAME
               value: drift
             - name: ENABLE_PIPENV
-              value: true
+              value: 'true'
             - name: prometheus_multiproc_dir
               value: /prometheus-data
           readinessProbe:
