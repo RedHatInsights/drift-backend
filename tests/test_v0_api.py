@@ -29,8 +29,15 @@ class ApiTests(unittest.TestCase):
     def test_compare_api_no_account_number(self):
         response = self.client.get("r/insights/platform/drift/v0/compare?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER_NO_ACCT)
+        self.assertEqual(response.status_code, 400)
+
+    def test_comparison_report_duplicate_uuid(self):
+        response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
+                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                                   "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
 
     @mock.patch('drift.views.v0.fetch_systems')
@@ -38,7 +45,7 @@ class ApiTests(unittest.TestCase):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_RESULT
         response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
 
@@ -47,7 +54,7 @@ class ApiTests(unittest.TestCase):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_SAME_FACTS_RESULT
         response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
 
@@ -60,7 +67,7 @@ class ApiTests(unittest.TestCase):
 
         response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
 
@@ -69,7 +76,7 @@ class ApiTests(unittest.TestCase):
         mock_fetch_systems.side_effect = SystemNotReturned("oops")
         response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
 
@@ -78,7 +85,7 @@ class ApiTests(unittest.TestCase):
         mock_fetch_systems.side_effect = InventoryServiceError("oops")
         response = self.client.get("r/insights/platform/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 500)
 
