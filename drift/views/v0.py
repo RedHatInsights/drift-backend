@@ -19,6 +19,10 @@ def comparison_report():
     system_ids = request.args.getlist('system_ids[]')
     auth_key = get_key_from_headers(request.headers)
 
+    if len(system_ids) > len(set(system_ids)):
+        raise HTTPError(HTTPStatus.BAD_REQUEST,
+                        message="duplicate UUID specified in system_ids list")
+
     fact_namespace = FACT_NAMESPACE
     if config.return_mock_data:
         fact_namespace = MOCK_FACT_NAMESPACE
