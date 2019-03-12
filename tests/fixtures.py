@@ -68,11 +68,15 @@ FETCH_SYSTEMS_RESULT = [
       "display_name": None,
       "facts": [
         {
-          "facts": {'fqdn': "fake_system_99.example.com"},
+          "facts": {'fqdn': "fake_system_99.example.com",
+                    'os.kernel_modules': ["fat16", "com4"],
+                    'system_properties.hostnames': ["fake", "fake2"]},
           "namespace": "inventory"
         },
         {
-          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
+          "facts": {'fqdn': "fake_system_99.example.com",
+                    'os.kernel_modules': ["fat16", "com4"],
+                    'system_properties.hostnames': ["fake", "fake2"]},
           "namespace": "mockfacts"
         }
       ],

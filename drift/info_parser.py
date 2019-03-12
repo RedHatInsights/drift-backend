@@ -12,7 +12,9 @@ def build_comparisons(inventory_service_systems, fact_namespace):
     fact_comparison = _select_applicable_info(inventory_service_systems, fact_namespace)
 
     system_mappings = [_system_mapping(system) for system in inventory_service_systems]
-    return {'facts': fact_comparison, 'systems': system_mappings}
+
+    sorted_comparison = sorted(fact_comparison, key=lambda comparison: comparison['name'])
+    return {'facts': sorted_comparison, 'systems': system_mappings}
 
 
 def _select_applicable_info(systems, fact_namespace):
@@ -37,9 +39,19 @@ def _select_applicable_info(systems, fact_namespace):
 
 def _flatten_list_facts(facts):
     # TODO: this should likely be handled in PUP
+    appended_facts = {}
     for fact in facts:
-        if fact in ['os.kernel_modules', 'system_properties.hostnames']:
-            facts[fact] = ', '.join(facts[fact])
+        # fact lists that we want to concatenate
+        if fact in ['system_properties.hostnames']:
+            facts[fact] = ', '.join(sorted(facts[fact]))
+        # fact lists that we want to flatten
+        if fact in ['os.kernel_modules']:
+            for kernel_module in facts['os.kernel_modules']:
+                appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
+
+    facts.update(appended_facts)
+    # remove facts that we have already flattened
+    facts.pop('os.kernel_modules', None)
 
     return facts
 
