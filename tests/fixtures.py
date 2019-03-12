@@ -76,6 +76,7 @@ FETCH_SYSTEMS_RESULT = [
         {
           "facts": {'fqdn': "fake_system_99.example.com",
                     'os.kernel_modules': ["fat16", "com4"],
+                    'cpu_flags': ["vm86", "vme"],
                     'system_properties.hostnames': ["fake", "fake2"]},
           "namespace": "mockfacts"
         }
