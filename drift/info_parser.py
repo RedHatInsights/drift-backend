@@ -41,13 +41,13 @@ def _flatten_list_facts(facts):
     # TODO: this should likely be handled in PUP
     appended_facts = {}
     for fact in facts:
-        # fact lists that we want to concatenate
-        if fact in ['system_properties.hostnames']:
-            facts[fact] = ', '.join(sorted(facts[fact]))
         # fact lists that we want to flatten
         if fact in ['os.kernel_modules']:
             for kernel_module in facts['os.kernel_modules']:
                 appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
+        # if we don't know what to do with the list, just join it
+        elif type(facts[fact]) is list:
+            facts[fact] = ', '.join(sorted(facts[fact]))
 
     facts.update(appended_facts)
     # remove facts that we have already flattened
