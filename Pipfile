@@ -21,3 +21,7 @@ openapi-spec-validator = "==0.2.4"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+flask = "python standalone_flask_server.py"
+tests = "bash run_unit_tests.sh"
