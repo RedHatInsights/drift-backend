@@ -41,16 +41,19 @@ def _flatten_list_facts(facts):
     # TODO: this should likely be handled in PUP
     appended_facts = {}
     for fact in facts:
-        # fact lists that we want to flatten w/ fact-specific verb
-        if fact in ['os.kernel_modules']:
-            for kernel_module in facts['os.kernel_modules']:
-                appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
-        if fact in ['cpu_flags']:
-            for cpu_flag in facts['cpu_flags']:
-                appended_facts['cpu_flags.' + cpu_flag] = "enabled"
-        # if we don't know what to do with the list, just join it
-        elif type(facts[fact]) is list:
-            facts[fact] = ', '.join(sorted(facts[fact]))
+        try:
+            # fact lists that we want to flatten w/ fact-specific verb
+            if fact in ['os.kernel_modules']:
+                for kernel_module in facts['os.kernel_modules']:
+                    appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
+            if fact in ['cpu_flags']:
+                for cpu_flag in facts['cpu_flags']:
+                    appended_facts['cpu_flags.' + cpu_flag] = "enabled"
+            # if we don't know what to do with the list, just join it
+            elif type(facts[fact]) is list:
+                facts[fact] = ', '.join(sorted(facts[fact]))
+        except TypeError:
+            facts[fact] = "PARSE_ERROR"
 
     facts.update(appended_facts)
     # remove facts that we have already flattened
