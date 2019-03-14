@@ -20,7 +20,7 @@ pandas = "*"
 openapi-spec-validator = "==0.2.4"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
 [scripts]
 flask = "python standalone_flask_server.py"
