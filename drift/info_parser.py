@@ -49,6 +49,18 @@ def _flatten_list_facts(facts):
             if fact in ['cpu_flags']:
                 for cpu_flag in facts['cpu_flags']:
                     appended_facts['cpu_flags.' + cpu_flag] = "enabled"
+            if fact in ['network.interfaces']:
+                for iface in facts['network.interfaces']:
+                    iface_fact_name = 'network.interfaces.' + iface['name']
+                    ipv4_addresses = ','.join(sorted(iface['ipv4_addresses'])),
+                    ipv6_addresses = ','.join(sorted(iface['ipv6_addresses'])),
+                    iface_facts = {iface_fact_name + '.mtu': iface['mtu'],
+                                   iface_fact_name + '.state': iface['state'],
+                                   iface_fact_name + '.type': iface['type'],
+                                   iface_fact_name + '.ipv4_addresses': ipv4_addresses,
+                                   iface_fact_name + '.ipv6_addresses': ipv6_addresses}
+                    appended_facts.update(iface_facts)
+
             # if we don't know what to do with the list, just join it
             elif type(facts[fact]) is list:
                 facts[fact] = ', '.join(sorted(facts[fact]))
@@ -59,6 +71,7 @@ def _flatten_list_facts(facts):
     # remove facts that we have already flattened
     facts.pop('os.kernel_modules', None)
     facts.pop('cpu_flags', None)
+    facts.pop('network.interfaces', None)
 
     return facts
 
