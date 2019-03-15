@@ -1,3 +1,5 @@
+import re
+
 from pandas.io.json import json_normalize
 
 from drift.constants import SYSTEM_ID_KEY, COMPARISON_SAME
@@ -37,6 +39,22 @@ def _select_applicable_info(systems, fact_namespace):
     return info_comparisons
 
 
+def _get_nevra_from_string(rpm_string):
+    """
+    this function is originally from vmaas project
+    """
+    nevra_re = re.compile(r'(([0-9]+):)?(.*)-([^-]+)-([^-]+)\.([a-z0-9_]+)')
+    match = nevra_re.match(rpm_string)
+
+    if not match:
+        raise "unable to match %s" % rpm_string
+
+    _, epoch, name, version, release, arch = match.groups()
+    if epoch is None:
+        epoch = '0'
+    return name, epoch, version, release, arch
+
+
 def _flatten_list_facts(facts):
     # TODO: this should likely be handled in PUP
     appended_facts = {}
@@ -60,6 +78,10 @@ def _flatten_list_facts(facts):
                                    iface_fact_name + '.ipv4_addresses': ipv4_addresses,
                                    iface_fact_name + '.ipv6_addresses': ipv6_addresses}
                     appended_facts.update(iface_facts)
+            if fact in ['installed_packages']:
+                for package in facts['installed_packages']:
+                    name, epoch, version, release, arch = _get_nevra_from_string(package)
+                    appended_facts['installed_packages.'+name] = version+'-'+release+'.'+arch
 
             # if we don't know what to do with the list, just join it
             elif type(facts[fact]) is list:
@@ -72,6 +94,7 @@ def _flatten_list_facts(facts):
     facts.pop('os.kernel_modules', None)
     facts.pop('cpu_flags', None)
     facts.pop('network.interfaces', None)
+    facts.pop('installed_packages', None)
 
     return facts
 
