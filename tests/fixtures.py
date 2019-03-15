@@ -83,6 +83,8 @@ FETCH_SYSTEMS_RESULT = [
                                            "name": "eth0",
                                            "state": "UP",
                                            "type": "ether"},
+                    'installed_packages': ["httpd-filesystem-2.4.37-5.fc29.noarch",
+                                           "python3-langtable-0.0.39-1.fc29.noarch"],
                     'system_properties.hostnames': ["fake", "fake2"]},
           "namespace": "mockfacts"
         }
