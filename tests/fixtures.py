@@ -76,7 +76,6 @@ FETCH_SYSTEMS_RESULT = [
         {
           "facts": {'fqdn': "fake_system_99.example.com",
                     'os.kernel_modules': ["fat16", "com4"],
-                    'cpu_flags': ["vm86", "vme"],
                     'network.interfaces': {"ipv4_addresses": ["192.168.121.24"],
                                            "ipv6_addresses": ["fe80::5054:ff:fee9:1234"],
                                            "mtu": "1500",
@@ -85,6 +84,8 @@ FETCH_SYSTEMS_RESULT = [
                                            "type": "ether"},
                     'installed_packages': ["httpd-filesystem-2.4.37-5.fc29.noarch",
                                            "python3-langtable-0.0.39-1.fc29.noarch"],
+                    'cpu.cpu_flags': ["vm86", "vme"],
+                    'random_dict': [{'this_is_not': 'handled'}],
                     'system_properties.hostnames': ["fake", "fake2"]},
           "namespace": "mockfacts"
         }

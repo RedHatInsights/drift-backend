@@ -64,9 +64,6 @@ def _flatten_list_facts(facts):
             if fact in ['os.kernel_modules']:
                 for kernel_module in facts['os.kernel_modules']:
                     appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
-            if fact in ['cpu_flags']:
-                for cpu_flag in facts['cpu_flags']:
-                    appended_facts['cpu_flags.' + cpu_flag] = "enabled"
             if fact in ['network.interfaces']:
                 for iface in facts['network.interfaces']:
                     iface_fact_name = 'network.interfaces.' + iface['name']
@@ -82,7 +79,9 @@ def _flatten_list_facts(facts):
                 for package in facts['installed_packages']:
                     name, epoch, version, release, arch = _get_nevra_from_string(package)
                     appended_facts['installed_packages.'+name] = version+'-'+release+'.'+arch
-
+            if fact in ['cpu.cpu_flags']:
+                for cpu_flag in facts['cpu.cpu_flags']:
+                    appended_facts['cpu.cpu_flags.' + cpu_flag] = "enabled"
             # if we don't know what to do with the list, just join it
             elif type(facts[fact]) is list:
                 facts[fact] = ', '.join(sorted(facts[fact]))
@@ -92,9 +91,9 @@ def _flatten_list_facts(facts):
     facts.update(appended_facts)
     # remove facts that we have already flattened
     facts.pop('os.kernel_modules', None)
-    facts.pop('cpu_flags', None)
     facts.pop('network.interfaces', None)
     facts.pop('installed_packages', None)
+    facts.pop('cpu.cpu_flags', None)
 
     return facts
 
@@ -107,8 +106,8 @@ def _find_facts_for_namespace(system, fact_namespace):
     for facts in system['facts']:
         if facts['namespace'] == fact_namespace:
             dataframe = json_normalize(_flatten_list_facts(facts['facts']), sep='.')
-            # TODO: we should transform this in PUP, not here
-            dataframe = dataframe.replace({True: "enabled", False: "disabled"})
+            dataframe = dataframe.applymap(str)
+            dataframe = dataframe.replace({"True": "enabled", "False": "disabled"})
             return dataframe.to_dict(orient='records')[0]
     return {}
 
