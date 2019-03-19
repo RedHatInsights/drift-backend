@@ -31,7 +31,7 @@ spec:
             - name: APP_CONFIG
               value: gunicorn.conf.py
             - name: PATH_PREFIX
-              value: /r/insights/platform/
+              value: /api/
             - name: APP_NAME
               value: drift
             - name: ENABLE_PIPENV
