@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 
 from pandas.io.json import json_normalize
 
@@ -64,6 +65,8 @@ def _flatten_list_facts(facts):
             if fact in ['os.kernel_modules']:
                 for kernel_module in facts['os.kernel_modules']:
                     appended_facts['os.kernel_modules.' + kernel_module] = "loaded"
+            if fact in ['processes.running']:
+                appended_facts['processes.running.count'] = Counter(facts['processes.running'])
             if fact in ['network.interfaces']:
                 for iface in facts['network.interfaces']:
                     iface_fact_name = 'network.interfaces.' + iface['name']
@@ -94,6 +97,7 @@ def _flatten_list_facts(facts):
     facts.pop('network.interfaces', None)
     facts.pop('installed_packages', None)
     facts.pop('cpu.cpu_flags', None)
+    facts.pop('processes.running', None)
 
     return facts
 
