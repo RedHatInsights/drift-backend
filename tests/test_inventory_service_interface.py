@@ -18,13 +18,13 @@ class InventoryServiceTests(unittest.TestCase):
         self.mock_logger = mock.Mock()
 
     def _create_response_for_systems(self, service_hostname, system_uuids):
-        url_template = "http://%s/r/insights/platform/inventory/api/v1/hosts/%s"
+        url_template = "http://%s/api/inventory/v1/hosts/%s"
         responses.add(responses.GET, url_template % (service_hostname, system_uuids),
                       body=fixtures.SYSTEMS_TEMPLATE, status=requests.codes.ok,
                       content_type='application/json')
 
     def _create_500_response_for_systems(self, service_hostname, system_uuids):
-        url_template = "http://%s/r/insights/platform/inventory/api/v1/hosts/%s"
+        url_template = "http://%s/api/inventory/v1/hosts/%s"
         responses.add(responses.GET, url_template % (service_hostname, system_uuids),
                       body="I am error", status=requests.codes.INTERNAL_SERVER_ERROR,
                       content_type='application/json')
