@@ -40,7 +40,7 @@ The same info as above, but in handy table form:
 | LOG_LEVEL                 | no        | string          | lowercase log level (info by default)             |
 | RETURN_MOCK_DATA          | no        | boolean         | return fake facts                                 |
 | prometheus_multiproc_dir  | yes       | string          | path to dir for sharing stats between processes   |
-| PATH_PREFIX               | no        | string          | API path prefix (default: `/r/insights/platform`) |
+| PATH_PREFIX               | no        | string          | API path prefix (default: `/api`)                 |
 | APP_NAME                  | no        | string          | API app name (default: `drift`)                   |
 
 If you would like to use this service with insights-proxy, you can use the
