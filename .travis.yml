@@ -13,3 +13,7 @@ script:
 install:
   - pip install pipenv
   - pipenv install --dev
+  - pip install codecov
+
+after_success:
+  - codecov
