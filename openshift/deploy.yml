@@ -3,10 +3,11 @@
   hosts: localhost
   gather_facts: false
   connection: local
-  vars_files:
-    - vars/secrets.yml
   vars:
     deployment_state: present
     project: drift-ci
+  vars_files:
+    - vars/secrets.yml
+    - "vars/{{ project.split('-')[1] }}.yml"
   roles:
     - drift-backend
