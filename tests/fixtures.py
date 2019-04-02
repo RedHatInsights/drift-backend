@@ -60,37 +60,133 @@ AUTH_HEADER_NO_ACCT = {'X-RH-IDENTITY': 'eyJpZGVudGl0eSI6eyJ0eXBlIjoiVXNlciIsInV
                                         '2ludGVybmFsIjp0cnVlLCJsb2NhbGUiOiJlbl9VUyJ9LC'
                                         'JpbnRlcm5hbCI6eyJvcmdfaWQiOiI5OTk5In19fQo='}
 
-FETCH_SYSTEMS_RESULT = [
+FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
     {
       "account": "9876543",
       "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
       "created": "2019-01-31T13:00:00.100010Z",
       "display_name": None,
-      "facts": [
-        {
-          "facts": {'fqdn': "fake_system_99.example.com",
-                    'os.kernel_modules': ["fat16", "com4"],
-                    'system_properties.hostnames': ["fake", "fake2"]},
-          "namespace": "inventory"
-        },
-        {
-          "facts": {'fqdn': "fake_system_99.example.com",
-                    'os.kernel_modules': ["fat16", "com4"],
-                    'installed_packages': ["httpd-filesystem-2.4.37-5.fc29.noarch",
-                                           "python3-langtable-0.0.39-1.fc29.noarch"],
-                    'cpu.cpu_flags': ["vm86", "vme"],
-                    'random_dict': [{'this_is_not': 'handled'}],
-                    'processes.running': ["doom.exe", "command.com", "doom.exe"],
-                    'network.interfaces': [{"ipv4_addresses": ["192.168.121.24"],
-                                            "ipv6_addresses": ["fe80::5054:ff:fee9:1234"],
-                                            "mtu": "1500",
-                                            "name": "eth0",
-                                            "state": "UP",
-                                            "type": "ether"}],
-                    'system_properties.hostnames': ["fake", "fake2"]},
-          "namespace": "mockfacts"
-        }
+      "fqdn": "fake_system_99.example.com",
+      "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
+      "insights_id": "01791a58-28af-11e9-9ab0-c85b761454fa",
+      "ip_addresses": [
+        "10.0.0.3",
+        "2620:52:0:2598:5054:ff:fecd:ae15"
       ],
+      "mac_addresses": [
+        "52:54:00:cd:ae:00",
+        "00:00:00:00:00:00"
+      ],
+      "rhel_machine_id": None,
+      "satellite_id": None,
+      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+      "system_profile": {'salutation': "hello",
+                         'installed_packages': ["0:bash-4.4.23-6.fc29.x86_64"],
+                         "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa"},
+      "tags": [],
+      "updated": "2019-01-31T14:00:00.500000Z"
+    },
+    {
+      "account": "9876543",
+      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
+      "created": "2018-01-31T13:00:00.100010Z",
+      "display_name": None,
+      "fqdn": "fake_system_99.example.com",
+      "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+      "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
+      "ip_addresses": [
+        "10.0.0.3",
+        "2620:52:0:2598:5054:ff:fecd:ae15"
+      ],
+      "mac_addresses": [
+        "52:54:00:cd:ae:00",
+        "00:00:00:00:00:00"
+      ],
+      "rhel_machine_id": None,
+      "satellite_id": None,
+      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+      "system_profile": {'salutation': "hi",
+                         "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa"},
+      "tags": [],
+      "updated": "2018-01-31T14:00:00.500000Z"}
+    ]
+
+FETCH_SYSTEM_PROFILES_INV_SVC = '''
+{
+  "count": 1,
+  "page": 1,
+  "per_page": 50,
+  "results": [
+    {
+      "id": "243926fa-262f-11e9-a632-c85b761454fa",
+      "system_profile": {
+        "arch": "x86_64",
+        "bios_vendor": "SeaBIOS",
+        "bios_version": "?-20180531_142017-buildhw-08.phx2.fedoraproject.org-1.fc28",
+        "cores_per_socket": 1,
+        "cpu_flags": [ "fpu", "vme" ],
+        "enabled_services": ["auditd", "chronyd", "crond" ],
+        "infrastructure_type": "virtual",
+        "infrastructure_vendor": "kvm",
+        "installed_packages": ["0:bash-4.4.19-7.el8", "0:chrony-3.3-3.el8",
+                               "0:dnf-4.0.9.2-4.el8", "1:NetworkManager-1.14.0-14.el8"],
+        "installed_services": [ "arp-ethers", "auditd", "autovt@", "chronyd", "cpupower"],
+        "kernel_modules": [ "kvm", "pcspkr", "joydev", "xfs"],
+        "last_boot_time": "2019-03-25T19:32:18",
+        "network_interfaces": [
+          {
+            "ipv4_addresses": ["127.0.0.1"],
+            "ipv6_addresses": ["::1"],
+            "mac_address": "00:00:00:00:00:00",
+            "mtu": 65536,
+            "name": "lo",
+            "state": "UNKNOWN",
+            "type": "loopback"
+          },
+          {
+            "ipv4_addresses": ["192.168.0.1"],
+            "ipv6_addresses": ["fe80::5054:ff::0001"],
+            "mac_address": "52:54:00:00:00:00",
+            "mtu": 1500,
+            "name": "eth0",
+            "state": "UP",
+            "type": "ether"
+          }
+        ],
+        "number_of_cpus": 2,
+        "number_of_sockets": 2,
+        "os_kernel_version": "4.18.0",
+        "running_processes": [ "watchdog/1", "systemd-logind", "md", "ksmd", "sshd" ],
+        "system_memory_bytes": 1917988864,
+        "yum_repos": [
+          {
+            "base_url": "https://cdn.example.com/content/freedos/1.0/i386/os",
+            "enabled": true,
+            "gpgcheck": true,
+            "name": "freedos 1.0 repo i386"
+          },
+          {
+            "base_url": "https://cdn.example.com/content/freedos/1.0/z80/os",
+            "enabled": false,
+            "gpgcheck": true,
+            "name": "freedos 1.0 repo z80"
+          }
+        ]
+      }
+    }
+  ],
+  "total": 1
+}
+'''
+
+FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT = [
+    {
+      "account": "9876543",
+      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
+      "created": "2019-01-31T13:00:00.100010Z",
+      "display_name": None,
+      "system_profile": {'salutation': "howdy",
+                         "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa"},
       "fqdn": "fake_system_99.example.com",
       "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
       "insights_id": "01791a58-28af-11e9-9ab0-c85b761454fa",
@@ -113,16 +209,8 @@ FETCH_SYSTEMS_RESULT = [
       "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
       "created": "2018-01-31T13:00:00.100010Z",
       "display_name": None,
-      "facts": [
-        {
-          "facts": {'foo': "bar"},
-          "namespace": "inventory"
-        },
-        {
-          "facts": {'fakefact2': "qux"},
-          "namespace": "mockfacts"
-        }
-      ],
+      "system_profile": {'salutation': "howdy",
+                         "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa"},
       "fqdn": "fake_system_99.example.com",
       "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
       "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
@@ -141,73 +229,7 @@ FETCH_SYSTEMS_RESULT = [
       "updated": "2018-01-31T14:00:00.500000Z"}
     ]
 
-FETCH_SYSTEMS_SAME_FACTS_RESULT = [
-    {
-      "account": "9876543",
-      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
-      "created": "2019-01-31T13:00:00.100010Z",
-      "display_name": None,
-      "facts": [
-        {
-          "facts": {'fqdn': "fake_system_99.example.com"},
-          "namespace": "inventory"
-        },
-        {
-          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
-          "namespace": "mockfacts"
-        }
-      ],
-      "fqdn": "fake_system_99.example.com",
-      "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
-      "insights_id": "01791a58-28af-11e9-9ab0-c85b761454fa",
-      "ip_addresses": [
-        "10.0.0.3",
-        "2620:52:0:2598:5054:ff:fecd:ae15"
-      ],
-      "mac_addresses": [
-        "52:54:00:cd:ae:00",
-        "00:00:00:00:00:00"
-      ],
-      "rhel_machine_id": None,
-      "satellite_id": None,
-      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
-      "tags": [],
-      "updated": "2019-01-31T14:00:00.500000Z"
-    },
-    {
-      "account": "9876543",
-      "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
-      "created": "2018-01-31T13:00:00.100010Z",
-      "display_name": None,
-      "facts": [
-        {
-          "facts": {'fqdn': "fake_system_99.example.com"},
-          "namespace": "inventory"
-        },
-        {
-          "facts": {'fakefact': "pretend_this_fact_was_injected_via_RETURN_MOCK_DATA"},
-          "namespace": "mockfacts"
-        }
-      ],
-      "fqdn": "fake_system_99.example.com",
-      "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
-      "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
-      "ip_addresses": [
-        "10.0.0.3",
-        "2620:52:0:2598:5054:ff:fecd:ae15"
-      ],
-      "mac_addresses": [
-        "52:54:00:cd:ae:00",
-        "00:00:00:00:00:00"
-      ],
-      "rhel_machine_id": None,
-      "satellite_id": None,
-      "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
-      "tags": [],
-      "updated": "2018-01-31T14:00:00.500000Z"}
-    ]
-
-SYSTEMS_TEMPLATE = '''
+FETCH_SYSTEMS_INV_SVC = '''
     {
       "count": 2,
       "page": 1,
@@ -218,12 +240,6 @@ SYSTEMS_TEMPLATE = '''
       "bios_uuid": "dc43976c263411e9bcf0c85b761454fa",
       "created": "2018-12-01T12:00:00.000000Z",
       "display_name": "system1.example.com",
-      "facts": [
-        {
-          "facts": {"foo": "bar"},
-          "namespace": "inventory"
-        }
-      ],
       "fqdn": "system.example.com",
       "id": "243926fa-262f-11e9-a632-c85b761454fa",
       "insights_id": "TEST-ID00-0000-0000",
@@ -243,12 +259,6 @@ SYSTEMS_TEMPLATE = '''
       "bios_uuid": "ec43976c263411e9bcf0c85b761454fa",
       "created": "2018-12-01T12:00:00.000000Z",
       "display_name": "system2.example.com",
-      "facts": [
-        {
-          "facts": {},
-          "namespace": "inventory"
-        }
-      ],
       "fqdn": "system2.example.com",
       "id": "264fb5b2-262f-11e9-9b12-c85b761454fa",
       "insights_id": "TEST-ID22-2222-2222",

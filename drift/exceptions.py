@@ -34,3 +34,12 @@ class InventoryServiceError(Exception):
         """
         super(InventoryServiceError, self).__init__()
         self.message = message
+
+
+class UnparsableNEVRAError(RuntimeError):
+    def __init__(self, message):
+        """
+        Raise this exception if we cannot parse a nevra
+        """
+        super(RuntimeError, self).__init__()
+        self.message = message
