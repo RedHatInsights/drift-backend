@@ -40,38 +40,25 @@ class ApiTests(unittest.TestCase):
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
 
-    @mock.patch('drift.views.v0.fetch_systems')
+    @mock.patch('drift.views.v0.fetch_systems_with_profiles')
     def test_comparison_report_api(self, mock_fetch_systems):
-        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_RESULT
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         response = self.client.get("api/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
                                    "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch('drift.views.v0.fetch_systems')
+    @mock.patch('drift.views.v0.fetch_systems_with_profiles')
     def test_comparison_report_api_same_facts(self, mock_fetch_systems):
-        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_SAME_FACTS_RESULT
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT
         response = self.client.get("api/drift/v0/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
                                    "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch('drift.views.v0.config')
-    @mock.patch('drift.views.v0.fetch_systems')
-    def test_comparison_report_api_mock_facts(self, mock_fetch_systems, mock_config):
-        mock_config.inventory_svc_hostname = "http://inventory_svc_url_is_not_set"
-        mock_config.return_mock_data = True
-        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_RESULT
-
-        response = self.client.get("api/drift/v0/comparison_report?"
-                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-                                   headers=fixtures.AUTH_HEADER)
-        self.assertEqual(response.status_code, 200)
-
-    @mock.patch('drift.views.v0.fetch_systems')
+    @mock.patch('drift.views.v0.fetch_systems_with_profiles')
     def test_comparison_report_api_missing_system_uuid(self, mock_fetch_systems):
         mock_fetch_systems.side_effect = SystemNotReturned("oops")
         response = self.client.get("api/drift/v0/comparison_report?"
@@ -80,7 +67,7 @@ class ApiTests(unittest.TestCase):
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
 
-    @mock.patch('drift.views.v0.fetch_systems')
+    @mock.patch('drift.views.v0.fetch_systems_with_profiles')
     def test_comparison_report_api_500_backend(self, mock_fetch_systems):
         mock_fetch_systems.side_effect = InventoryServiceError("oops")
         response = self.client.get("api/drift/v0/comparison_report?"

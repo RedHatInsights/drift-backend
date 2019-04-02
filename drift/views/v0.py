@@ -4,10 +4,9 @@ import logging
 import json
 import base64
 
-from drift import config, info_parser, metrics
-from drift.constants import FACT_NAMESPACE, MOCK_FACT_NAMESPACE
+from drift import info_parser, metrics
 from drift.exceptions import HTTPError, SystemNotReturned
-from drift.inventory_service_interface import fetch_systems, get_key_from_headers
+from drift.inventory_service_interface import fetch_systems_with_profiles, get_key_from_headers
 
 
 section = Blueprint('v0', __name__)
@@ -23,14 +22,10 @@ def comparison_report():
         raise HTTPError(HTTPStatus.BAD_REQUEST,
                         message="duplicate UUID specified in system_ids list")
 
-    fact_namespace = FACT_NAMESPACE
-    if config.return_mock_data:
-        fact_namespace = MOCK_FACT_NAMESPACE
-
     try:
-        comparisons = info_parser.build_comparisons(fetch_systems(system_ids, auth_key,
-                                                                  current_app.logger),
-                                                    fact_namespace)
+        comparisons = info_parser.build_comparisons(fetch_systems_with_profiles(system_ids,
+                                                                                auth_key,
+                                                                                current_app.logger))
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
