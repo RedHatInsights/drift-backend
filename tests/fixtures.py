@@ -81,7 +81,12 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
       "satellite_id": None,
       "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
       "system_profile": {'salutation': "hello",
-                         'installed_packages': ["0:bash-4.4.23-6.fc29.x86_64"],
+                         'installed_packages': ["0:bash-4.4.23-6.fc29.x86_64",
+                                                "this isn't parsable",
+                                                "no_epoch-1.0-1.fc99.8088"],
+                         'cpu_flags': ['maryland'],
+                         'yum_repos': [{'name': 'yummy', 'enabled': False}, {'no_name': 'bleh'}],
+                         'network_interfaces': [{'name': 'eth99', 'mtu': 3}, {'no_name': 'foo'}],
                          "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa"},
       "tags": [],
       "updated": "2019-01-31T14:00:00.500000Z"
