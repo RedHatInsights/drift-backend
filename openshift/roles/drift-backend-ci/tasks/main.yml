@@ -1,0 +1,15 @@
+---
+- name: secret
+  k8s:
+    definition: "{{ lookup('template', 'templates/secret.yaml') | from_yaml }}"
+    host: "{{ openshift_host }}"
+
+- name: image stream
+  k8s:
+    definition: "{{ lookup('template', 'templates/image-stream.yaml') | from_yaml }}"
+    host: "{{ openshift_host }}"
+
+- name: build config
+  k8s:
+    definition: "{{ lookup('template', 'templates/build-config.yaml') | from_yaml }}"
+    host: "{{ openshift_host }}"
