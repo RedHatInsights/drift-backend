@@ -64,6 +64,17 @@ def _group_comparisons(comparisons):
         else:
             grouped_comparisons.append(comparison)
 
+    # set summary status if grouped comparison contains groups
+    for grouped_comparison in grouped_comparisons:
+        if 'comparisons' in grouped_comparison:
+            states = {comparison['state'] for comparison in grouped_comparison['comparisons']}
+            if COMPARISON_DIFFERENT in states:
+                grouped_comparison['status'] = COMPARISON_DIFFERENT
+            elif COMPARISON_SAME in states and len(states) == 1:
+                grouped_comparison['status'] = COMPARISON_SAME
+            else:  # use 'incomplete data' as the fallback state if something goes wrong
+                grouped_comparison['status'] = COMPARISON_INCOMPLETE_DATA
+
     return grouped_comparisons
 
 
