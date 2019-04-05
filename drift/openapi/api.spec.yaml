@@ -92,7 +92,7 @@ components:
     FactComparison:
       description: "A list of fact names, states, and systems. This is useful
                     for displaying rows of facts to compare. Note that if the
-                    'comparisons' array is populated, the 'state' and 'system'
+                    'comparisons' array is populated, the 'system' field
                     will not be used. The 'comparisons' array is used for
                     creating nested values."
       required:
