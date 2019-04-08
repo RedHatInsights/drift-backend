@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.1
 info:
-  version: "0.1"
+  version: "1.0"
   title: Drift Backend Service
   description: Service that returns differences between systems.
   license:
@@ -9,7 +9,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: "{{ path_prefix }}{{ app_name }}/v0"
+  - url: "{{ path_prefix }}{{ app_name }}/v1"
 
 paths:
   /comparison_report:
@@ -20,7 +20,7 @@ paths:
       description: "Fetch a comparison report for given system IDs. This will
                     only fetch the most current system state using data from
                     inventory service."
-      operationId: drift.views.v0.comparison_report
+      operationId: drift.views.v1.comparison_report
       parameters:
         - name: system_ids[]
           in: query
@@ -125,14 +125,16 @@ components:
         value:
           type: string
     System:
-      description: "The system ID, FQDN, and last updated timestamp for each
-                    system in the report"
+      description: "The system ID, display_name, and last updated timestamp for each
+                    system in the report. The display_name will try to populate
+                    from the inventory service record's display_name, fqdn, and
+                    finally ID."
       required:
-        - fqdn
+        - display_name
         - id
         - last_updated
       properties:
-        fqdn:
+        display_name:
           type: string
         id:
           type: string

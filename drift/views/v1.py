@@ -9,7 +9,7 @@ from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems_with_profiles, get_key_from_headers
 
 
-section = Blueprint('v0', __name__)
+section = Blueprint('v1', __name__)
 
 
 @metrics.comparison_report_requests.time()

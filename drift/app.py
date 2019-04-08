@@ -2,7 +2,7 @@ import connexion
 import logging
 
 from drift import config
-from drift.views import v0
+from drift.views import v1
 from drift.error import handle_http_error
 from drift.exceptions import HTTPError
 from drift.metrics_registry import create_prometheus_registry_dir
@@ -27,6 +27,6 @@ def create_app():
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
 
-    flask_app.register_blueprint(v0.section)
+    flask_app.register_blueprint(v1.section)
     flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app
