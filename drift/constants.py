@@ -1,4 +1,3 @@
-API_VERSION_PREFIX = "/v0"
 AUTH_HEADER_NAME = 'X-RH-IDENTITY'
 FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_SYSTEMS_ENDPOINT = '/api/inventory/v1/hosts/%s?per_page=%s'

@@ -219,4 +219,12 @@ def _system_mapping(system):
     """
     create a header mapping for one system
     """
-    return {'id': system[SYSTEM_ID_KEY], 'fqdn': system['fqdn'], 'last_updated': system['updated']}
+    # this mimics how the inventory service modal displays names.
+    name = system['id']
+    if system.get('fqdn'):
+        name = system.get('fqdn')
+    if system.get('display_name'):
+        name = system.get('display_name')
+
+    return {'id': system[SYSTEM_ID_KEY], 'display_name': name,
+            'last_updated': system.get('updated', None)}
