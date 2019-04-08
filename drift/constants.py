@@ -4,8 +4,6 @@ FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_SYSTEMS_ENDPOINT = '/api/inventory/v1/hosts/%s?per_page=%s'
 INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT = '/api/inventory/v1/hosts/%s/system_profile?per_page=%s'
 MAX_UUID_COUNT = 20
-MOCK_FACT_NAMESPACE = 'mockfacts'
-MOCK_FACTS_FILE = 'drift/mock_data/mockfacts.json'
 SYSTEM_ID_KEY = 'id'
 
 COMPARISON_SAME = "SAME"
