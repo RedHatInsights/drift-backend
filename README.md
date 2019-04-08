@@ -25,9 +25,6 @@ To set the debug level (`info` by default):
 
 `LOG_LEVEL=debug prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> ./run_app.sh`
 
-You may also set `RETURN_MOCK_DATA` to `true` if you want a large set of mock
-facts returned for each system.
-
 The prometheus_multiproc_dir should be a path to a directory for sharing info
 between app processes. If the dir does not already exist, the app will create
 one.
@@ -38,7 +35,6 @@ The same info as above, but in handy table form:
 | ------------              | --------- | --------------- | ------------                                      |
 | INVENTORY_SVC_URL         | yes       | URL             | URL for inventory service (do not include path)   |
 | LOG_LEVEL                 | no        | string          | lowercase log level (info by default)             |
-| RETURN_MOCK_DATA          | no        | boolean         | return fake facts                                 |
 | prometheus_multiproc_dir  | yes       | string          | path to dir for sharing stats between processes   |
 | PATH_PREFIX               | no        | string          | API path prefix (default: `/api`)                 |
 | APP_NAME                  | no        | string          | API app name (default: `drift`)                   |
