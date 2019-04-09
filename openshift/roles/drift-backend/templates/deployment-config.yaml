@@ -38,6 +38,8 @@ spec:
               value: 'true'
             - name: prometheus_multiproc_dir
               value: /prometheus-data
+            - name: INVENTORY_SVC_URL
+              value: "{{ inventory_svc_url }}"
           readinessProbe:
             httpGet:
               path: /mgmt/v0/status
