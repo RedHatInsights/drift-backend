@@ -28,6 +28,7 @@ paths:
             type: array
             items:
               type: string
+              format: uuid
           required: true
           description: list of system IDs to generate report for
       responses:

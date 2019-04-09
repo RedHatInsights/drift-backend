@@ -40,6 +40,13 @@ class ApiTests(unittest.TestCase):
                                    headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 400)
 
+    def test_comparison_report_bad_uuid(self):
+        response = self.client.get("api/drift/v1/comparison_report?"
+                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454faaaaaa"
+                                   "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 400)
+
     @mock.patch('drift.views.v1.fetch_systems_with_profiles')
     def test_comparison_report_api(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
