@@ -3,13 +3,26 @@ from http import HTTPStatus
 import logging
 import json
 import base64
+from uuid import UUID
 
 from drift import info_parser, metrics
 from drift.exceptions import HTTPError, SystemNotReturned
 from drift.inventory_service_interface import fetch_systems_with_profiles, get_key_from_headers
 
-
 section = Blueprint('v1', __name__)
+
+
+def _validate_uuids(system_ids):
+    """
+    helper method to test if a UUID is properly formatted. Will raise an
+    exception if format is wrong.
+    """
+    for system_id in system_ids:
+        try:
+            UUID(system_id)
+        except ValueError:
+            raise HTTPError(HTTPStatus.BAD_REQUEST,
+                            message="system_id %s is not a UUID" % system_id)
 
 
 @metrics.comparison_report_requests.time()
@@ -21,6 +34,8 @@ def comparison_report():
     if len(system_ids) > len(set(system_ids)):
         raise HTTPError(HTTPStatus.BAD_REQUEST,
                         message="duplicate UUID specified in system_ids list")
+
+    _validate_uuids(system_ids)
 
     try:
         comparisons = info_parser.build_comparisons(fetch_systems_with_profiles(system_ids,
