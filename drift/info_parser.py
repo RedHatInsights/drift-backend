@@ -202,12 +202,12 @@ def _create_comparison(systems, info_name):
     info_comparison = COMPARISON_DIFFERENT
 
     system_id_values = [{'id': system[SYSTEM_ID_KEY],
-                         'value': system.get(info_name, "FACT_NOT_SET")}
+                         'value': system.get(info_name, "N/A")}
                         for system in systems]
 
     system_values = {system['value'] for system in system_id_values}
 
-    if "FACT_NOT_SET" in system_values:
+    if "N/A" in system_values:
         info_comparison = COMPARISON_INCOMPLETE_DATA
     elif len(system_values) == 1:
         info_comparison = COMPARISON_SAME
