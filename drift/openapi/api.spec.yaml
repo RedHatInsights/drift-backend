@@ -99,8 +99,6 @@ components:
       required:
         - name
         - state
-        - systems
-        - comparisons
       properties:
         name:
           type: string
