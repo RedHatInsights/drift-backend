@@ -106,7 +106,7 @@ components:
           type: string
         state:
           type: string
-          enum: [SAME, DIFFERENT]
+          enum: [SAME, DIFFERENT, N/A, INCOMPLETE_DATA]
         systems:
           type: array
           items:
