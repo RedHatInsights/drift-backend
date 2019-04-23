@@ -77,6 +77,13 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
 
     # fill in any fields that were not on the profile
     for system_id in system_profiles:
+        # before we populate the fields, mark where the system profile came
+        # from. This is useful so we know if the system has uploaded a tarball
+        # or not.
+        if system_profiles[system_id]['system_profile']:
+            system_profiles[system_id]['system_profile']['profile_from_inventory'] = True
+        else:
+            system_profiles[system_id]['system_profile']['profile_from_inventory'] = False
         # TODO: populate more than just integers and strings
         for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_STRINGS:
             if key not in system_profiles[system_id]['system_profile']:

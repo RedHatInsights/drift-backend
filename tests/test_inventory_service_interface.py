@@ -54,7 +54,6 @@ class InventoryServiceTests(unittest.TestCase):
         systems = inventory_service_interface.fetch_systems_with_profiles(systems_to_fetch,
                                                                           "my-auth-key",
                                                                           self.mock_logger)
-
         found_system_ids = {system['id'] for system in systems}
         self.assertSetEqual(found_system_ids, set(systems_to_fetch))
 

@@ -132,12 +132,15 @@ components:
         - display_name
         - id
         - last_updated
+        - profile_from_inventory
       properties:
         display_name:
           type: string
         id:
           type: string
           format: uuid
+        profile_from_inventory:
+          type: boolean
         last_updated:
           type: string
           format: date-time

@@ -21,7 +21,11 @@ def build_comparisons(systems_with_profiles):
     system_mappings = [_system_mapping(system_with_profile)
                        for system_with_profile in systems_with_profiles]
 
-    grouped_comparisons = _group_comparisons(fact_comparisons)
+    # remove system metadata that we put into to the comparison earlier
+    stripped_comparisons = [comparison for comparison in fact_comparisons
+                            if comparison['name'] not in {'id', 'profile_from_inventory'}]
+
+    grouped_comparisons = _group_comparisons(stripped_comparisons)
     sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison['name'])
 
     return {'facts': sorted_comparisons, 'systems': system_mappings}
@@ -226,5 +230,8 @@ def _system_mapping(system):
     if system.get('display_name'):
         name = system.get('display_name')
 
+    profile_from_inventory = system['system_profile']['profile_from_inventory']
+
     return {'id': system[SYSTEM_ID_KEY], 'display_name': name,
+            'profile_from_inventory': profile_from_inventory,
             'last_updated': system.get('updated', None)}
