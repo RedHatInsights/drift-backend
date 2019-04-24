@@ -145,6 +145,7 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
 FETCH_SYSTEM_PROFILES_INV_SVC = '''
 {
   "count": 1,
+  "total": 1,
   "page": 1,
   "per_page": 50,
   "results": [
@@ -265,6 +266,7 @@ FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT = [
 FETCH_SYSTEMS_INV_SVC = '''
     {
       "count": 2,
+      "total": 2,
       "page": 1,
       "per_page": 50,
       "results": [

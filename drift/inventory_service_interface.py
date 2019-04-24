@@ -1,11 +1,10 @@
-import json
 import requests
 
 from urllib.parse import urljoin
 
 from drift import config, metrics
 from drift.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
-from drift.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT, MAX_UUID_COUNT
+from drift.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
 from drift.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
 from drift.exceptions import SystemNotReturned, InventoryServiceError
 
@@ -17,17 +16,14 @@ def get_key_from_headers(incoming_headers):
     return incoming_headers.get(AUTH_HEADER_NAME)
 
 
-def _parse_inventory_response(response, logger):
+def _validate_inventory_response(response, logger):
     """
-    return an object based on the inventory response. Raise an expection if the
-    response was not what we expected.
+    Raise an exception if the response was not what we expected.
     """
     if response.status_code is not requests.codes.ok:
         logger.warn("%s error received from inventory service: %s" %
                     (response.status_code, response.text))
         raise InventoryServiceError("Error received from backend service")
-
-    return json.loads(response.text)
 
 
 def _ensure_correct_system_count(system_ids_requested, result):
@@ -36,18 +32,43 @@ def _ensure_correct_system_count(system_ids_requested, result):
 
     If the count is correct, do nothing.
     """
-    if result['count'] < len(system_ids_requested):
-        system_ids_returned = {system['id'] for system in result['results']}
+    if len(result) < len(system_ids_requested):
+        system_ids_returned = {system['id'] for system in result}
         missing_ids = set(system_ids_requested) - system_ids_returned
         raise SystemNotReturned("System(s) %s not available to display" % ','.join(missing_ids))
+
+
+def _fetch_url(url, auth_header, logger):
+    """
+    helper to make a single request
+    """
+    logger.debug("fetching %s" % url)
+    response = requests.get(url, headers=auth_header)
+    logger.debug("fetched %s" % url)
+    _validate_inventory_response(response, logger)
+    return response.json()
+
+
+def _fetch_paginated_url(url, auth_header, logger):
+    """
+    helper to collate a paginated response
+    """
+    results = []
+    page = 1
+    response_json = {'total': 1}
+
+    while len(results) < response_json['total']:
+        response_json = _fetch_url(url + ("?page=%s&per_page=20" % page), auth_header, logger)
+        results += response_json['results']
+        page += 1
+
+    return results
 
 
 def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
     """
     fetch systems from inventory service
     """
-    if len(system_ids) > MAX_UUID_COUNT:
-        raise SystemNotReturned("Too many systems requested, limit is %s" % MAX_UUID_COUNT)
 
     auth_header = {AUTH_HEADER_NAME: service_auth_key}
 
@@ -58,22 +79,19 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
                                       INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT)
 
     with metrics.inventory_service_requests.time():
-        systems_response = requests.get(system_location % (','.join(system_ids), MAX_UUID_COUNT),
-                                        headers=auth_header)
-        system_profiles_response = requests.get(system_profile_location % (','.join(system_ids),
-                                                                           MAX_UUID_COUNT),
-                                                headers=auth_header)
-
-    systems_result = _parse_inventory_response(systems_response, logger)
-    system_profiles_result = _parse_inventory_response(system_profiles_response, logger)
+        systems_result = _fetch_paginated_url(system_location % (','.join(system_ids)),
+                                              auth_header, logger)
+        system_profiles_result = _fetch_paginated_url(system_profile_location %
+                                                      (','.join(system_ids)),
+                                                      auth_header, logger)
 
     _ensure_correct_system_count(system_ids, systems_result)
 
     # create a blank profile for each system
-    system_profiles = {system['id']: {'system_profile': {}} for system in systems_result['results']}
+    system_profiles = {system['id']: {'system_profile': {}} for system in systems_result}
     # update with actual profile info if we have it
     system_profiles.update({profile['id']: profile
-                            for profile in system_profiles_result['results']})
+                            for profile in system_profiles_result})
 
     # fill in any fields that were not on the profile
     for system_id in system_profiles:
@@ -90,7 +108,7 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
                 system_profiles[system_id]['system_profile'][key] = 'N/A'
 
     systems_with_profiles = []
-    for system in systems_result['results']:
+    for system in systems_result:
         system_with_profile = system
         # we do not use the 'facts' field
         system_with_profile.pop('facts', None)
