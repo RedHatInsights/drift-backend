@@ -81,9 +81,9 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
         # from. This is useful so we know if the system has uploaded a tarball
         # or not.
         if system_profiles[system_id]['system_profile']:
-            system_profiles[system_id]['system_profile']['profile_from_inventory'] = True
+            system_profiles[system_id]['system_profile']['system_profile_exists'] = True
         else:
-            system_profiles[system_id]['system_profile']['profile_from_inventory'] = False
+            system_profiles[system_id]['system_profile']['system_profile_exists'] = False
         # TODO: populate more than just integers and strings
         for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_STRINGS:
             if key not in system_profiles[system_id]['system_profile']:

@@ -132,14 +132,14 @@ components:
         - display_name
         - id
         - last_updated
-        - profile_from_inventory
+        - system_profile_exists
       properties:
         display_name:
           type: string
         id:
           type: string
           format: uuid
-        profile_from_inventory:
+        system_profile_exists:
           type: boolean
         last_updated:
           type: string
