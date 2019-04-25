@@ -95,7 +95,11 @@ components:
                     for displaying rows of facts to compare. Note that if the
                     'comparisons' array is populated, the 'system' field
                     will not be used. The 'comparisons' array is used for
-                    creating nested values."
+                    creating nested values.
+                    If a fact for one system is N/A, it will make the entire
+                    status N/A. However, if facts are being grouped and one
+                    fact is in DIFFERENT state, then the group's roll-up status
+                    will be DIFFERENT."
       required:
         - name
         - state
