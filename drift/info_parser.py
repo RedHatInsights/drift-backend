@@ -5,6 +5,7 @@ from flask import current_app
 from drift.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from drift.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 from drift.constants import SYSTEM_PROFILE_STRINGS, SYSTEM_PROFILE_INTEGERS
+from drift.constants import SYSTEM_PROFILE_BOOLEANS
 from drift.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED
 from drift.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED
 
@@ -148,6 +149,8 @@ def _parse_profile(system_profile):
     # add all integers, converting to str
     parsed_profile.update({key: str(system_profile.get(key, None))
                            for key in SYSTEM_PROFILE_INTEGERS})
+    parsed_profile.update({key: str(system_profile.get(key, None))
+                           for key in SYSTEM_PROFILE_BOOLEANS})
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, 'enabled')
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, 'installed')
