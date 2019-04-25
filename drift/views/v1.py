@@ -46,6 +46,13 @@ def comparison_report():
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
 
 
+def _is_mgmt_url(path):
+    """
+    small helper to test if URL is for management API.
+    """
+    return path.startswith('/mgmt/')
+
+
 @section.before_app_request
 def ensure_account_number():
     auth_key = get_key_from_headers(request.headers)
@@ -55,6 +62,33 @@ def ensure_account_number():
             current_app.logger.debug("account number not found on identity token %s" % auth_key)
             raise HTTPError(HTTPStatus.BAD_REQUEST,
                             message="account number not found on identity token")
+
+
+@section.before_app_request
+def ensure_entitled():
+    """
+    check if the request is entitled. We run this on all requests and bail out
+    if the URL is whitelisted. Returning 'None' allows the request to go through.
+    """
+    # TODO: Blueprint.before_request was not working as expected, using
+    # before_app_request and checking URL here instead.
+    if _is_mgmt_url(request.path):
+        return  # allow request
+
+    auth_key = get_key_from_headers(request.headers)
+    if auth_key:
+        entitlements = json.loads(base64.b64decode(auth_key)).get('entitlements', {})
+        if 'smart_management' in entitlements:
+            if entitlements['smart_management'].get('is_entitled'):
+                current_app.logger.debug("enabled smart management entitlement found on header")
+                return  # allow request
+    else:
+        current_app.logger.debug("identity header not sent for request")
+
+    # if we got here, reject the request
+    current_app.logger.debug("smart management entitlement not found for account.")
+    raise HTTPError(HTTPStatus.BAD_REQUEST,
+                    message="Smart management entitlement not found for account.")
 
 
 @section.before_app_request

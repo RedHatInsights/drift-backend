@@ -27,10 +27,25 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_compare_api_no_account_number(self):
-        response = self.client.get("api/drift/v1/compare?"
+        response = self.client.get("api/drift/v1/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
                                    "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
                                    headers=fixtures.AUTH_HEADER_NO_ACCT)
+        self.assertEqual(response.status_code, 400)
+
+    # this scenario should never happen in real life
+    def test_compare_api_no_account_number_but_has_ents(self):
+        response = self.client.get("api/drift/v1/comparison_report?"
+                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER_NO_ACCT_BUT_HAS_ENTS)
+        self.assertEqual(response.status_code, 400)
+
+    def test_compare_api_no_entitlement(self):
+        response = self.client.get("api/drift/v1/comparison_report?"
+                                   "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                                   "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                                   headers=fixtures.AUTH_HEADER_SMART_MGMT_FALSE)
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_duplicate_uuid(self):
@@ -99,7 +114,7 @@ class DebugLoggingApiTests(unittest.TestCase):
     @mock.patch('drift.views.v1.get_key_from_headers')
     def test_username_logging_on_debug_no_key(self, mock_get_key):
         mock_get_key.return_value = None
-        self.client.get("api/drift/v1/status")
+        self.client.get("api/drift/v1/comparison_report")
         self.handler.flush()
         self.assertIn("identity header not sent for request", self.stream.getvalue())
         self.assertNotIn("username from identity header", self.stream.getvalue())
@@ -107,7 +122,7 @@ class DebugLoggingApiTests(unittest.TestCase):
     @mock.patch('drift.views.v1.get_key_from_headers')
     def test_username_logging_on_debug_with_key(self, mock_get_key):
         mock_get_key.return_value = fixtures.AUTH_HEADER['X-RH-IDENTITY']
-        self.client.get("api/drift/v1/status")
+        self.client.get("api/drift/v1/comparison_report")
         self.handler.flush()
         self.assertNotIn("identity header not sent for request", self.stream.getvalue())
         self.assertIn("username from identity header: test_user", self.stream.getvalue())
