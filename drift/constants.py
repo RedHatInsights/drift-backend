@@ -13,6 +13,6 @@ SYSTEM_PROFILE_INTEGERS = {'number_of_cpus', 'number_of_sockets', 'cores_per_soc
 SYSTEM_PROFILE_STRINGS = {'infrastructure_type', 'infrastructure_vendor',
                           'bios_vendor', 'bios_version', 'bios_release_date',
                           'os_release', 'os_kernel_version', 'arch', 'last_boot_time',
-                          'cloud_provider'}
+                          'cloud_provider', 'fqdn'}
 SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED = {'cpu_flags', 'kernel_modules', 'enabled_services'}
 SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED = {'installed_services'}
