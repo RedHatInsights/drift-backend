@@ -23,6 +23,8 @@ def build_comparisons(systems_with_profiles):
     system_mappings = [_system_mapping(system_with_profile)
                        for system_with_profile in systems_with_profiles]
 
+    sorted_system_mappings = sorted(system_mappings, key=lambda system: system['display_name'])
+
     # remove system metadata that we put into to the comparison earlier
     stripped_comparisons = [comparison for comparison in fact_comparisons
                             if comparison['name'] not in {'id', 'system_profile_exists'}]
@@ -30,7 +32,7 @@ def build_comparisons(systems_with_profiles):
     grouped_comparisons = _group_comparisons(stripped_comparisons)
     sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison['name'])
 
-    return {'facts': sorted_comparisons, 'systems': system_mappings}
+    return {'facts': sorted_comparisons, 'systems': sorted_system_mappings}
 
 
 def _group_comparisons(comparisons):
