@@ -1,7 +1,9 @@
 import re
 import bitmath
+import ipaddress
 
 from flask import current_app
+from ipaddress import AddressValueError
 
 from drift.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from drift.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
@@ -128,14 +130,26 @@ def _parse_profile(system_profile):
         parsed_profile.update({'yum_repos.' + name + '.gpgcheck':
                                str(yum_repo.get('gpgcheck', None))})
 
+    def _canonicalize_ipv6_addr(addr):
+        """
+        helper method to display ipv6 address strings unambiguously. If the address
+        is not parsable (for example: 'N/A'), just keep the string as-is.
+        """
+        try:
+            return str(ipaddress.IPv6Address(addr).compressed)
+        except AddressValueError:
+            return addr
+
     def _parse_interface(name):
         """
         helper method to convert network interface objects to comparable facts
         """
+        ipv6_addresses = [_canonicalize_ipv6_addr(addr)
+                          for addr in interface.get('ipv6_addresses', ['N/A'])]
         parsed_profile.update({'network_interfaces.' + name + '.ipv4_addresses':
                                ','.join(interface.get('ipv4_addresses', []))})
         parsed_profile.update({'network_interfaces.' + name + '.ipv6_addresses':
-                               ','.join(interface.get('ipv6_addresses', []))})
+                               ','.join(ipv6_addresses)})
         parsed_profile.update({'network_interfaces.' + name + '.mac_address':
                                interface.get('mac_address', None)})
         parsed_profile.update({'network_interfaces.' + name + '.mtu': interface.get('mtu', None)})
