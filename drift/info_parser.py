@@ -1,4 +1,5 @@
 import re
+import bitmath
 
 from flask import current_app
 
@@ -154,6 +155,13 @@ def _parse_profile(system_profile):
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, 'enabled')
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, 'installed')
+
+    # convert bytes to human readable format
+    if 'system_memory_bytes' in system_profile:
+        with bitmath.format(fmt_str="{value:.2f} {unit}"):
+            formatted_size = bitmath.Byte(system_profile['system_memory_bytes']).best_prefix()
+            parsed_profile['system_memory'] = str(formatted_size)
+        system_profile.pop('system_memory_bytes')
 
     for package in system_profile.get('installed_packages', []):
         try:
