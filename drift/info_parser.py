@@ -124,11 +124,11 @@ def _parse_profile(system_profile):
         """
         helper method to convert yum repo objects to comparable facts
         """
-        parsed_profile.update({'yum_repos.' + name + '.base_url': yum_repo.get('base_url', None)})
+        parsed_profile.update({'yum_repos.' + name + '.base_url': yum_repo.get('base_url', 'N/A')})
         parsed_profile.update({'yum_repos.' + name + '.enabled':
-                               str(yum_repo.get('enabled', None))})
+                               str(yum_repo.get('enabled', 'N/A'))})
         parsed_profile.update({'yum_repos.' + name + '.gpgcheck':
-                               str(yum_repo.get('gpgcheck', None))})
+                               str(yum_repo.get('gpgcheck', 'N/A'))})
 
     def _canonicalize_ipv6_addr(addr):
         """
@@ -147,16 +147,16 @@ def _parse_profile(system_profile):
         ipv6_addresses = [_canonicalize_ipv6_addr(addr)
                           for addr in interface.get('ipv6_addresses', ['N/A'])]
         parsed_profile.update({'network_interfaces.' + name + '.ipv4_addresses':
-                               ','.join(interface.get('ipv4_addresses', []))})
+                               ','.join(interface.get('ipv4_addresses', ['N/A']))})
         parsed_profile.update({'network_interfaces.' + name + '.ipv6_addresses':
                                ','.join(ipv6_addresses)})
         parsed_profile.update({'network_interfaces.' + name + '.mac_address':
-                               interface.get('mac_address', None)})
-        parsed_profile.update({'network_interfaces.' + name + '.mtu': interface.get('mtu', None)})
+                               interface.get('mac_address', 'N/A')})
+        parsed_profile.update({'network_interfaces.' + name + '.mtu': interface.get('mtu', 'N/A')})
         parsed_profile.update({'network_interfaces.' + name + '.state':
-                               interface.get('state', None)})
+                               interface.get('state', 'N/A')})
         parsed_profile.update({'network_interfaces.' + name + '.type':
-                               interface.get('loopback', None)})
+                               interface.get('loopback', 'N/A')})
 
     # start with metadata that we have brought down from the system record
     parsed_profile = {'id': system_profile[SYSTEM_ID_KEY]}
