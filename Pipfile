@@ -17,6 +17,7 @@ Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
 openapi-spec-validator = "==0.2.4"
+bitmath = "*"
 
 [requires]
 python_version = "3.6"

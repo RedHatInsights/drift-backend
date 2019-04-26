@@ -85,6 +85,7 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
                                                 "this isn't parsable",
                                                 "no_epoch-1.0-1.fc99.8088"],
                          'cpu_flags': ['maryland'],
+                         'system_memory_bytes': 640,
                          'yum_repos': [{'name': 'yummy', 'enabled': False}, {'no_name': 'bleh'}],
                          'network_interfaces': [{'name': 'eth99', 'mtu': 3}, {'no_name': 'foo'}],
                          "system_profile_exists": True,

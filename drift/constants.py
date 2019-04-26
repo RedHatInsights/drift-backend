@@ -9,8 +9,7 @@ COMPARISON_DIFFERENT = "DIFFERENT"
 COMPARISON_INCOMPLETE_DATA = "INCOMPLETE_DATA"
 
 SYSTEM_PROFILE_BOOLEANS = {'satellite_managed'}
-SYSTEM_PROFILE_INTEGERS = {'number_of_cpus', 'number_of_sockets',
-                           'cores_per_socket', 'system_memory_bytes'}
+SYSTEM_PROFILE_INTEGERS = {'number_of_cpus', 'number_of_sockets', 'cores_per_socket'}
 SYSTEM_PROFILE_STRINGS = {'infrastructure_type', 'infrastructure_vendor',
                           'bios_vendor', 'bios_version', 'bios_release_date',
                           'os_release', 'os_kernel_version', 'arch', 'last_boot_time',
