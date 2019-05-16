@@ -4,6 +4,11 @@
     definition: "{{ lookup('template', 'templates/deployment-config.yaml') | from_yaml }}"
     host: "{{ openshift_host }}"
 
+- name: horizontal pod autoscaler
+  k8s:
+    definition: "{{ lookup('template', 'templates/hpa.yaml') | from_yaml }}"
+    host: "{{ openshift_host }}"
+
 - name: service
   k8s:
     definition: "{{ lookup('template', 'templates/service.yaml') | from_yaml }}"
