@@ -43,24 +43,29 @@ def _fetch_url(url, auth_header, logger):
     helper to make a single request
     """
     logger.debug("fetching %s" % url)
-    response = requests.get(url, headers=auth_header)
+    with metrics.inventory_service_requests.time():
+        response = requests.get(url, headers=auth_header)
     logger.debug("fetched %s" % url)
     _validate_inventory_response(response, logger)
     return response.json()
 
 
-def _fetch_paginated_url(url, auth_header, logger):
+def _fetch_data(url, auth_header, system_ids, logger):
     """
-    helper to collate a paginated response
-    """
-    results = []
-    page = 1
-    response_json = {'total': 1}
+    fetch system IDs in batches of 40 for given RESTful URL
 
-    while len(results) < response_json['total']:
-        response_json = _fetch_url(url + ("?page=%s&per_page=20" % page), auth_header, logger)
+    A batch size of 40 was chosen to fetch as many systems per request as we
+    can, but still keep some headroom in the URL length.
+    """
+    BATCH_SIZE = 40
+    results = []
+    system_ids_to_fetch = system_ids
+
+    while len(system_ids_to_fetch) > 0:
+        id_batch = system_ids_to_fetch[:BATCH_SIZE]
+        response_json = _fetch_url(url % (','.join(id_batch)), auth_header, logger)
         results += response_json['results']
-        page += 1
+        system_ids_to_fetch = system_ids_to_fetch[BATCH_SIZE:]
 
     return results
 
@@ -78,12 +83,9 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
     system_profile_location = urljoin(config.inventory_svc_hostname,
                                       INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT)
 
-    with metrics.inventory_service_requests.time():
-        systems_result = _fetch_paginated_url(system_location % (','.join(system_ids)),
-                                              auth_header, logger)
-        system_profiles_result = _fetch_paginated_url(system_profile_location %
-                                                      (','.join(system_ids)),
-                                                      auth_header, logger)
+    systems_result = _fetch_data(system_location, auth_header, system_ids, logger)
+    system_profiles_result = _fetch_data(system_profile_location, auth_header,
+                                         system_ids, logger)
 
     _ensure_correct_system_count(system_ids, systems_result)
 

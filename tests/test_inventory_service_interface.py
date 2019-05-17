@@ -23,7 +23,7 @@ class InventoryServiceTests(unittest.TestCase):
                       content_type='application/json')
 
     def _create_response_for_system_profiles(self, service_hostname, system_uuids):
-        url_template = "http://%s/api/inventory/v1/hosts/%s/system_profile?page=1&per_page=20"
+        url_template = "http://%s/api/inventory/v1/hosts/%s/system_profile"
         responses.add(responses.GET, url_template % (service_hostname, system_uuids),
                       body=fixtures.FETCH_SYSTEM_PROFILES_INV_SVC, status=requests.codes.ok,
                       content_type='application/json')
@@ -35,7 +35,7 @@ class InventoryServiceTests(unittest.TestCase):
                       content_type='application/json')
 
     def _create_500_response_for_system_profiles(self, service_hostname, system_uuids):
-        url_template = "http://%s/api/inventory/v1/hosts/%s/system_profile?page=1&per_page=20"
+        url_template = "http://%s/api/inventory/v1/hosts/%s/system_profile"
         responses.add(responses.GET, url_template % (service_hostname, system_uuids),
                       body="I am error", status=requests.codes.INTERNAL_SERVER_ERROR,
                       content_type='application/json')
