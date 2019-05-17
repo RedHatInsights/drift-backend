@@ -26,6 +26,12 @@ class ApiTests(unittest.TestCase):
                                    "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa")
         self.assertEqual(response.status_code, 400)
 
+    def test_comparison_report_api_post(self):
+        data = {"system_ids":
+                ["d6bba69a-25a8-11e9-81b8-c85b761454fa", "11b3cbce-25a9-11e9-8457-c85b761454fa"]}
+        response = self.client.post("api/drift/v1/comparison_report", data=data)
+        self.assertEqual(response.status_code, 400)
+
     def test_compare_api_no_account_number(self):
         response = self.client.get("api/drift/v1/comparison_report?"
                                    "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"

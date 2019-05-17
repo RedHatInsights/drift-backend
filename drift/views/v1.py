@@ -25,12 +25,10 @@ def _validate_uuids(system_ids):
                             message="system_id %s is not a UUID" % system_id)
 
 
-@metrics.comparison_report_requests.time()
-@metrics.api_exceptions.count_exceptions()
-def comparison_report():
-    system_ids = request.args.getlist('system_ids[]')
-    auth_key = get_key_from_headers(request.headers)
-
+def comparison_report(system_ids, auth_key):
+    """
+    return a comparison report
+    """
     if len(system_ids) > len(set(system_ids)):
         raise HTTPError(HTTPStatus.BAD_REQUEST,
                         message="duplicate UUID specified in system_ids list")
@@ -44,6 +42,30 @@ def comparison_report():
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
+
+
+@metrics.comparison_report_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def comparison_report_get():
+    """
+    small wrapper over comparison_report for GETs
+    """
+    system_ids = request.args.getlist('system_ids[]')
+    auth_key = get_key_from_headers(request.headers)
+
+    return comparison_report(system_ids, auth_key)
+
+
+@metrics.comparison_report_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def comparison_report_post():
+    """
+    small wrapper over comparison_report for POSTs
+    """
+    system_ids = request.json['system_ids']
+    auth_key = get_key_from_headers(request.headers)
+
+    return comparison_report(system_ids, auth_key)
 
 
 def _is_mgmt_url(path):
