@@ -53,6 +53,13 @@ def _is_mgmt_url(path):
     return path.startswith('/mgmt/')
 
 
+def _is_openapi_url(path):
+    """
+    small helper to test if URL is the openapi spec
+    """
+    return path == '/api/drift/v1/openapi.json'
+
+
 @section.before_app_request
 def ensure_account_number():
     auth_key = get_key_from_headers(request.headers)
@@ -72,7 +79,7 @@ def ensure_entitled():
     """
     # TODO: Blueprint.before_request was not working as expected, using
     # before_app_request and checking URL here instead.
-    if _is_mgmt_url(request.path):
+    if _is_mgmt_url(request.path) or _is_openapi_url(request.path):
         return  # allow request
 
     auth_key = get_key_from_headers(request.headers)
