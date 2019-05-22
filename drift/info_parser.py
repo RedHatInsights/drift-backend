@@ -1,4 +1,3 @@
-import re
 import bitmath
 import ipaddress
 
@@ -181,8 +180,8 @@ def _parse_profile(system_profile):
 
     for package in system_profile.get('installed_packages', []):
         try:
-            name, epoch, version, release, arch = _get_nevra_from_string(package)
-            parsed_profile.update({'installed_packages.' + name: version+'-'+release+'.'+arch})
+            name, vra = _get_name_vra_from_string(package)
+            parsed_profile.update({'installed_packages.' + name: vra})
         except UnparsableNEVRAError as e:
             current_app.logger.warn(e.message)
 
@@ -205,20 +204,25 @@ def _parse_profile(system_profile):
     return parsed_profile
 
 
-def _get_nevra_from_string(rpm_string):
+def _get_name_vra_from_string(rpm_string):
     """
-    this function is originally from vmaas project
+    small helper to pull name + version/release/arch from string
     """
-    nevra_re = re.compile(r'(([0-9]+):)?(.*)-([^-]+)-([^-]+)\.([a-z0-9_]+)')
-    match = nevra_re.match(rpm_string)
-
-    if not match:
+    split_nevra = rpm_string.split('-')
+    if len(split_nevra) < 3:
         raise UnparsableNEVRAError("unable to parse %s into nevra" % rpm_string)
+    # grab the version-release.arch
+    vra = '-'.join(split_nevra[-2:])
 
-    _, epoch, name, version, release, arch = match.groups()
-    if epoch is None:
-        epoch = '0'
-    return name, epoch, version, release, arch
+    # grab the epoch:name
+    epoch_name = '-'.join(split_nevra[:-2])
+    if ':' in epoch_name:
+        # drop the 'epoch:' if it exists
+        name = ':'.join(epoch_name.split(':')[1:])
+    else:
+        name = epoch_name
+
+    return name, vra
 
 
 def _create_comparison(systems, info_name):
