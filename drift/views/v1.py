@@ -39,6 +39,7 @@ def comparison_report(system_ids, auth_key):
         comparisons = info_parser.build_comparisons(fetch_systems_with_profiles(system_ids,
                                                                                 auth_key,
                                                                                 current_app.logger))
+        metrics.systems_compared.observe(len(system_ids))
         return jsonify(comparisons)
     except SystemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
