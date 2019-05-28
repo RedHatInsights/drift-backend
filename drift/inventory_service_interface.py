@@ -95,6 +95,7 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
     system_profiles.update({profile['id']: profile
                             for profile in system_profiles_result})
 
+    systems_without_profile_count = 0
     # fill in any fields that were not on the profile
     for system_id in system_profiles:
         # before we populate the fields, mark where the system profile came
@@ -104,10 +105,14 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
             system_profiles[system_id]['system_profile']['system_profile_exists'] = True
         else:
             system_profiles[system_id]['system_profile']['system_profile_exists'] = False
+            systems_without_profile_count += 1
         # TODO: populate more than just integers and strings
         for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_STRINGS:
             if key not in system_profiles[system_id]['system_profile']:
                 system_profiles[system_id]['system_profile'][key] = 'N/A'
+
+    # record how many no-profile systems were in this report
+    metrics.systems_compared_no_sysprofile.observe(systems_without_profile_count)
 
     systems_with_profiles = []
     for system in systems_result:
