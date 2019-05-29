@@ -18,6 +18,8 @@ gunicorn = "*"
 prometheus_client = "*"
 openapi-spec-validator = "==0.2.4"
 bitmath = "*"
+boto3 = "*"
+watchtower = "*"
 
 [requires]
 python_version = "3.6"
