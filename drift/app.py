@@ -1,7 +1,9 @@
-import connexion
 import logging
 
+import connexion
+
 from drift import config
+from drift.cloudwatch import setup_cw_logging
 from drift.views import v1
 from drift.error import handle_http_error
 from drift.exceptions import HTTPError
@@ -26,6 +28,7 @@ def create_app():
     gunicorn_logger = logging.getLogger('gunicorn.error')
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
+    setup_cw_logging(flask_app.logger)
 
     flask_app.register_blueprint(v1.section)
     flask_app.register_error_handler(HTTPError, handle_http_error)
