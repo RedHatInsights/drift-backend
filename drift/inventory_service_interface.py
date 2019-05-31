@@ -92,8 +92,8 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
     # create a blank profile for each system
     system_profiles = {system['id']: {'system_profile': {}} for system in systems_result}
     # update with actual profile info if we have it
-    system_profiles.update({profile['id']: profile
-                            for profile in system_profiles_result})
+    for profile in system_profiles_result:
+        system_profiles[profile['id']] = profile
 
     systems_without_profile_count = 0
     # fill in any fields that were not on the profile
