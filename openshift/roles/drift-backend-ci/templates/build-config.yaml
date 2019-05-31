@@ -7,6 +7,8 @@ metadata:
   name: drift-backend
   namespace: "{{ project }}"
 spec:
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
   source:
     git:
       ref: master
@@ -24,7 +26,8 @@ spec:
     type: Source
   resources:
     limits:
-      memory: 512Mi
+      cpu: 50m
+      memory: 500Mi
   output:
     to:
       kind: ImageStreamTag
