@@ -4,6 +4,7 @@ python:
  - "3.6"
 
 script:
+  - .travis/check-manifest.sh
   - flake8
   - yamllint drift/openapi/mgmt_api.spec.yaml
   - yamllint drift/openapi/api.spec.yaml
