@@ -122,7 +122,7 @@ def _parse_profile(system_profile, display_name):
         """
         for list_of_strings in names:
             for item in system_profile.get(list_of_strings, []):
-                parsed_profile.update({list_of_strings + '.' + item: verb})
+                parsed_profile[list_of_strings + '.' + item] = verb
 
     def _parse_running_processes(processes):
         """
@@ -141,11 +141,9 @@ def _parse_profile(system_profile, display_name):
         """
         helper method to convert yum repo objects to comparable facts
         """
-        parsed_profile.update({'yum_repos.' + name + '.base_url': yum_repo.get('base_url', 'N/A')})
-        parsed_profile.update({'yum_repos.' + name + '.enabled':
-                               str(yum_repo.get('enabled', 'N/A'))})
-        parsed_profile.update({'yum_repos.' + name + '.gpgcheck':
-                               str(yum_repo.get('gpgcheck', 'N/A'))})
+        parsed_profile['yum_repos.' + name + '.base_url'] = yum_repo.get('base_url', 'N/A')
+        parsed_profile['yum_repos.' + name + '.enabled'] = str(yum_repo.get('enabled', 'N/A'))
+        parsed_profile['yum_repos.' + name + '.gpgcheck'] = str(yum_repo.get('gpgcheck', 'N/A'))
 
     def _canonicalize_ipv6_addr(addr):
         """
@@ -163,28 +161,25 @@ def _parse_profile(system_profile, display_name):
         """
         ipv6_addresses = [_canonicalize_ipv6_addr(addr)
                           for addr in interface.get('ipv6_addresses', ['N/A'])]
-        parsed_profile.update({'network_interfaces.' + name + '.ipv4_addresses':
-                               ','.join(interface.get('ipv4_addresses', ['N/A']))})
-        parsed_profile.update({'network_interfaces.' + name + '.ipv6_addresses':
-                               ','.join(ipv6_addresses)})
-        parsed_profile.update({'network_interfaces.' + name + '.mac_address':
-                               interface.get('mac_address', 'N/A')})
-        parsed_profile.update({'network_interfaces.' + name + '.mtu': interface.get('mtu', 'N/A')})
-        parsed_profile.update({'network_interfaces.' + name + '.state':
-                               interface.get('state', 'N/A')})
-        parsed_profile.update({'network_interfaces.' + name + '.type':
-                               interface.get('loopback', 'N/A')})
+        parsed_profile['network_interfaces.' + name + '.ipv4_addresses'] = \
+            ','.join(interface.get('ipv4_addresses', ['N/A']))
+        parsed_profile['network_interfaces.' + name + '.ipv6_addresses'] = \
+            ','.join(ipv6_addresses)
+        parsed_profile['network_interfaces.' + name + '.mac_address'] = \
+            interface.get('mac_address', 'N/A')
+        parsed_profile['network_interfaces.' + name + '.mtu'] = interface.get('mtu', 'N/A')
+        parsed_profile['network_interfaces.' + name + '.state'] = interface.get('state', 'N/A')
+        parsed_profile['network_interfaces.' + name + '.type'] = interface.get('loopback', 'N/A')
 
     # start with metadata that we have brought down from the system record
     parsed_profile = {'id': system_profile[SYSTEM_ID_KEY], 'name': display_name}
     # add all strings as-is
-    parsed_profile.update({key: system_profile.get(key, None) for key in SYSTEM_PROFILE_STRINGS})
+    for key in SYSTEM_PROFILE_STRINGS:
+        parsed_profile[key] = system_profile.get(key, None)
 
     # add all integers, converting to str
-    parsed_profile.update({key: str(system_profile.get(key, None))
-                           for key in SYSTEM_PROFILE_INTEGERS})
-    parsed_profile.update({key: str(system_profile.get(key, None))
-                           for key in SYSTEM_PROFILE_BOOLEANS})
+    for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_BOOLEANS:
+        parsed_profile[key] = str(system_profile.get(key, None))
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, 'enabled')
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, 'installed')
@@ -201,7 +196,7 @@ def _parse_profile(system_profile, display_name):
     for package in system_profile.get('installed_packages', []):
         try:
             name, vra = _get_name_vra_from_string(package)
-            parsed_profile.update({'installed_packages.' + name: vra})
+            parsed_profile['installed_packages.' + name] = vra
         except UnparsableNEVRAError as e:
             current_app.logger.warn(e.message)
 
