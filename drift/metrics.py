@@ -1,6 +1,9 @@
 from prometheus_client import Counter, Histogram
 
-api_exceptions = Counter("drift_inventory_service_exceptions",
+inventory_service_exceptions = Counter("drift_inventory_service_exceptions",
+                                       "count of exceptions raised by inv service")
+
+api_exceptions = Counter("drift_api_exceptions",
                          "count of exceptions raised on public API")
 
 systems_compared = Histogram("drift_systems_compared",

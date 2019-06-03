@@ -44,7 +44,8 @@ def _fetch_url(url, auth_header, logger):
     """
     logger.debug("fetching %s" % url)
     with metrics.inventory_service_requests.time():
-        response = requests.get(url, headers=auth_header)
+        with metrics.inventory_service_exceptions.count_exceptions():
+            response = requests.get(url, headers=auth_header)
     logger.debug("fetched %s" % url)
     _validate_inventory_response(response, logger)
     return response.json()
