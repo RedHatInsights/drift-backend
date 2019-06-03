@@ -124,6 +124,19 @@ def _parse_profile(system_profile, display_name):
             for item in system_profile.get(list_of_strings, []):
                 parsed_profile.update({list_of_strings + '.' + item: verb})
 
+    def _parse_running_processes(processes):
+        """
+        helper method to convert running process lists to facts. We output a
+        fact for each process name, with its count as a value. The count is
+        returned as a string to match the API spec.
+        """
+        for process in processes:
+            process_fact_name = 'running_processes.' + process
+            if process_fact_name in parsed_profile:
+                parsed_profile[process_fact_name] = str(int(parsed_profile[process_fact_name]) + 1)
+            else:
+                parsed_profile[process_fact_name] = "1"
+
     def _parse_yum_repo(name):
         """
         helper method to convert yum repo objects to comparable facts
@@ -175,6 +188,8 @@ def _parse_profile(system_profile, display_name):
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, 'enabled')
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, 'installed')
+
+    _parse_running_processes(system_profile.get('running_processes', []))
 
     # convert bytes to human readable format
     if 'system_memory_bytes' in system_profile:
