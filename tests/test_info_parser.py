@@ -25,3 +25,9 @@ class InfoParserTests(unittest.TestCase):
     def test_bad_package_parsing(self):
         with self.assertRaises(UnparsableNEVRAError):
             info_parser._get_name_vra_from_string("this-will_not_parse")
+
+    def test_running_process_parsing(self):
+        profile = {'id': "1234", 'running_processes': ["vim", "vim", "doom.exe"]}
+        result = info_parser._parse_profile(profile)
+        self.assertEqual(result['running_processes.vim'], '2')
+        self.assertEqual(result['running_processes.doom.exe'], '1')
