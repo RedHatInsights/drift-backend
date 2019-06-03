@@ -28,6 +28,13 @@ class InfoParserTests(unittest.TestCase):
 
     def test_running_process_parsing(self):
         profile = {'id': "1234", 'running_processes': ["vim", "vim", "doom.exe"]}
-        result = info_parser._parse_profile(profile)
+        result = info_parser._parse_profile(profile, "some_display_name")
         self.assertEqual(result['running_processes.vim'], '2')
         self.assertEqual(result['running_processes.doom.exe'], '1')
+
+    def test_network_interface_parsing(self):
+        profile = {'id': "1234", 'network_interfaces': [{'mtu': 9876, 'name': "fake-nic"},
+                                                        {'name': "no_mtu"}]}
+        result = info_parser._parse_profile(profile, "some_display_name")
+        self.assertEqual(result['network_interfaces.fake-nic.mtu'], '9876')
+        self.assertEqual(result['network_interfaces.no_mtu.mtu'], 'N/A')

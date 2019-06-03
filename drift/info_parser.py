@@ -167,7 +167,7 @@ def _parse_profile(system_profile, display_name):
             ','.join(ipv6_addresses)
         parsed_profile['network_interfaces.' + name + '.mac_address'] = \
             interface.get('mac_address', 'N/A')
-        parsed_profile['network_interfaces.' + name + '.mtu'] = interface.get('mtu', 'N/A')
+        parsed_profile['network_interfaces.' + name + '.mtu'] = str(interface.get('mtu', 'N/A'))
         parsed_profile['network_interfaces.' + name + '.state'] = interface.get('state', 'N/A')
         parsed_profile['network_interfaces.' + name + '.type'] = interface.get('loopback', 'N/A')
 
