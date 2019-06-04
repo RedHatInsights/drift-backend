@@ -40,6 +40,20 @@ spec:
               value: /prometheus-data
             - name: INVENTORY_SVC_URL
               value: "{{ inventory_svc_url }}"
+            - name: CW_LOG_GROUP
+              value: "{{ cloudwatch_log_group }}"
+            - name: AWS_REGION
+              value: 'us-east-1'
+            - name: CW_AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: CW_AWS_ACCESS_KEY_ID
+                  name: cloudwatch
+            - name: CW_AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: CW_AWS_SECRET_ACCESS_KEY
+                  name: cloudwatch
           readinessProbe:
             httpGet:
               path: /mgmt/v0/status
