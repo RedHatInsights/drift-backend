@@ -94,8 +94,12 @@ def _select_applicable_info(systems_with_profiles):
     useful when comparing facts across systems.
     """
     # create dicts of id + info
-    parsed_system_profiles = [_parse_profile(system_with_profile['system_profile'])
-                              for system_with_profile in systems_with_profiles]
+    parsed_system_profiles = []
+
+    for system_with_profile in systems_with_profiles:
+        system_name = _get_name(system_with_profile)
+        parsed_system_profile = _parse_profile(system_with_profile['system_profile'], system_name)
+        parsed_system_profiles.append(parsed_system_profile)
 
     # find the set of all keys to iterate over
     all_keys = set()
@@ -106,9 +110,10 @@ def _select_applicable_info(systems_with_profiles):
     return info_comparisons
 
 
-def _parse_profile(system_profile):
+def _parse_profile(system_profile, display_name):
     """
     break complex data structures into more simple structures that can be compared easily.
+    display_name is added to data structure for sorting and is later stripped from data structure
     """
 
     def _parse_lists_of_strings(names, verb):
@@ -158,7 +163,7 @@ def _parse_profile(system_profile):
                                interface.get('loopback', 'N/A')})
 
     # start with metadata that we have brought down from the system record
-    parsed_profile = {'id': system_profile[SYSTEM_ID_KEY]}
+    parsed_profile = {'id': system_profile[SYSTEM_ID_KEY], 'name': display_name}
     # add all strings as-is
     parsed_profile.update({key: system_profile.get(key, None) for key in SYSTEM_PROFILE_STRINGS})
 
@@ -237,8 +242,14 @@ def _create_comparison(systems, info_name):
     info_comparison = COMPARISON_DIFFERENT
 
     system_id_values = [{'id': system[SYSTEM_ID_KEY],
+                         'name': system['name'],
                          'value': system.get(info_name, "N/A")}
                         for system in systems]
+
+    sorted_system_id_values = sorted(system_id_values, key=lambda system: system['name'])
+
+    for sorted_system_id_value in sorted_system_id_values:
+        del sorted_system_id_value['name']
 
     system_values = {system['value'] for system in system_id_values}
 
@@ -247,13 +258,22 @@ def _create_comparison(systems, info_name):
     elif len(system_values) == 1:
         info_comparison = COMPARISON_SAME
 
-    return {'name': info_name, 'state': info_comparison, 'systems': system_id_values}
+    return {'name': info_name, 'state': info_comparison, 'systems': sorted_system_id_values}
 
 
 def _system_mapping(system):
     """
     create a header mapping for one system
     """
+
+    system_profile_exists = system['system_profile']['system_profile_exists']
+
+    return {'id': system[SYSTEM_ID_KEY], 'display_name': _get_name(system),
+            'system_profile_exists': system_profile_exists,
+            'last_updated': system.get('updated', None)}
+
+
+def _get_name(system):
     # this mimics how the inventory service modal displays names.
     name = system['id']
     if system.get('fqdn'):
@@ -261,8 +281,4 @@ def _system_mapping(system):
     if system.get('display_name'):
         name = system.get('display_name')
 
-    system_profile_exists = system['system_profile']['system_profile_exists']
-
-    return {'id': system[SYSTEM_ID_KEY], 'display_name': name,
-            'system_profile_exists': system_profile_exists,
-            'last_updated': system.get('updated', None)}
+    return name
