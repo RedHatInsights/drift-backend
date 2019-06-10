@@ -1,5 +1,5 @@
 class HTTPError(Exception):
-    def __init__(self, status_code, message=''):
+    def __init__(self, status_code, message=""):
         """
         Raise this exception to return an http response indicating an error.
 
