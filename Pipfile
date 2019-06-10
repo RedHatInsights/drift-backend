@@ -10,6 +10,7 @@ mock = "*"
 nose = "*"
 responses = "*"
 yamllint = "*"
+black = "==19.3b0"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}

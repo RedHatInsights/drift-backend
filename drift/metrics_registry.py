@@ -11,7 +11,7 @@ def get_registry():
     obtain a metrics registry. If one doesn't already exist, initialize and
     throw it into the global app context.
     """
-    if 'metrics_registry' not in g:
+    if "metrics_registry" not in g:
         g.metrics_registry = CollectorRegistry()
         multiprocess.MultiProcessCollector(g.metrics_registry)
     return g.metrics_registry

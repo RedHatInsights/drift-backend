@@ -12,4 +12,4 @@ def metrics():
 
 
 def status():
-    return jsonify({'status': "running"})
+    return jsonify({"status": "running"})

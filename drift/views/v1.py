@@ -7,9 +7,12 @@ from uuid import UUID
 
 from drift import info_parser, metrics
 from drift.exceptions import HTTPError, SystemNotReturned
-from drift.inventory_service_interface import fetch_systems_with_profiles, get_key_from_headers
+from drift.inventory_service_interface import (
+    fetch_systems_with_profiles,
+    get_key_from_headers,
+)
 
-section = Blueprint('v1', __name__)
+section = Blueprint("v1", __name__)
 
 
 def _validate_uuids(system_ids):
@@ -21,8 +24,9 @@ def _validate_uuids(system_ids):
         try:
             UUID(system_id)
         except ValueError:
-            raise HTTPError(HTTPStatus.BAD_REQUEST,
-                            message="system_id %s is not a UUID" % system_id)
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST, message="system_id %s is not a UUID" % system_id
+            )
 
 
 def comparison_report(system_ids, auth_key):
@@ -30,15 +34,17 @@ def comparison_report(system_ids, auth_key):
     return a comparison report
     """
     if len(system_ids) > len(set(system_ids)):
-        raise HTTPError(HTTPStatus.BAD_REQUEST,
-                        message="duplicate UUID specified in system_ids list")
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="duplicate UUID specified in system_ids list",
+        )
 
     _validate_uuids(system_ids)
 
     try:
-        comparisons = info_parser.build_comparisons(fetch_systems_with_profiles(system_ids,
-                                                                                auth_key,
-                                                                                current_app.logger))
+        comparisons = info_parser.build_comparisons(
+            fetch_systems_with_profiles(system_ids, auth_key, current_app.logger)
+        )
         metrics.systems_compared.observe(len(system_ids))
         return jsonify(comparisons)
     except SystemNotReturned as error:
@@ -51,7 +57,7 @@ def comparison_report_get():
     """
     small wrapper over comparison_report for GETs
     """
-    system_ids = request.args.getlist('system_ids[]')
+    system_ids = request.args.getlist("system_ids[]")
     auth_key = get_key_from_headers(request.headers)
 
     return comparison_report(system_ids, auth_key)
@@ -63,7 +69,7 @@ def comparison_report_post():
     """
     small wrapper over comparison_report for POSTs
     """
-    system_ids = request.json['system_ids']
+    system_ids = request.json["system_ids"]
     auth_key = get_key_from_headers(request.headers)
 
     return comparison_report(system_ids, auth_key)
@@ -73,25 +79,29 @@ def _is_mgmt_url(path):
     """
     small helper to test if URL is for management API.
     """
-    return path.startswith('/mgmt/')
+    return path.startswith("/mgmt/")
 
 
 def _is_openapi_url(path):
     """
     small helper to test if URL is the openapi spec
     """
-    return path == '/api/drift/v1/openapi.json'
+    return path == "/api/drift/v1/openapi.json"
 
 
 @section.before_app_request
 def ensure_account_number():
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
-        identity = json.loads(base64.b64decode(auth_key))['identity']
-        if 'account_number' not in identity:
-            current_app.logger.debug("account number not found on identity token %s" % auth_key)
-            raise HTTPError(HTTPStatus.BAD_REQUEST,
-                            message="account number not found on identity token")
+        identity = json.loads(base64.b64decode(auth_key))["identity"]
+        if "account_number" not in identity:
+            current_app.logger.debug(
+                "account number not found on identity token %s" % auth_key
+            )
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="account number not found on identity token",
+            )
 
 
 @section.before_app_request
@@ -107,18 +117,22 @@ def ensure_entitled():
 
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
-        entitlements = json.loads(base64.b64decode(auth_key)).get('entitlements', {})
-        if 'smart_management' in entitlements:
-            if entitlements['smart_management'].get('is_entitled'):
-                current_app.logger.debug("enabled smart management entitlement found on header")
+        entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
+        if "smart_management" in entitlements:
+            if entitlements["smart_management"].get("is_entitled"):
+                current_app.logger.debug(
+                    "enabled smart management entitlement found on header"
+                )
                 return  # allow request
     else:
         current_app.logger.debug("identity header not sent for request")
 
     # if we got here, reject the request
     current_app.logger.debug("smart management entitlement not found for account.")
-    raise HTTPError(HTTPStatus.BAD_REQUEST,
-                    message="Smart management entitlement not found for account.")
+    raise HTTPError(
+        HTTPStatus.BAD_REQUEST,
+        message="Smart management entitlement not found for account.",
+    )
 
 
 @section.before_app_request
@@ -126,8 +140,9 @@ def log_username():
     if current_app.logger.level == logging.DEBUG:
         auth_key = get_key_from_headers(request.headers)
         if auth_key:
-            identity = json.loads(base64.b64decode(auth_key))['identity']
-            current_app.logger.debug("username from identity header: %s" %
-                                     identity['user']['username'])
+            identity = json.loads(base64.b64decode(auth_key))["identity"]
+            current_app.logger.debug(
+                "username from identity header: %s" % identity["user"]["username"]
+            )
         else:
             current_app.logger.debug("identity header not sent for request")

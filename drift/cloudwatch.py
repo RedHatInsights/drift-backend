@@ -30,7 +30,7 @@ def setup_cw_logging(logger):  # pragma: no cover
     handler = watchtower.CloudWatchLogHandler(
         boto3_session=session,
         log_group=os.environ.get("CW_LOG_GROUP", "platform-dev"),
-        stream_name=namespace
+        stream_name=namespace,
     )
 
     logger.addHandler(handler)

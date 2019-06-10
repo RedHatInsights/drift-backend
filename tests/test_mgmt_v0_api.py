@@ -6,7 +6,6 @@ import unittest
 
 
 class ManagementApiTests(unittest.TestCase):
-
     def setUp(self):
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
@@ -16,7 +15,7 @@ class ManagementApiTests(unittest.TestCase):
         response = self.client.get("mgmt/v0/status")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.data), {'status': 'running'})
+        self.assertEqual(json.loads(response.data), {"status": "running"})
 
     def test_metrics(self):
         response = self.client.get("mgmt/v0/metrics")
