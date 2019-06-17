@@ -1,0 +1,32 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+coverage = "*"
+flake8 = "*"
+mock = "*"
+nose = "*"
+responses = "*"
+yamllint = "*"
+black = "*"
+
+[packages]
+connexion = {extras = ["swagger-ui"],version = "*"}
+Flask = "*"
+gunicorn = "*"
+prometheus_client = "*"
+openapi-spec-validator = "==0.2.4"
+boto3 = "*"
+watchtower = "*"
+
+[requires]
+python_version = "3.6"
+
+[scripts]
+flask = "python standalone_flask_server.py"
+tests = "bash run_unit_tests.sh"
+
+[pipenv]
+allow_prereleases = true
