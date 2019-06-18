@@ -1,0 +1,18 @@
+language: python
+
+python:
+ - "3.6"
+
+script:
+  - flake8
+  - yamllint system_baseline/openapi/mgmt_api.spec.yaml
+  - yamllint system_baseline/openapi/api.spec.yaml
+  - black . --check
+
+install:
+  - pip install pipenv
+  - pipenv install --dev
+  - pip install codecov
+
+after_success:
+  - codecov
