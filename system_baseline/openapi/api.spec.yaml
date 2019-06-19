@@ -18,7 +18,10 @@ paths:
     get:
       summary: fetch list of Baseline IDs
       description: "Fetch the list of Baseline IDs"
-      operationId: system_baseline.views.v0.get_baseline_ids
+      operationId: system_baseline.views.v0.get_baselines
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/perPageParam'
       responses:
         '200':
           description: a list of Baseline IDs
@@ -32,6 +35,32 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: create a baseline
+      description: "create a baseline"
+      operationId: system_baseline.views.v0.create_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_baselines_list
+              type: array
+              items:
+                $ref: "#/components/schemas/BaselineIn"
+      responses:
+        '200':
+          description: a list of created Baseline objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /baselines/{baseline_ids}:
     parameters:
       - $ref: '#/components/parameters/rhIdentityHeader'
@@ -40,6 +69,47 @@ paths:
       summary: fetch one or more Baseline objects
       description: "Fetch one Baseline object"
       operationId: system_baseline.views.v0.get_baselines_by_ids
+      responses:
+        '200':
+          description: a list of Baseline objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: update a baseline
+      description: "update a baseline"
+      operationId: system_baseline.views.v0.update_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_baseline_partial
+              $ref: "#/components/schemas/BaselineInPartial"
+      responses:
+        '200':
+          description: a list of updated Baseline objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: delete one or more baselines
+      description: "delete one or more baselines"
+      operationId: system_baseline.views.v0.delete_baselines_by_ids
       responses:
         '200':
           description: a list of Baseline objects
@@ -93,7 +163,54 @@ components:
             type: object
             additionalProperties:
               type: string
+    BaselineIn:
+      required:
+        - display_name
+        - baseline_facts
+      properties:
+        display_name:
+          type: string
+        baseline_facts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaselineFact"
+    BaselineInPartial:
+      required:
+        - baseline_facts
+      properties:
+        baseline_facts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaselineFact"
+    BaselineFact:
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
   parameters:
+    pageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: A page number of the items to return.
+    perPageParam:
+      name: per_page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: A number of items to return per page.
     rhIdentityHeader:
       in: header
       name: x-rh-identity

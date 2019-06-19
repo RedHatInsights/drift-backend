@@ -20,6 +20,11 @@ prometheus_client = "*"
 openapi-spec-validator = "==0.2.4"
 boto3 = "*"
 watchtower = "*"
+psycopg2 = "*"
+flask-sqlalchemy = "*"
+alembic = "*"
+flask-script = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.6"

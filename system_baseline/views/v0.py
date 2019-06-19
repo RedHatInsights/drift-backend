@@ -1,95 +1,154 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, Response
 from http import HTTPStatus
 import logging
 import json
 import base64
 
 from system_baseline import metrics
+from system_baseline.models import SystemBaseline, db
 from system_baseline.constants import AUTH_HEADER_NAME
 from system_baseline.exceptions import HTTPError
 
 section = Blueprint("v0", __name__)
 
-BASELINES = {
-    "total": 2,
-    "count": 2,
-    "page": 1,
-    "per_page": 50,
-    "results": [
-        {
-            "id": "1234",
-            "display_name": "beav's baseline",
-            "fact_count": 2,
-            "created": "2019-01-18T13:30:00.000000Z",
-            "updated": "2019-05-18T15:00:00.000000Z",
-        },
-        {
-            "id": "abcd",
-            "display_name": "micjohns' baseline",
-            "fact_count": 2,
-            "created": "2019-02-18T13:30:00.000000Z",
-            "updated": "2019-05-19T15:00:00.000000Z",
-        },
-    ],
-}
 
-BASELINE_MICJOHNS = {
-    "id": "abcd",
-    "display_name": "micjohns' baseline",
-    "fact_count": 2,
-    "created": "2019-02-18T13:30:00.000000Z",
-    "updated": "2019-05-19T15:00:00.000000Z",
-    "baseline_facts": {
-        "arch": "x86_64",
-        "cloud_provider": "stratosphere of Neptune",
-        "mountains": "dislike",
-    },
-}
-
-BASELINE_BEAV = {
-    "id": "1234",
-    "display_name": "beav's baseline",
-    "fact_count": 2,
-    "created": "2019-01-18T13:30:00.000000Z",
-    "updated": "2019-05-18T15:00:00.000000Z",
-    "baseline_facts": {"arch": "x86_64", "cloud_provider": "tiny ice crystals"},
-}
-
-
-@metrics.api_exceptions.count_exceptions()
-def get_baselines_by_ids(baseline_ids):
-    """
-    return a list of baseline objects
-    """
-    fetched_baselines = []
-
-    for baseline_id in baseline_ids:
-        # validate that we have all IDs requested
-        if baseline_id == "1234":
-            fetched_baselines.append(BASELINE_BEAV)
-        elif baseline_id == "abcd":
-            fetched_baselines.append(BASELINE_MICJOHNS)
-        else:
-            raise HTTPError(HTTPStatus.NOT_FOUND, message="ID not found")
-
-    # assemble metadata
-    response = {
-        "total": len(fetched_baselines),
-        "count": len(fetched_baselines),
-        "page": 1,
-        "per_page": 50,
-        "results": fetched_baselines,
+def _build_paginated_baseline_list_response(
+    total, page, per_page, baseline_list, withhold_facts=False
+):
+    json_baseline_list = [
+        baseline.to_json(withhold_facts=withhold_facts) for baseline in baseline_list
+    ]
+    json_output = {
+        "total": total,
+        "count": len(baseline_list),
+        "page": page,
+        "per_page": per_page,
+        "results": json_baseline_list,
     }
 
-    return response
+    return _build_json_response(json_output)
+
+
+def _build_json_response(json_data, status=200):
+    return Response(json.dumps(json_data), status=status, mimetype="application/json")
+
+
+def get_baselines_by_ids(baseline_ids, page=1, per_page=100):
+    """
+    return a list of baselines given their ID
+    """
+    account_number = _get_account_number()
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
+    )
+
+    query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
+    query_results = query.paginate(page, per_page)
+
+    return _build_paginated_baseline_list_response(
+        query_results.total, page, per_page, query_results.items, withhold_facts=False
+    )
+
+
+def delete_baselines_by_ids(baseline_ids):
+    """
+    delete a list of baselines given their ID
+    """
+    account_number = _get_account_number()
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
+    )
+    query.delete(synchronize_session="fetch")
+    db.session.commit()
+
+
+def get_baselines(page=1, per_page=100):
+    """
+    return a list of baselines given their ID
+    """
+    account_number = _get_account_number()
+    query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
+
+    query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
+    query_results = query.paginate(page, per_page)
+
+    return _build_paginated_baseline_list_response(
+        query_results.total, page, per_page, query_results.items, withhold_facts=True
+    )
 
 
 @metrics.api_exceptions.count_exceptions()
-def get_baseline_ids():
+def create_baseline(system_baselines_list):
     """
-    return a list of available objects
+    create a baseline
     """
-    return BASELINES
+
+    account_number = _get_account_number()
+
+    created_baselines = []
+    for input_baseline in system_baselines_list:
+        baseline = SystemBaseline(
+            account=account_number,
+            display_name=input_baseline["display_name"],
+            baseline_facts=input_baseline["baseline_facts"],
+        )
+        db.session.add(baseline)
+        db.session.commit()  # commit now so we get a created/updated time before json conversion
+        created_baselines.append(baseline.to_json())
+
+    return created_baselines
+
+
+def _merge_baselines(baseline, baseline_updates):
+    """
+    merge a baseline with a partial update set.
+    """
+    # convert to dicts for easier manipulation
+    existing_facts = {fact["name"]: fact["value"] for fact in baseline.baseline_facts}
+    new_facts = {
+        fact["name"]: fact["value"] for fact in baseline_updates["baseline_facts"]
+    }
+
+    existing_facts.update(new_facts)
+
+    # convert back
+    merged_baseline_facts = []
+    for fact in existing_facts:
+        baseline_fact = {"name": fact, "value": existing_facts[fact]}
+        merged_baseline_facts.append(baseline_fact)
+
+    baseline.baseline_facts = merged_baseline_facts
+    return baseline
+
+
+def update_baseline(baseline_ids, system_baseline_partial):
+    """
+    update a baseline
+    """
+    if len(baseline_ids) > 1:
+        raise "can only patch one baseline at a time"
+
+    account_number = _get_account_number()
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
+    )
+    existing_baseline = query.first_or_404()
+
+    new_baseline = _merge_baselines(existing_baseline, system_baseline_partial)
+    db.session.add(new_baseline)
+    db.session.commit()
+
+    # pull baseline again so we have the correct updated timestamp and fact count
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
+    )
+    return [query.first().to_json()]
+
+
+def _get_account_number():
+    auth_key = get_key_from_headers(request.headers)
+    identity = json.loads(base64.b64decode(auth_key))["identity"]
+    return identity["account_number"]
 
 
 def _is_mgmt_url(path):
