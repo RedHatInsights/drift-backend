@@ -14,12 +14,12 @@ from drift.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED
 from drift.exceptions import UnparsableNEVRAError
 
 
-def build_comparisons(systems_with_profiles):
+def build_comparisons(systems_with_profiles, baselines):
     """
     given a list of system profile dicts and fact namespace, return a dict of
     comparisons, along with a dict of system data
     """
-    fact_comparisons = _select_applicable_info(systems_with_profiles)
+    fact_comparisons = _select_applicable_info(systems_with_profiles, baselines)
 
     system_mappings = [
         _system_mapping(system_with_profile)
@@ -42,7 +42,13 @@ def build_comparisons(systems_with_profiles):
         grouped_comparisons, key=lambda comparison: comparison["name"]
     )
 
-    return {"facts": sorted_comparisons, "systems": sorted_system_mappings}
+    baseline_mappings = [_baseline_mapping(baseline) for baseline in baselines]
+
+    return {
+        "facts": sorted_comparisons,
+        "systems": sorted_system_mappings,
+        "baselines": baseline_mappings,
+    }
 
 
 def _group_comparisons(comparisons):
@@ -98,7 +104,7 @@ def _group_comparisons(comparisons):
     return grouped_comparisons
 
 
-def _select_applicable_info(systems_with_profiles):
+def _select_applicable_info(systems_with_profiles, baselines):
     """
     Take a list of systems with profiles, and output a "pivoted" list of
     profile facts, where each fact key has a dict of systems and their values. This is
@@ -113,6 +119,13 @@ def _select_applicable_info(systems_with_profiles):
             system_with_profile["system_profile"], system_name
         )
         parsed_system_profiles.append(parsed_system_profile)
+
+    # add baselines into parsed_system_profiles
+    for baseline in baselines:
+        baseline_facts = {"id": baseline["id"], "name": baseline["display_name"]}
+        for baseline_fact in baseline["baseline_facts"]:
+            baseline_facts[baseline_fact["name"]] = baseline_fact["value"]
+        parsed_system_profiles.append(baseline_facts)
 
     # find the set of all keys to iterate over
     all_keys = set()
@@ -329,6 +342,18 @@ def _system_mapping(system):
         "display_name": _get_name(system),
         "system_profile_exists": system_profile_exists,
         "last_updated": system.get("updated", None),
+    }
+
+
+def _baseline_mapping(baseline):
+    """
+    create a header mapping for one baseline
+    """
+
+    return {
+        "id": baseline["id"],
+        "display_name": baseline["display_name"],
+        "updated": baseline["updated"],
     }
 
 

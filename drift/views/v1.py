@@ -7,10 +7,9 @@ from uuid import UUID
 
 from drift import info_parser, metrics
 from drift.exceptions import HTTPError, SystemNotReturned
-from drift.inventory_service_interface import (
-    fetch_systems_with_profiles,
-    get_key_from_headers,
-)
+from drift.inventory_service_interface import fetch_systems_with_profiles
+from drift.service_interface import get_key_from_headers
+from drift.baseline_service_interface import fetch_baselines
 
 section = Blueprint("v1", __name__)
 
@@ -29,7 +28,7 @@ def _validate_uuids(system_ids):
             )
 
 
-def comparison_report(system_ids, auth_key):
+def comparison_report(system_ids, baseline_ids, auth_key):
     """
     return a comparison report
     """
@@ -43,7 +42,8 @@ def comparison_report(system_ids, auth_key):
 
     try:
         comparisons = info_parser.build_comparisons(
-            fetch_systems_with_profiles(system_ids, auth_key, current_app.logger)
+            fetch_systems_with_profiles(system_ids, auth_key, current_app.logger),
+            fetch_baselines(baseline_ids, auth_key, current_app.logger),
         )
         metrics.systems_compared.observe(len(system_ids))
         return jsonify(comparisons)
@@ -58,9 +58,10 @@ def comparison_report_get():
     small wrapper over comparison_report for GETs
     """
     system_ids = request.args.getlist("system_ids[]")
+    baseline_ids = request.args.getlist("baseline_ids[]")
     auth_key = get_key_from_headers(request.headers)
 
-    return comparison_report(system_ids, auth_key)
+    return comparison_report(system_ids, baseline_ids, auth_key)
 
 
 @metrics.comparison_report_requests.time()
@@ -70,9 +71,12 @@ def comparison_report_post():
     small wrapper over comparison_report for POSTs
     """
     system_ids = request.json["system_ids"]
+    baseline_ids = []
+    if "baseline_ids" in request.json:
+        baseline_ids = request.json["baseline_ids"]
     auth_key = get_key_from_headers(request.headers)
 
-    return comparison_report(system_ids, auth_key)
+    return comparison_report(system_ids, baseline_ids, auth_key)
 
 
 def _is_mgmt_url(path):

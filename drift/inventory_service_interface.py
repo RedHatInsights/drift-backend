@@ -1,31 +1,11 @@
-import requests
-
 from urllib.parse import urljoin
 
 from drift import config, metrics
 from drift.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
 from drift.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
 from drift.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
-from drift.exceptions import SystemNotReturned, InventoryServiceError
-
-
-def get_key_from_headers(incoming_headers):
-    """
-    return auth key from header
-    """
-    return incoming_headers.get(AUTH_HEADER_NAME)
-
-
-def _validate_inventory_response(response, logger):
-    """
-    Raise an exception if the response was not what we expected.
-    """
-    if response.status_code is not requests.codes.ok:
-        logger.warn(
-            "%s error received from inventory service: %s"
-            % (response.status_code, response.text)
-        )
-        raise InventoryServiceError("Error received from backend service")
+from drift.exceptions import SystemNotReturned
+from drift.service_interface import fetch_data
 
 
 def _ensure_correct_system_count(system_ids_requested, result):
@@ -40,39 +20,6 @@ def _ensure_correct_system_count(system_ids_requested, result):
         raise SystemNotReturned(
             "System(s) %s not available to display" % ",".join(missing_ids)
         )
-
-
-def _fetch_url(url, auth_header, logger):
-    """
-    helper to make a single request
-    """
-    logger.debug("fetching %s" % url)
-    with metrics.inventory_service_requests.time():
-        with metrics.inventory_service_exceptions.count_exceptions():
-            response = requests.get(url, headers=auth_header)
-    logger.debug("fetched %s" % url)
-    _validate_inventory_response(response, logger)
-    return response.json()
-
-
-def _fetch_data(url, auth_header, system_ids, logger):
-    """
-    fetch system IDs in batches of 40 for given RESTful URL
-
-    A batch size of 40 was chosen to fetch as many systems per request as we
-    can, but still keep some headroom in the URL length.
-    """
-    BATCH_SIZE = 40
-    results = []
-    system_ids_to_fetch = system_ids
-
-    while len(system_ids_to_fetch) > 0:
-        id_batch = system_ids_to_fetch[:BATCH_SIZE]
-        response_json = _fetch_url(url % (",".join(id_batch)), auth_header, logger)
-        results += response_json["results"]
-        system_ids_to_fetch = system_ids_to_fetch[BATCH_SIZE:]
-
-    return results
 
 
 def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
@@ -90,9 +37,21 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
         config.inventory_svc_hostname, INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
     )
 
-    systems_result = _fetch_data(system_location, auth_header, system_ids, logger)
-    system_profiles_result = _fetch_data(
-        system_profile_location, auth_header, system_ids, logger
+    systems_result = fetch_data(
+        system_location,
+        auth_header,
+        system_ids,
+        logger,
+        metrics.inventory_service_requests,
+        metrics.inventory_service_exceptions,
+    )
+    system_profiles_result = fetch_data(
+        system_profile_location,
+        auth_header,
+        system_ids,
+        logger,
+        metrics.inventory_service_requests,
+        metrics.inventory_service_exceptions,
     )
 
     _ensure_correct_system_count(system_ids, systems_result)
