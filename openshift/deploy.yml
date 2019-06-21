@@ -4,14 +4,8 @@
   gather_facts: false
   connection: local
   vars:
-    project: drift-ci
     environment: "{{ project.split('-')[1] }}"
   vars_files:
     - "vars/{{ environment }}.yml"
-  pre_tasks:
-    - include_vars: vars/secrets.yml
-      when: project == 'drift-ci'
   roles:
-    - role: drift-backend-ci
-      when: project == 'drift-ci'
     - drift-backend
