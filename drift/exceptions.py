@@ -26,13 +26,13 @@ class SystemNotReturned(Exception):
         self.message = message
 
 
-class InventoryServiceError(Exception):
+class ServiceError(Exception):
     def __init__(self, message):
         """
         Raise this exception if the inventory service is not reachable or does
         not provide a valid response
         """
-        super(InventoryServiceError, self).__init__()
+        super(ServiceError, self).__init__()
         self.message = message
 
 
