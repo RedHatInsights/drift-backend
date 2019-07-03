@@ -304,7 +304,7 @@ def _create_comparison(systems, info_name):
         {
             "id": system[SYSTEM_ID_KEY],
             "name": system["name"],
-            "value": system.get(info_name, "N/A"),
+            "value": system.get(info_name, "N/A") or "N/A",
         }
         for system in systems
     ]
