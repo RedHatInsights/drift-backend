@@ -1,8 +1,0 @@
-FROM registry.access.redhat.com/rhscl/postgresql-10-rhel7
-
-ENV POSTGRESQL_USER 'insights'
-ENV POSTGRESQL_PASSWORD 'insights'
-ENV POSTGRESQL_DATABASE 'insights'
-ENV APPBASEDIR=database/
-
-EXPOSE 5432
