@@ -8,7 +8,7 @@ inventory_svc_hostname = os.getenv(
 prometheus_multiproc_dir = os.getenv("prometheus_multiproc_dir", None)
 
 path_prefix = os.getenv("PATH_PREFIX", "/api/")
-app_name = os.getenv("APP_NAME", "system_baseline")
+app_name = os.getenv("APP_NAME", "system-baseline")
 
 
 _db_user = os.getenv("BASELINE_DB_USER", "insights")

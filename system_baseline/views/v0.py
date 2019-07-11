@@ -33,6 +33,8 @@ def _build_json_response(json_data, status=200):
     return Response(json.dumps(json_data), status=status, mimetype="application/json")
 
 
+@metrics.baseline_fetch_requests.time()
+@metrics.api_exceptions.count_exceptions()
 def get_baselines_by_ids(baseline_ids, page=1, per_page=100):
     """
     return a list of baselines given their ID
@@ -50,6 +52,8 @@ def get_baselines_by_ids(baseline_ids, page=1, per_page=100):
     )
 
 
+@metrics.baseline_delete_requests.time()
+@metrics.api_exceptions.count_exceptions()
 def delete_baselines_by_ids(baseline_ids):
     """
     delete a list of baselines given their ID
@@ -62,6 +66,8 @@ def delete_baselines_by_ids(baseline_ids):
     db.session.commit()
 
 
+@metrics.baseline_fetch_all_requests.time()
+@metrics.api_exceptions.count_exceptions()
 def get_baselines(page=1, per_page=100):
     """
     return a list of baselines given their ID
@@ -77,6 +83,7 @@ def get_baselines(page=1, per_page=100):
     )
 
 
+@metrics.baseline_create_requests.time()
 @metrics.api_exceptions.count_exceptions()
 def create_baseline(system_baselines_list):
     """
