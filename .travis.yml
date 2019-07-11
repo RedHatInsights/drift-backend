@@ -4,15 +4,13 @@ python:
  - "3.6"
 
 script:
+  - .travis/check-manifest.sh
   - flake8
+  - black . --check -t py36
   - yamllint system_baseline/openapi/mgmt_api.spec.yaml
   - yamllint system_baseline/openapi/api.spec.yaml
-  - black . --check
 
 install:
   - pip install pipenv
   - pipenv install --dev
   - pip install codecov
-
-after_success:
-  - codecov
