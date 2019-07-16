@@ -60,7 +60,7 @@ This service is used by `drift-frontend`. This frontend app calls both `drift` a
 
 You can list all of your baselines with GET a call to `/v0/baselines`. This will show your baselines but will not show their facts. You can then pull up an individual baseline with a GET call to `/v0/baselines/<UUID>`. A DELETE call will delete the baseline. POSTing to `/v0/baselines` will create a new baseline. The POST data to create two baselines at once looks like this:
 
-```
+```json
 [
     {
         "baseline_facts": [
@@ -93,3 +93,24 @@ You can list all of your baselines with GET a call to `/v0/baselines`. This will
 
 
 This call will return two new baseline UUIDs.
+
+You can also use PATCH calls to a UUID with data like so:
+
+```json
+    {
+        "baseline_facts": [
+            {
+                "name": "archarch",
+                "value": "x86_64x86_64"
+            },
+            {
+                "name": "phony.arch.fact.2",
+                "value": "some value2"
+            },
+            {
+                "name": "phony.arch.fact.3",
+                "value": "some value3"
+            }
+        ]
+    }
+```

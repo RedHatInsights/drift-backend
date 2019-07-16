@@ -13,18 +13,20 @@ class SystemBaseline(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     account = db.Column(db.String(10))
     display_name = db.Column(db.String(200))
-    fact_count = db.Column(db.Integer)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
     modified_on = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
     baseline_facts = db.Column(JSONB)
 
+    @property
+    def fact_count(self):
+        return len(self.baseline_facts)
+
     def __init__(self, baseline_facts, display_name=display_name, account=account):
         self.baseline_facts = baseline_facts
         self.display_name = display_name
         self.account = account
-        self.fact_count = len(self.baseline_facts)
 
     def to_json(self, withhold_facts=False):
         json_dict = {}
