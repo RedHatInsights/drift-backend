@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app, Response
+from flask import Blueprint, request, current_app, Response, abort
 from http import HTTPStatus
 import logging
 import json
@@ -11,19 +11,57 @@ from system_baseline.exceptions import HTTPError
 
 section = Blueprint("v0", __name__)
 
+pagination_link_template = "%s?limit=%s&offset=%s"
+
+
+def _create_first_link(path, limit, offset, total):
+    first_link = pagination_link_template % (path, limit, 0)
+    return first_link
+
+
+def _create_previous_link(path, limit, offset, total):
+    # if we are at the beginning, do not create a previous link
+    if offset == 0 or offset - limit < 0:
+        return _create_first_link(path, limit, offset, total)
+    previous_link = pagination_link_template % (request.path, limit, offset - limit)
+    return previous_link
+
+
+def _create_next_link(path, limit, offset, total):
+    # if we are at the end, do not create a next link
+    if limit + offset >= total:
+        return _create_last_link(path, limit, offset, total)
+    next_link = pagination_link_template % (request.path, limit, limit + offset)
+    return next_link
+
+
+def _create_last_link(path, limit, offset, total):
+    final_offset = total - limit if (total - limit) >= 0 else 0
+    last_link = pagination_link_template % (path, limit, final_offset)
+    return last_link
+
 
 def _build_paginated_baseline_list_response(
-    total, page, per_page, baseline_list, withhold_facts=False
+    total, limit, offset, baseline_list, withhold_facts=False
 ):
     json_baseline_list = [
         baseline.to_json(withhold_facts=withhold_facts) for baseline in baseline_list
     ]
-    json_output = {
+    link_params = {
+        "path": request.path,
+        "limit": limit,
+        "offset": offset,
         "total": total,
-        "count": len(baseline_list),
-        "page": page,
-        "per_page": per_page,
-        "results": json_baseline_list,
+    }
+    json_output = {
+        "meta": {"count": total},
+        "links": {
+            "first": _create_first_link(**link_params),
+            "next": _create_next_link(**link_params),
+            "previous": _create_previous_link(**link_params),
+            "last": _create_last_link(**link_params),
+        },
+        "data": json_baseline_list,
     }
 
     return _build_json_response(json_output)
@@ -35,7 +73,7 @@ def _build_json_response(json_data, status=200):
 
 @metrics.baseline_fetch_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines_by_ids(baseline_ids, page=1, per_page=100):
+def get_baselines_by_ids(baseline_ids, limit, offset):
     """
     return a list of baselines given their ID
     """
@@ -43,12 +81,17 @@ def get_baselines_by_ids(baseline_ids, page=1, per_page=100):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
+    total_count = query.count()
 
     query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
-    query_results = query.paginate(page, per_page)
+    query = query.limit(limit).offset(offset)
+    query_results = query.all()
+
+    if not query_results:
+        abort(404)
 
     return _build_paginated_baseline_list_response(
-        query_results.total, page, per_page, query_results.items, withhold_facts=False
+        total_count, limit, offset, query_results, withhold_facts=False
     )
 
 
@@ -68,18 +111,21 @@ def delete_baselines_by_ids(baseline_ids):
 
 @metrics.baseline_fetch_all_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines(page=1, per_page=100):
+def get_baselines(limit, offset):
     """
     return a list of baselines given their ID
     """
     account_number = _get_account_number()
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
 
+    total_count = query.count()
+
     query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
-    query_results = query.paginate(page, per_page)
+    query = query.limit(limit).offset(offset)
+    query_results = query.all()
 
     return _build_paginated_baseline_list_response(
-        query_results.total, page, per_page, query_results.items, withhold_facts=True
+        total_count, limit, offset, query_results, withhold_facts=True
     )
 
 

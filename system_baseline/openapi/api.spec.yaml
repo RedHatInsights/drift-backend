@@ -20,8 +20,8 @@ paths:
       description: "Fetch the list of Baseline IDs"
       operationId: system_baseline.views.v0.get_baselines
       parameters:
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/perPageParam'
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         '200':
           description: a list of Baseline IDs
@@ -69,6 +69,9 @@ paths:
       summary: fetch one or more Baseline objects
       description: "Fetch one Baseline object"
       operationId: system_baseline.views.v0.get_baselines_by_ids
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         '200':
           description: a list of Baseline objects
@@ -155,14 +158,30 @@ components:
           type: string
     Baseline:
       required:
-        - bar
+        - account
+        - baseline_facts
+        - created
+        - display_name
+        - fact_count
+        - id
+        - updated
       properties:
-        bar:
+        account:
+          type: string
+        baseline_facts:
           type: array
           items:
-            type: object
-            additionalProperties:
-              type: string
+            $ref: "#/components/schemas/BaselineFact"
+        created:
+          type: date-time
+        display_name:
+          type: string
+        fact_count:
+          type: integer
+        id:
+          type: uuid
+        updated:
+          type: date-time
     BaselineIn:
       required:
         - display_name
@@ -192,17 +211,17 @@ components:
         value:
           type: string
   parameters:
-    pageParam:
-      name: page
+    offsetParam:
+      name: offset
       in: query
       required: false
       schema:
         type: integer
-        minimum: 1
-        default: 1
-      description: A page number of the items to return.
-    perPageParam:
-      name: per_page
+        minimum: 0
+        default: 0
+      description: item number offset
+    limitParam:
+      name: limit
       in: query
       required: false
       schema:
@@ -210,7 +229,7 @@ components:
         minimum: 1
         maximum: 100
         default: 50
-      description: A number of items to return per page.
+      description: A number of items to return
     rhIdentityHeader:
       in: header
       name: x-rh-identity
