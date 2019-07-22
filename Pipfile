@@ -11,6 +11,7 @@ nose = "*"
 responses = "*"
 yamllint = "*"
 black = "*"
+ipdb = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}

@@ -44,7 +44,7 @@ paths:
         content:
           application/json:
             schema:
-              x-body-name: system_baselines_list
+              x-body-name: system_baseline_list
               type: array
               items:
                 $ref: "#/components/schemas/BaselineIn"

@@ -131,7 +131,7 @@ def get_baselines(limit, offset):
 
 @metrics.baseline_create_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def create_baseline(system_baselines_list):
+def create_baseline(system_baseline_list):
     """
     create a baseline
     """
@@ -139,7 +139,8 @@ def create_baseline(system_baselines_list):
     account_number = _get_account_number()
 
     created_baselines = []
-    for input_baseline in system_baselines_list:
+
+    for input_baseline in system_baseline_list:
         baseline = SystemBaseline(
             account=account_number,
             display_name=input_baseline["display_name"],

@@ -1,10 +1,20 @@
 language: python
 
+services:
+  - postgresql
+
 python:
  - "3.6"
 
+before_install:
+  - psql -c "CREATE USER insights WITH PASSWORD 'insights';"
+  - psql -c "ALTER USER insights CREATEDB"
+# we use `testdb` for the tests; this is just to create a place for insights user to have
+  - psql -c 'create database insights;' -U postgres
+
 script:
   - .travis/check-manifest.sh
+  - ./run_unit_tests.sh
   - flake8
   - black . --check -t py36
   - yamllint system_baseline/openapi/mgmt_api.spec.yaml
