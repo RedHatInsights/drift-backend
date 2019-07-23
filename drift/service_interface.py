@@ -55,7 +55,13 @@ def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metr
             time_metric,
             exception_metric,
         )
-        results += response_json["results"]
+        # older APIs sent data in "results", newer uses "data"
+        if "data" in response_json:
+            results += response_json["data"]
+        elif "results" in response_json:
+            results += response_json["results"]
+        else:
+            raise ServiceError("unparsable result returned from service")
         object_ids_to_fetch = object_ids_to_fetch[BATCH_SIZE:]
 
     return results
