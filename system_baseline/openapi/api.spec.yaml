@@ -44,10 +44,8 @@ paths:
         content:
           application/json:
             schema:
-              x-body-name: system_baseline_list
-              type: array
-              items:
-                $ref: "#/components/schemas/BaselineIn"
+              $ref: "#/components/schemas/BaselineIn"
+              x-body-name: system_baseline_in
       responses:
         '200':
           description: a list of created Baseline objects

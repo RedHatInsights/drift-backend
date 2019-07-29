@@ -132,26 +132,33 @@ def get_baselines(limit, offset):
 
 @metrics.baseline_create_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def create_baseline(system_baseline_list):
+def create_baseline(system_baseline_in):
     """
     create a baseline
     """
-
     account_number = _get_account_number()
 
-    created_baselines = []
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number,
+        SystemBaseline.display_name == system_baseline_in["display_name"],
+    )
 
-    for input_baseline in system_baseline_list:
-        baseline = SystemBaseline(
-            account=account_number,
-            display_name=input_baseline["display_name"],
-            baseline_facts=input_baseline["baseline_facts"],
+    if query.count() > 0:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="display_name '%s' already used for this account"
+            % system_baseline_in["display_name"],
         )
-        db.session.add(baseline)
-        db.session.commit()  # commit now so we get a created/updated time before json conversion
-        created_baselines.append(baseline.to_json())
 
-    return created_baselines
+    baseline = SystemBaseline(
+        account=account_number,
+        display_name=system_baseline_in["display_name"],
+        baseline_facts=system_baseline_in["baseline_facts"],
+    )
+    db.session.add(baseline)
+    db.session.commit()  # commit now so we get a created/updated time before json conversion
+
+    return baseline.to_json()
 
 
 def _merge_baselines(baseline, baseline_updates):

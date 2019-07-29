@@ -3,19 +3,24 @@ from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.schema import UniqueConstraint
 
 db = SQLAlchemy()
 
 
 class SystemBaseline(db.Model):
     __tablename__ = "system_baselines"
+    # do not allow two records in the same account to have the same display name
+    __table_args__ = (
+        UniqueConstraint("account", "display_name", name="_account_display_name_uc"),
+    )
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account = db.Column(db.String(10))
-    display_name = db.Column(db.String(200))
-    created_on = db.Column(db.DateTime, default=datetime.utcnow)
+    account = db.Column(db.String(10), nullable=False)
+    display_name = db.Column(db.String(200), nullable=False)
+    created_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     modified_on = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
     baseline_facts = db.Column(JSONB)
 
