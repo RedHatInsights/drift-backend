@@ -3,6 +3,7 @@ from http import HTTPStatus
 import logging
 import json
 import base64
+from uuid import UUID
 
 from system_baseline import metrics
 from system_baseline.models import SystemBaseline, db
@@ -72,12 +73,28 @@ def _build_json_response(json_data, status=200):
     return Response(json.dumps(json_data), status=status, mimetype="application/json")
 
 
+def _validate_uuids(baseline_ids):
+    """
+    helper method to test if a UUID is properly formatted. Will raise an
+    exception if format is wrong.
+    """
+    for baseline_id in baseline_ids:
+        try:
+            UUID(baseline_id)
+        except ValueError:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="baseline_id %s is not a UUID" % baseline_id,
+            )
+
+
 @metrics.baseline_fetch_requests.time()
 @metrics.api_exceptions.count_exceptions()
 def get_baselines_by_ids(baseline_ids, limit, offset):
     """
     return a list of baselines given their ID
     """
+    _validate_uuids(baseline_ids)
     account_number = _get_account_number()
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
@@ -102,6 +119,7 @@ def delete_baselines_by_ids(baseline_ids):
     """
     delete a list of baselines given their ID
     """
+    _validate_uuids(baseline_ids)
     account_number = _get_account_number()
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
@@ -187,6 +205,7 @@ def update_baseline(baseline_ids, system_baseline_partial):
     """
     update a baseline
     """
+    _validate_uuids(baseline_ids)
     if len(baseline_ids) > 1:
         raise "can only patch one baseline at a time"
 
