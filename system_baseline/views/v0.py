@@ -8,6 +8,7 @@ from system_baseline import metrics
 from system_baseline.models import SystemBaseline, db
 from system_baseline.constants import AUTH_HEADER_NAME
 from system_baseline.exceptions import HTTPError
+from system_baseline.config import path_prefix, app_name
 
 section = Blueprint("v0", __name__)
 
@@ -216,7 +217,7 @@ def _is_openapi_url(path):
     """
     small helper to test if URL is the openapi spec
     """
-    return path == "/api/system_baseline/v0/openapi.json"
+    return path == "%s%s/v0/openapi.json" % (path_prefix, app_name)
 
 
 @section.before_app_request
