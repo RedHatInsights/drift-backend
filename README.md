@@ -1,2 +1,2 @@
 # kerlescan
-shared service libs
+shared service lib
