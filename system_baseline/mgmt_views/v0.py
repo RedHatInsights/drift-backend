@@ -1,6 +1,6 @@
 from flask import jsonify
 
-from system_baseline.metrics_registry import get_registry
+from kerlescan.metrics_registry import get_registry
 
 from prometheus_client import generate_latest
 

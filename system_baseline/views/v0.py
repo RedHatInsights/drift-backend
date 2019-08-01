@@ -1,15 +1,16 @@
 from flask import Blueprint, request, current_app, Response, abort
 from http import HTTPStatus
-import logging
 import json
-import base64
 from uuid import UUID
 
-from system_baseline import metrics
+from kerlescan import view_helpers
+from kerlescan import profile_parser
+from kerlescan.exceptions import HTTPError
+from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.service_interface import get_key_from_headers
+
+from system_baseline import metrics, app_config
 from system_baseline.models import SystemBaseline, db
-from system_baseline.constants import AUTH_HEADER_NAME
-from system_baseline.exceptions import HTTPError
-from system_baseline.config import path_prefix, app_name
 
 section = Blueprint("v0", __name__)
 
@@ -95,7 +96,7 @@ def get_baselines_by_ids(baseline_ids, limit, offset):
     return a list of baselines given their ID
     """
     _validate_uuids(baseline_ids)
-    account_number = _get_account_number()
+    account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
@@ -120,7 +121,7 @@ def delete_baselines_by_ids(baseline_ids):
     delete a list of baselines given their ID
     """
     _validate_uuids(baseline_ids)
-    account_number = _get_account_number()
+    account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
@@ -134,7 +135,7 @@ def get_baselines(limit, offset):
     """
     return a list of baselines given their ID
     """
-    account_number = _get_account_number()
+    account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
 
     total_count = query.count()
@@ -148,13 +149,66 @@ def get_baselines(limit, offset):
     )
 
 
+def group_baselines(baseline):
+    """
+    return a grouped baseline
+    """
+
+    def _get_group_name(name):
+        n, _, _ = name.partition(".")
+        return n
+
+    def _get_value_name(name):
+        _, _, n = name.partition(".")
+        return n
+
+    def _find_group(name):
+        for group in grouped_baseline:
+            if group["name"] == name:
+                return group
+
+    # build out group names
+    group_names = {_get_group_name(b["name"]) for b in baseline if "." in b["name"]}
+    grouped_baseline = []
+    for group_name in group_names:
+        grouped_baseline.append({"name": group_name, "values": []})
+
+    # populate groups
+    for fact in baseline:
+        if "." in fact["name"]:
+            group = _find_group(_get_group_name(fact["name"]))
+            fact["name"] = _get_value_name(fact["name"])
+            group["values"].append(fact)
+        else:
+            grouped_baseline.append(fact)
+
+    return grouped_baseline
+
+
+def get_event_counters():
+    """
+    small helper to create a dict of event counters
+    """
+    return {
+        "systems_compared_no_sysprofile": metrics.systems_compared_no_sysprofile,
+        "inventory_service_requests": metrics.inventory_service_requests,
+        "inventory_service_exceptions": metrics.inventory_service_exceptions,
+    }
+
+
 @metrics.baseline_create_requests.time()
 @metrics.api_exceptions.count_exceptions()
 def create_baseline(system_baseline_in):
     """
     create a baseline
     """
-    account_number = _get_account_number()
+    account_number = view_helpers.get_account_number(request)
+
+    if "values" in system_baseline_in and "value" in system_baseline_in:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="'values' and 'value' cannot both be defined for system baseline",
+        )
 
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number,
@@ -168,10 +222,33 @@ def create_baseline(system_baseline_in):
             % system_baseline_in["display_name"],
         )
 
+    baseline_facts = []
+    if "baseline_facts" in system_baseline_in:
+        baseline_facts = system_baseline_in["baseline_facts"]
+    elif "inventory_uuid" in system_baseline_in:
+        auth_key = get_key_from_headers(request.headers)
+        system_with_profile = fetch_systems_with_profiles(
+            [system_baseline_in["inventory_uuid"]],
+            auth_key,
+            current_app.logger,
+            get_event_counters(),
+        )[0]
+
+        system_name = profile_parser.get_name(system_with_profile)
+        parsed_profile = profile_parser.parse_profile(
+            system_with_profile["system_profile"], system_name, current_app.logger
+        )
+        facts = []
+        for fact in parsed_profile:
+            if fact not in ["id", "name"] and parsed_profile[fact] not in ["N/A"]:
+                facts.append({"name": fact, "value": parsed_profile[fact]})
+
+        baseline_facts = group_baselines(facts)
+
     baseline = SystemBaseline(
         account=account_number,
         display_name=system_baseline_in["display_name"],
-        baseline_facts=system_baseline_in["baseline_facts"],
+        baseline_facts=baseline_facts,
     )
     db.session.add(baseline)
     db.session.commit()  # commit now so we get a created/updated time before json conversion
@@ -181,23 +258,22 @@ def create_baseline(system_baseline_in):
 
 def _merge_baselines(baseline, baseline_updates):
     """
-    merge a baseline with a partial update set.
+    update a baseline with a partial update set.
     """
-    # convert to dicts for easier manipulation
-    existing_facts = {fact["name"]: fact["value"] for fact in baseline.baseline_facts}
-    new_facts = {
-        fact["name"]: fact["value"] for fact in baseline_updates["baseline_facts"]
-    }
+    # remove existing baseline facts with the same names
+    updated_fact_names = set()
+    for update in baseline_updates["baseline_facts"]:
+        updated_fact_names.add(update["name"])
 
-    existing_facts.update(new_facts)
+    existing_baseline_facts = []
+    for existing_fact in baseline.baseline_facts:
+        if existing_fact["name"] not in updated_fact_names:
+            existing_baseline_facts.append(existing_fact)
 
-    # convert back
-    merged_baseline_facts = []
-    for fact in existing_facts:
-        baseline_fact = {"name": fact, "value": existing_facts[fact]}
-        merged_baseline_facts.append(baseline_fact)
-
-    baseline.baseline_facts = merged_baseline_facts
+    # merge remaining facts with new facts
+    baseline.baseline_facts = (
+        existing_baseline_facts + baseline_updates["baseline_facts"]
+    )
     return baseline
 
 
@@ -209,7 +285,7 @@ def update_baseline(baseline_ids, system_baseline_partial):
     if len(baseline_ids) > 1:
         raise "can only patch one baseline at a time"
 
-    account_number = _get_account_number()
+    account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
     )
@@ -226,87 +302,18 @@ def update_baseline(baseline_ids, system_baseline_partial):
     return [query.first().to_json()]
 
 
-def _get_account_number():
-    auth_key = get_key_from_headers(request.headers)
-    identity = json.loads(base64.b64decode(auth_key))["identity"]
-    return identity["account_number"]
-
-
-def _is_mgmt_url(path):
-    """
-    small helper to test if URL is for management API.
-    """
-    return path.startswith("/mgmt/")
-
-
-def _is_openapi_url(path):
-    """
-    small helper to test if URL is the openapi spec
-    """
-    return path == "%s%s/v0/openapi.json" % (path_prefix, app_name)
-
-
 @section.before_app_request
-def ensure_account_number():
-    auth_key = get_key_from_headers(request.headers)
-    if auth_key:
-        identity = json.loads(base64.b64decode(auth_key))["identity"]
-        if "account_number" not in identity:
-            current_app.logger.debug(
-                "account number not found on identity token %s" % auth_key
-            )
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="account number not found on identity token",
-            )
+def log_username():
+    view_helpers.log_username(current_app.logger, request)
 
 
 @section.before_app_request
 def ensure_entitled():
-    """
-    check if the request is entitled. We run this on all requests and bail out
-    if the URL is whitelisted. Returning 'None' allows the request to go through.
-    """
-    # TODO: Blueprint.before_request was not working as expected, using
-    # before_app_request and checking URL here instead.
-    if _is_mgmt_url(request.path) or _is_openapi_url(request.path):
-        return  # allow request
-
-    auth_key = get_key_from_headers(request.headers)
-    if auth_key:
-        entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
-        if "smart_management" in entitlements:
-            if entitlements["smart_management"].get("is_entitled"):
-                current_app.logger.debug(
-                    "enabled smart management entitlement found on header"
-                )
-                return  # allow request
-    else:
-        current_app.logger.debug("identity header not sent for request")
-
-    # if we got here, reject the request
-    current_app.logger.debug("smart management entitlement not found for account.")
-    raise HTTPError(
-        HTTPStatus.BAD_REQUEST,
-        message="Smart management entitlement not found for account.",
+    return view_helpers.ensure_entitled(
+        request, app_config.get_app_name(), current_app.logger
     )
 
 
 @section.before_app_request
-def log_username():
-    if current_app.logger.level == logging.DEBUG:
-        auth_key = get_key_from_headers(request.headers)
-        if auth_key:
-            identity = json.loads(base64.b64decode(auth_key))["identity"]
-            current_app.logger.debug(
-                "username from identity header: %s" % identity["user"]["username"]
-            )
-        else:
-            current_app.logger.debug("identity header not sent for request")
-
-
-def get_key_from_headers(incoming_headers):
-    """
-    return auth key from header
-    """
-    return incoming_headers.get(AUTH_HEADER_NAME)
+def ensure_account_number():
+    return view_helpers.ensure_account_number(request, current_app.logger)

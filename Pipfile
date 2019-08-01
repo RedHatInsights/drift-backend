@@ -26,6 +26,8 @@ flask-sqlalchemy = "*"
 alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.1"}
+bitmath = "*"
 
 [requires]
 python_version = "3.6"

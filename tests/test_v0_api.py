@@ -29,7 +29,12 @@ class ApiTests(unittest.TestCase):
         self.client.post(
             "api/system-baseline/v0/baselines",
             headers=fixtures.AUTH_HEADER,
-            json=fixtures.BASELINE_LOAD,
+            json=fixtures.BASELINE_ONE_LOAD,
+        )
+        self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_TWO_LOAD,
         )
 
     def tearDown(self):
@@ -38,10 +43,11 @@ class ApiTests(unittest.TestCase):
         )
         data = json.loads(response.data)["data"]
         for baseline in data:
-            self.client.delete(
+            response = self.client.delete(
                 "api/system-baseline/v0/baselines/%s" % baseline["id"],
                 headers=fixtures.AUTH_HEADER,
             )
+            self.assertEqual(response.status_code, 200)
 
     def test_fetch_baseline_list(self):
         response = self.client.get(
@@ -50,3 +56,73 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
+
+
+class ApiPatchTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+        self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_THREE_LOAD,
+        )
+
+    def tearDown(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            response = self.client.delete(
+                "api/system-baseline/v0/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_patch_baseline(self):
+        # obtain the UUID for a baseline
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        patched_uuid = result["data"][0]["id"]
+
+        # apply patch to data
+        response = self.client.patch(
+            "api/system-baseline/v0/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PARTIAL_ONE,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # confirm patch landed
+        response = self.client.get(
+            "api/system-baseline/v0/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        result = json.loads(response.data)
+        for fact in result["data"][0]["baseline_facts"]:
+            self.assertTrue(fact["name"] in ("nested", "hello"))
+
+        # apply nested patch to data
+        response = self.client.patch(
+            "api/system-baseline/v0/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PARTIAL_TWO,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # confirm patch landed
+        response = self.client.get(
+            "api/system-baseline/v0/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        result = json.loads(response.data)
+        for fact in result["data"][0]["baseline_facts"]:
+            self.assertTrue(fact["name"] in ("nested", "hello"))
+            if fact["name"] == "hello":
+                self.assertNotIn("value", fact)  # confirm we got rid of non-nested data
+                self.assertEqual(len(fact["values"]), 2)

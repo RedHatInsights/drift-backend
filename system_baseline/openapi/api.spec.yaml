@@ -183,9 +183,10 @@ components:
     BaselineIn:
       required:
         - display_name
-        - baseline_facts
       properties:
         display_name:
+          type: string
+        inventory_uuid:
           type: string
         baseline_facts:
           type: array
@@ -202,12 +203,13 @@ components:
     BaselineFact:
       required:
         - name
-        - value
       properties:
         name:
           type: string
         value:
           type: string
+        values:
+          type: array
   parameters:
     offsetParam:
       name: offset

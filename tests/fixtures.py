@@ -114,19 +114,36 @@ AUTH_HEADER_NO_ACCT = {
     "JpbnRlcm5hbCI6eyJvcmdfaWQiOiI5OTk5In19fQo="
 }
 
-BASELINE_LOAD = [
-    {
-        "baseline_facts": [
-            {"name": "arch", "value": "x86_64"},
-            {"name": "phony.arch.fact", "value": "some value"},
-        ],
-        "display_name": "arch baseline",
-    },
-    {
-        "baseline_facts": [
-            {"name": "memory", "value": "64GB"},
-            {"name": "cpu_sockets", "value": "16"},
-        ],
-        "display_name": "cpu + mem baseline",
-    },
-]
+BASELINE_ONE_LOAD = {
+    "baseline_facts": [
+        {"name": "arch", "value": "x86_64"},
+        {"name": "phony.arch.fact", "value": "some value"},
+    ],
+    "display_name": "arch baseline",
+}
+BASELINE_TWO_LOAD = {
+    "baseline_facts": [
+        {"name": "memory", "value": "64GB"},
+        {"name": "cpu_sockets", "value": "16"},
+    ],
+    "display_name": "cpu + mem baseline",
+}
+BASELINE_THREE_LOAD = {
+    "baseline_facts": [
+        {"name": "nested", "values": [{"name": "cpu_sockets", "value": "16"}]}
+    ],
+    "display_name": "cpu + mem baseline",
+}
+
+BASELINE_PARTIAL_ONE = {"baseline_facts": [{"name": "hello", "value": "world"}]}
+BASELINE_PARTIAL_TWO = {
+    "baseline_facts": [
+        {
+            "name": "hello",
+            "values": [
+                {"name": "nested_one", "value": "one"},
+                {"name": "nested_two", "value": "two"},
+            ],
+        }
+    ]
+}
