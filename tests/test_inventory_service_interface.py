@@ -3,8 +3,9 @@ import responses
 import unittest
 import mock
 
-from drift import app, inventory_service_interface
-from drift.exceptions import ServiceError, ItemNotReturned
+from drift import app
+from kerlescan import inventory_service_interface
+from kerlescan.exceptions import ServiceError, ItemNotReturned
 from . import fixtures
 
 
@@ -14,6 +15,12 @@ class InventoryServiceTests(unittest.TestCase):
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
         self.mock_logger = mock.Mock()
+
+        self.mock_counters = {
+            "systems_compared_no_sysprofile": mock.MagicMock(),
+            "inventory_service_requests": mock.MagicMock(),
+            "inventory_service_exceptions": mock.MagicMock(),
+        }
 
     def _create_response_for_systems(self, service_hostname, system_uuids):
         url_template = "http://%s/api/inventory/v1/hosts/%s"
@@ -70,7 +77,7 @@ class InventoryServiceTests(unittest.TestCase):
         )
 
         systems = inventory_service_interface.fetch_systems_with_profiles(
-            systems_to_fetch, "my-auth-key", self.mock_logger
+            systems_to_fetch, "my-auth-key", self.mock_logger, self.mock_counters
         )
         found_system_ids = {system["id"] for system in systems}
         self.assertSetEqual(found_system_ids, set(systems_to_fetch))
@@ -93,7 +100,7 @@ class InventoryServiceTests(unittest.TestCase):
 
         with self.assertRaises(ItemNotReturned) as cm:
             inventory_service_interface.fetch_systems_with_profiles(
-                systems_to_fetch, "my-auth-key", self.mock_logger
+                systems_to_fetch, "my-auth-key", self.mock_logger, self.mock_counters
             )
 
         self.assertEqual(
@@ -119,7 +126,7 @@ class InventoryServiceTests(unittest.TestCase):
 
         with self.assertRaises(ServiceError) as cm:
             inventory_service_interface.fetch_systems_with_profiles(
-                systems_to_fetch, "my-auth-key", self.mock_logger
+                systems_to_fetch, "my-auth-key", self.mock_logger, self.mock_counters
             )
 
         self.assertEqual(cm.exception.message, "Error received from backend service")

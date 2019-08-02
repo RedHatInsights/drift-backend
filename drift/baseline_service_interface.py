@@ -1,8 +1,9 @@
 from urllib.parse import urljoin
 
-from drift import config, metrics
-from drift.service_interface import fetch_data, ensure_correct_count
-from drift.constants import AUTH_HEADER_NAME, BASELINE_SVC_ENDPOINT
+from drift import metrics
+from kerlescan import config
+from kerlescan.service_interface import fetch_data
+from kerlescan.constants import AUTH_HEADER_NAME, BASELINE_SVC_ENDPOINT
 
 
 def fetch_baselines(baseline_ids, service_auth_key, logger):
@@ -22,6 +23,5 @@ def fetch_baselines(baseline_ids, service_auth_key, logger):
         metrics.baseline_service_requests,
         metrics.baseline_service_exceptions,
     )
-    ensure_correct_count(baseline_ids, baseline_result)
 
     return baseline_result

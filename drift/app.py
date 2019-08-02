@@ -1,13 +1,15 @@
 import logging
+import os
 
 import connexion
 
-from drift import config
-from drift.cloudwatch import setup_cw_logging
 from drift.views import v1
-from drift.error import handle_http_error
-from drift.exceptions import HTTPError
-from drift.metrics_registry import create_prometheus_registry_dir
+from kerlescan import config
+from kerlescan.error import handle_http_error
+from kerlescan.exceptions import HTTPError
+from kerlescan.metrics_registry import create_prometheus_registry_dir
+
+from kerlescan.cloudwatch import setup_cw_logging
 
 
 def create_app():
@@ -16,7 +18,8 @@ def create_app():
     :return:    flask app
     :rtype:     Flask
     """
-    openapi_args = {"path_prefix": config.path_prefix, "app_name": config.app_name}
+    app_name = os.getenv("APP_NAME", "drift")
+    openapi_args = {"path_prefix": config.path_prefix, "app_name": app_name}
     connexion_app = connexion.App(
         __name__, specification_dir="openapi/", arguments=openapi_args
     )

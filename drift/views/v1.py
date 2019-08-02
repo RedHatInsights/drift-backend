@@ -1,15 +1,14 @@
 from flask import Blueprint, jsonify, request, current_app
 from http import HTTPStatus
-import logging
-import json
-import base64
 from uuid import UUID
 
-from drift import info_parser, metrics
-from drift.exceptions import HTTPError, ItemNotReturned
-from drift.inventory_service_interface import fetch_systems_with_profiles
-from drift.service_interface import get_key_from_headers
+from drift import info_parser, metrics, app_config
 from drift.baseline_service_interface import fetch_baselines
+
+from kerlescan import view_helpers
+from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.service_interface import get_key_from_headers
+from kerlescan.exceptions import HTTPError, ItemNotReturned
 
 section = Blueprint("v1", __name__)
 
@@ -28,6 +27,17 @@ def _validate_uuids(system_ids):
             )
 
 
+def get_event_counters():
+    """
+    small helper to create a dict of event counters
+    """
+    return {
+        "systems_compared_no_sysprofile": metrics.systems_compared_no_sysprofile,
+        "inventory_service_requests": metrics.inventory_service_requests,
+        "inventory_service_exceptions": metrics.inventory_service_exceptions,
+    }
+
+
 def comparison_report(system_ids, baseline_ids, auth_key):
     """
     return a comparison report
@@ -43,7 +53,9 @@ def comparison_report(system_ids, baseline_ids, auth_key):
 
     try:
         comparisons = info_parser.build_comparisons(
-            fetch_systems_with_profiles(system_ids, auth_key, current_app.logger),
+            fetch_systems_with_profiles(
+                system_ids, auth_key, current_app.logger, get_event_counters()
+            ),
             fetch_baselines(baseline_ids, auth_key, current_app.logger),
         )
         metrics.systems_compared.observe(len(system_ids))
@@ -80,74 +92,18 @@ def comparison_report_post():
     return comparison_report(system_ids, baseline_ids, auth_key)
 
 
-def _is_mgmt_url(path):
-    """
-    small helper to test if URL is for management API.
-    """
-    return path.startswith("/mgmt/")
-
-
-def _is_openapi_url(path):
-    """
-    small helper to test if URL is the openapi spec
-    """
-    return path == "/api/drift/v1/openapi.json"
-
-
 @section.before_app_request
-def ensure_account_number():
-    auth_key = get_key_from_headers(request.headers)
-    if auth_key:
-        identity = json.loads(base64.b64decode(auth_key))["identity"]
-        if "account_number" not in identity:
-            current_app.logger.debug(
-                "account number not found on identity token %s" % auth_key
-            )
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="account number not found on identity token",
-            )
+def log_username():
+    view_helpers.log_username(current_app.logger, request)
 
 
 @section.before_app_request
 def ensure_entitled():
-    """
-    check if the request is entitled. We run this on all requests and bail out
-    if the URL is whitelisted. Returning 'None' allows the request to go through.
-    """
-    # TODO: Blueprint.before_request was not working as expected, using
-    # before_app_request and checking URL here instead.
-    if _is_mgmt_url(request.path) or _is_openapi_url(request.path):
-        return  # allow request
-
-    auth_key = get_key_from_headers(request.headers)
-    if auth_key:
-        entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
-        if "smart_management" in entitlements:
-            if entitlements["smart_management"].get("is_entitled"):
-                current_app.logger.debug(
-                    "enabled smart management entitlement found on header"
-                )
-                return  # allow request
-    else:
-        current_app.logger.debug("identity header not sent for request")
-
-    # if we got here, reject the request
-    current_app.logger.debug("smart management entitlement not found for account.")
-    raise HTTPError(
-        HTTPStatus.BAD_REQUEST,
-        message="Smart management entitlement not found for account.",
+    return view_helpers.ensure_entitled(
+        request, app_config.get_app_name(), current_app.logger
     )
 
 
 @section.before_app_request
-def log_username():
-    if current_app.logger.level == logging.DEBUG:
-        auth_key = get_key_from_headers(request.headers)
-        if auth_key:
-            identity = json.loads(base64.b64decode(auth_key))["identity"]
-            current_app.logger.debug(
-                "username from identity header: %s" % identity["user"]["username"]
-            )
-        else:
-            current_app.logger.debug("identity header not sent for request")
+def ensure_account_number():
+    return view_helpers.ensure_account_number(request, current_app.logger)

@@ -11,16 +11,18 @@ nose = "*"
 responses = "*"
 yamllint = "*"
 black = "==19.3b0"
+ipython = "*"
+openapi-spec-validator = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}
 Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
-openapi-spec-validator = "==0.2.4"
 bitmath = "*"
 boto3 = "*"
 watchtower = "*"
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.2"}
 
 [requires]
 python_version = "3.6"
