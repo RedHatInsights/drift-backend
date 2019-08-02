@@ -1,8 +1,9 @@
 import unittest
+from mock import MagicMock
 
-from drift import info_parser
+from kerlescan import profile_parser
 
-from drift.exceptions import UnparsableNEVRAError
+from kerlescan.exceptions import UnparsableNEVRAError
 
 
 class InfoParserTests(unittest.TestCase):
@@ -20,16 +21,19 @@ class InfoParserTests(unittest.TestCase):
         }
 
         for pkg_string in tests:
-            name, vra = info_parser._get_name_vra_from_string(pkg_string)
+            name, vra = profile_parser._get_name_vra_from_string(pkg_string)
             self.assertEqual((name, vra), tests[pkg_string])
 
     def test_bad_package_parsing(self):
         with self.assertRaises(UnparsableNEVRAError):
-            info_parser._get_name_vra_from_string("this-will_not_parse")
+            profile_parser._get_name_vra_from_string("this-will_not_parse")
 
     def test_running_process_parsing(self):
         profile = {"id": "1234", "running_processes": ["vim", "vim", "doom.exe"]}
-        result = info_parser._parse_profile(profile, "some_display_name")
+        fake_plastic_tree = MagicMock()
+        result = profile_parser.parse_profile(
+            profile, "some_display_name", fake_plastic_tree
+        )
         self.assertEqual(result["running_processes.vim"], "2")
         self.assertEqual(result["running_processes.doom.exe"], "1")
 
@@ -41,6 +45,9 @@ class InfoParserTests(unittest.TestCase):
                 {"name": "no_mtu"},
             ],
         }
-        result = info_parser._parse_profile(profile, "some_display_name")
+        fake_plastic_tree = MagicMock()
+        result = profile_parser.parse_profile(
+            profile, "some_display_name", fake_plastic_tree
+        )
         self.assertEqual(result["network_interfaces.fake-nic.mtu"], "9876")
         self.assertEqual(result["network_interfaces.no_mtu.mtu"], "N/A")

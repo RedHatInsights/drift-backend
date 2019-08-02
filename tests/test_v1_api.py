@@ -2,7 +2,7 @@ from io import StringIO
 import logging
 
 from drift import app
-from drift.exceptions import ServiceError, ItemNotReturned
+from kerlescan.exceptions import ServiceError, ItemNotReturned
 
 from . import fixtures
 import mock
@@ -149,7 +149,7 @@ class DebugLoggingApiTests(unittest.TestCase):
         self.assertIn("identity header not sent for request", self.stream.getvalue())
         self.assertNotIn("username from identity header", self.stream.getvalue())
 
-    @mock.patch("drift.views.v1.get_key_from_headers")
+    @mock.patch("kerlescan.view_helpers.get_key_from_headers")
     def test_username_logging_on_debug_with_key(self, mock_get_key):
         mock_get_key.return_value = fixtures.AUTH_HEADER["X-RH-IDENTITY"]
         self.client.get("api/drift/v1/comparison_report")
