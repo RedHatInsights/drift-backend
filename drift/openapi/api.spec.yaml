@@ -58,10 +58,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                system_ids:
-                  type: array
+              $ref: "#/components/schemas/ComparisonRequest"
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -93,6 +90,18 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    ComparisonRequest:
+      required:
+        - system_ids
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+        baseline_ids:
+          type: array
+          items:
+            type: string
     Error:
       required:
         - detail
