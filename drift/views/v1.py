@@ -24,7 +24,7 @@ def _validate_uuids(system_ids):
             UUID(system_id)
         except ValueError:
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST, message="system_id %s is not a UUID" % system_id
+                HTTPStatus.BAD_REQUEST, message="%s is not a UUID" % system_id
             )
 
 
@@ -39,6 +39,7 @@ def comparison_report(system_ids, baseline_ids, auth_key):
         )
 
     _validate_uuids(system_ids)
+    _validate_uuids(baseline_ids)
 
     try:
         comparisons = info_parser.build_comparisons(
