@@ -4,7 +4,7 @@ import unittest
 import mock
 
 from drift import app, inventory_service_interface
-from drift.exceptions import ServiceError, SystemNotReturned
+from drift.exceptions import ServiceError, ItemNotReturned
 from . import fixtures
 
 
@@ -91,14 +91,14 @@ class InventoryServiceTests(unittest.TestCase):
             "inventory_svc_url_is_not_set", ",".join(systems_to_fetch)
         )
 
-        with self.assertRaises(SystemNotReturned) as cm:
+        with self.assertRaises(ItemNotReturned) as cm:
             inventory_service_interface.fetch_systems_with_profiles(
                 systems_to_fetch, "my-auth-key", self.mock_logger
             )
 
         self.assertEqual(
             cm.exception.message,
-            "System(s) 269a3da8-262f-11e9-8ee5-c85b761454fa not available to display",
+            "269a3da8-262f-11e9-8ee5-c85b761454fa not available to display",
         )
 
     @responses.activate

@@ -6,7 +6,7 @@ import base64
 from uuid import UUID
 
 from drift import info_parser, metrics
-from drift.exceptions import HTTPError, SystemNotReturned
+from drift.exceptions import HTTPError, ItemNotReturned
 from drift.inventory_service_interface import fetch_systems_with_profiles
 from drift.service_interface import get_key_from_headers
 from drift.baseline_service_interface import fetch_baselines
@@ -48,7 +48,7 @@ def comparison_report(system_ids, baseline_ids, auth_key):
         )
         metrics.systems_compared.observe(len(system_ids))
         return jsonify(comparisons)
-    except SystemNotReturned as error:
+    except ItemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
 
 

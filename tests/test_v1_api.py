@@ -2,7 +2,7 @@ from io import StringIO
 import logging
 
 from drift import app
-from drift.exceptions import ServiceError, SystemNotReturned
+from drift.exceptions import ServiceError, ItemNotReturned
 
 from . import fixtures
 import mock
@@ -109,7 +109,7 @@ class ApiTests(unittest.TestCase):
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_missing_system_uuid(self, mock_fetch_systems):
-        mock_fetch_systems.side_effect = SystemNotReturned("oops")
+        mock_fetch_systems.side_effect = ItemNotReturned("oops")
         response = self.client.get(
             "api/drift/v1/comparison_report?"
             "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"

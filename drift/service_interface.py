@@ -1,7 +1,7 @@
 import requests
 
 from drift.constants import AUTH_HEADER_NAME
-from drift.exceptions import ServiceError
+from drift.exceptions import ItemNotReturned, ServiceError
 
 
 def get_key_from_headers(incoming_headers):
@@ -33,6 +33,18 @@ def _fetch_url(url, auth_header, logger, time_metric, exception_metric):
     logger.debug("fetched %s" % url)
     _validate_service_response(response, logger)
     return response.json()
+
+
+def ensure_correct_count(ids_requested, result):
+    """
+    raise an exception if we didn't get back the number of items we expected.
+
+    If the count is correct, do nothing.
+    """
+    if len(result) < len(ids_requested):
+        ids_returned = {item["id"] for item in result}
+        missing_ids = set(ids_requested) - ids_returned
+        raise ItemNotReturned("%s not available to display" % ",".join(missing_ids))
 
 
 def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metric):
