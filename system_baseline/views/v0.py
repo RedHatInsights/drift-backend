@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app, Response, abort
+from flask import Blueprint, request, current_app, Response
 from http import HTTPStatus
 import json
 from uuid import UUID
@@ -105,9 +105,6 @@ def get_baselines_by_ids(baseline_ids, limit, offset):
     query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
     query = query.limit(limit).offset(offset)
     query_results = query.all()
-
-    if not query_results:
-        abort(404)
 
     return _build_paginated_baseline_list_response(
         total_count, limit, offset, query_results, withhold_facts=False
