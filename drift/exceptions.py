@@ -17,12 +17,12 @@ class HTTPError(Exception):
         self.status_code = status_code
 
 
-class SystemNotReturned(Exception):
+class ItemNotReturned(Exception):
     def __init__(self, message):
         """
-        Raise this exception if a system was not returned by inventory service
+        Raise this exception if an item was not returned by inventory service
         """
-        super(SystemNotReturned, self).__init__()
+        super(ItemNotReturned, self).__init__()
         self.message = message
 
 

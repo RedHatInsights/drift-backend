@@ -4,22 +4,7 @@ from drift import config, metrics
 from drift.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
 from drift.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
 from drift.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
-from drift.exceptions import SystemNotReturned
-from drift.service_interface import fetch_data
-
-
-def _ensure_correct_system_count(system_ids_requested, result):
-    """
-    raise an exception if we didn't get back the number of systems we expected.
-
-    If the count is correct, do nothing.
-    """
-    if len(result) < len(system_ids_requested):
-        system_ids_returned = {system["id"] for system in result}
-        missing_ids = set(system_ids_requested) - system_ids_returned
-        raise SystemNotReturned(
-            "System(s) %s not available to display" % ",".join(missing_ids)
-        )
+from drift.service_interface import fetch_data, ensure_correct_count
 
 
 def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
@@ -54,7 +39,7 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger):
         metrics.inventory_service_exceptions,
     )
 
-    _ensure_correct_system_count(system_ids, systems_result)
+    ensure_correct_count(system_ids, systems_result)
 
     # create a blank profile for each system
     system_profiles = {

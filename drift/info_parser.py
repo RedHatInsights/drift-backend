@@ -124,7 +124,14 @@ def _select_applicable_info(systems_with_profiles, baselines):
     for baseline in baselines:
         baseline_facts = {"id": baseline["id"], "name": baseline["display_name"]}
         for baseline_fact in baseline["baseline_facts"]:
-            baseline_facts[baseline_fact["name"]] = baseline_fact["value"]
+            if "value" in baseline_fact:
+                baseline_facts[baseline_fact["name"]] = baseline_fact["value"]
+            elif "values" in baseline_fact:
+                prefix = baseline_fact["name"]
+                for nested_fact in baseline_fact["values"]:
+                    baseline_facts[prefix + "." + nested_fact["name"]] = nested_fact[
+                        "value"
+                    ]
         parsed_system_profiles.append(baseline_facts)
 
     # find the set of all keys to iterate over
