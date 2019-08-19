@@ -13,8 +13,6 @@ servers:
 
 paths:
   /baselines:
-    parameters:
-      - $ref: '#/components/parameters/rhIdentityHeader'
     get:
       summary: fetch list of Baseline IDs
       description: "Fetch the list of Baseline IDs"
@@ -61,7 +59,6 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /baselines/{baseline_ids}:
     parameters:
-      - $ref: '#/components/parameters/rhIdentityHeader'
       - $ref: '#/components/parameters/BaselineIds'
     get:
       summary: fetch one or more Baseline objects
@@ -138,6 +135,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
+  securitySchemes:
+    ApiKeyAuth:
+      description: "Identity header provided by 3scale"
+      in: "header"
+      name: "x-rh-identity"
+      type: "apiKey"
   schemas:
     Error:
       type: object
@@ -240,16 +243,6 @@ components:
         maximum: 100
         default: 50
       description: A number of items to return
-    rhIdentityHeader:
-      in: header
-      name: x-rh-identity
-      required: true
-      schema:
-        type: string
-      description: "Base64-encoded JSON identity header provided by 3Scale.
-                    Contains an account number of the user issuing the
-                    request. Format of the JSON:
-                    {'identity': {'account_number': '12345678'}}"
     BaselineIds:
       in: path
       name: baseline_ids
