@@ -140,6 +140,8 @@ components:
             $ref: "#/components/schemas/Error"
   schemas:
     Error:
+      type: object
+      additionalProperties: false
       required:
         - detail
         - status
@@ -155,6 +157,8 @@ components:
         type:
           type: string
     Baseline:
+      type: object
+      additionalProperties: false
       required:
         - account
         - baseline_facts
@@ -181,6 +185,8 @@ components:
         updated:
           type: date-time
     BaselineIn:
+      type: object
+      additionalProperties: false
       required:
         - display_name
       properties:
@@ -193,6 +199,8 @@ components:
           items:
             $ref: "#/components/schemas/BaselineFact"
     BaselineInPartial:
+      type: object
+      additionalProperties: false
       required:
         - baseline_facts
       properties:
@@ -201,6 +209,8 @@ components:
           items:
             $ref: "#/components/schemas/BaselineFact"
     BaselineFact:
+      type: object
+      additionalProperties: false
       required:
         - name
       properties:
