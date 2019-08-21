@@ -121,6 +121,7 @@ class ApiPatchTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         result = json.loads(response.data)
+        self.assertEqual("ABCDE", result["data"][0]["display_name"])
         for fact in result["data"][0]["baseline_facts"]:
             self.assertTrue(fact["name"] in ("nested", "hello"))
             if fact["name"] == "hello":

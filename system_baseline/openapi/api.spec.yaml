@@ -236,13 +236,13 @@ components:
     BaselineInPartial:
       type: object
       additionalProperties: false
-      required:
-        - baseline_facts
       properties:
         baseline_facts:
           type: array
           items:
             $ref: "#/components/schemas/BaselineFact"
+        display_name:
+          type: string
     BaselineFact:
       type: object
       additionalProperties: false

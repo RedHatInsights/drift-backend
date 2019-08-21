@@ -137,6 +137,7 @@ BASELINE_THREE_LOAD = {
 
 BASELINE_PARTIAL_ONE = {"baseline_facts": [{"name": "hello", "value": "world"}]}
 BASELINE_PARTIAL_TWO = {
+    "display_name": "ABCDE",
     "baseline_facts": [
         {
             "name": "hello",
@@ -145,5 +146,5 @@ BASELINE_PARTIAL_TWO = {
                 {"name": "nested_two", "value": "two"},
             ],
         }
-    ]
+    ],
 }

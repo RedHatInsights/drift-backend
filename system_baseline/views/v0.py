@@ -288,8 +288,11 @@ def update_baseline(baseline_ids, system_baseline_partial):
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
     )
     existing_baseline = query.first_or_404()
-
-    new_baseline = _merge_baselines(existing_baseline, system_baseline_partial)
+    new_baseline = existing_baseline
+    if "baseline_facts" in system_baseline_partial:
+        new_baseline = _merge_baselines(existing_baseline, system_baseline_partial)
+    if "display_name" in system_baseline_partial:
+        new_baseline.display_name = system_baseline_partial["display_name"]
     db.session.add(new_baseline)
     db.session.commit()
 
