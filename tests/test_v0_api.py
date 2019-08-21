@@ -3,6 +3,7 @@ import json
 from system_baseline import app
 
 import unittest
+from mock import patch
 
 from . import fixtures
 
@@ -127,3 +128,32 @@ class ApiPatchTests(unittest.TestCase):
             if fact["name"] == "hello":
                 self.assertNotIn("value", fact)  # confirm we got rid of non-nested data
                 self.assertEqual(len(fact["values"]), 2)
+
+
+class CreateFromInventoryTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+
+    def tearDown(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            response = self.client.delete(
+                "api/system-baseline/v0/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    @patch("system_baseline.views.v0.fetch_systems_with_profiles")
+    def test_create_from_inventory(self, mock_fetch):
+        mock_fetch.return_value = [fixtures.SYSTEM_WITH_PROFILE]
+        response = self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.CREATE_FROM_INVENTORY,
+        )
+        self.assertEqual(response.status_code, 200)

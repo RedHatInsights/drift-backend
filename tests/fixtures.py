@@ -148,3 +148,33 @@ BASELINE_PARTIAL_TWO = {
         }
     ],
 }
+CREATE_FROM_INVENTORY = {
+    "display_name": "created_from_inventory",
+    "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
+}
+
+SYSTEM_WITH_PROFILE = {
+    "account": "9876543",
+    "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
+    "created": "2018-01-31T13:00:00.100010Z",
+    "display_name": None,
+    "fqdn": None,
+    "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+    "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
+    "ip_addresses": ["10.0.0.3", "2620:52:0:2598:5054:ff:fecd:ae15"],
+    "mac_addresses": ["52:54:00:cd:ae:00", "00:00:00:00:00:00"],
+    "rhel_machine_id": None,
+    "satellite_id": None,
+    "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+    "system_profile": {
+        "salutation": "hi",
+        "system_profile_exists": False,
+        "installed_packages": [
+            "openssl-1.1.1c-2.fc30.x86_64",
+            "python2-libs-2.7.16-2.fc30.x86_64",
+        ],
+        "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+    },
+    "tags": [],
+    "updated": "2018-01-31T14:00:00.500000Z",
+}

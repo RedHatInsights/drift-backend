@@ -57,7 +57,7 @@ def create_connexion_app():
     return connexion_app
 
 
-def get_flask_app_with_migration():
+def get_flask_app_with_migration():  # pragma: no cover
     """
     return a Flask app. This is useful for migration code that expects a Flask
     app and not a Connexion app.
