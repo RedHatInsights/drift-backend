@@ -32,7 +32,9 @@ def create_connexion_app():
     connexion_app = connexion.App(
         __name__, specification_dir="openapi/", arguments=openapi_args
     )
-    connexion_app.add_api("api.spec.yaml", strict_validation=True)
+    connexion_app.add_api(
+        "api.spec.yaml", strict_validation=True, validate_responses=True
+    )
     connexion_app.add_api("mgmt_api.spec.yaml", strict_validation=True)
     flask_app = connexion_app.app
 

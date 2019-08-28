@@ -124,6 +124,7 @@ def delete_baselines_by_ids(baseline_ids):
     )
     query.delete(synchronize_session="fetch")
     db.session.commit()
+    return "OK"
 
 
 @metrics.baseline_fetch_all_requests.time()
