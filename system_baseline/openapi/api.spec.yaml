@@ -255,6 +255,16 @@ components:
           type: string
         values:
           type: array
+          items:
+            type: object
+            required:
+              - name
+              - value
+            properties:
+              name:
+                type: string
+              value:
+                type: string
   parameters:
     offsetParam:
       name: offset
