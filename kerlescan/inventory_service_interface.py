@@ -4,7 +4,7 @@ from kerlescan import config
 from kerlescan.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
 from kerlescan.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
 from kerlescan.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
-from kerlescan.exceptions import SystemNotReturned
+from kerlescan.exceptions import ItemNotReturned
 from kerlescan.service_interface import fetch_data
 
 
@@ -17,9 +17,7 @@ def _ensure_correct_system_count(system_ids_requested, result):
     if len(result) < len(system_ids_requested):
         system_ids_returned = {system["id"] for system in result}
         missing_ids = set(system_ids_requested) - system_ids_returned
-        raise SystemNotReturned(
-            "System(s) %s not available to display" % ",".join(missing_ids)
-        )
+        raise ItemNotReturned("%s not available to display" % ",".join(missing_ids))
 
 
 def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
