@@ -13,8 +13,6 @@ servers:
 
 paths:
   /comparison_report:
-    parameters:
-      - $ref: '#/components/parameters/rhIdentityHeader'
     get:
       summary: fetch comparison report
       description: "Fetch a comparison report for given system IDs. This will
@@ -89,6 +87,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
+  securitySchemes:
+    ApiKeyAuth:
+      description: "Identity header provided by 3scale"
+      in: "header"
+      name: "x-rh-identity"
+      type: "apiKey"
   schemas:
     ComparisonRequest:
       required:
@@ -188,14 +192,3 @@ components:
         last_updated:
           type: string
           format: date-time
-  parameters:
-    rhIdentityHeader:
-      in: header
-      name: x-rh-identity
-      required: true
-      schema:
-        type: string
-      description: "Base64-encoded JSON identity header provided by 3Scale.
-                    Contains an account number of the user issuing the
-                    request. Format of the JSON:
-                    {'identity': {'account_number': '12345678'}}"
