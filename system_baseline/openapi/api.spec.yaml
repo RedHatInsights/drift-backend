@@ -44,13 +44,11 @@ paths:
               x-body-name: system_baseline_in
       responses:
         '200':
-          description: a list of created Baseline objects
+          description: a created baseline object
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Baseline"
+                $ref: "#/components/schemas/Baseline"
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
