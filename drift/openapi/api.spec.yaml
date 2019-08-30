@@ -29,6 +29,15 @@ paths:
               format: uuid
           required: true
           description: list of system IDs to generate report for
+        - name: baseline_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          required: false
+          description: list of baseline IDs to generate report for
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -134,6 +143,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/System"
+        baselines:
+          type: array
+          items:
+            $ref: "#/components/schemas/Baseline"
     FactComparison:
       description: "A list of fact names, states, and systems. This is useful
                     for displaying rows of facts to compare. Note that if the
@@ -171,6 +184,21 @@ components:
           format: uuid
         value:
           type: string
+    Baseline:
+      description: "Display information for the baselines used"
+      required:
+        - display_name
+        - id
+        - updated
+      properties:
+        display_name:
+          type: string
+        id:
+          type: string
+          format: uuid
+        updated:
+          type: string
+          format: date-time
     System:
       description: "The system ID, display_name, and last updated timestamp for each
                     system in the report. The display_name will try to populate
