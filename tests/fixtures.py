@@ -148,10 +148,12 @@ BASELINE_PARTIAL_TWO = {
         }
     ],
 }
+BASELINE_PARTIAL_CONFLICT = {"display_name": "arch baseline"}
 CREATE_FROM_INVENTORY = {
     "display_name": "created_from_inventory",
     "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
 }
+
 
 SYSTEM_WITH_PROFILE = {
     "account": "9876543",

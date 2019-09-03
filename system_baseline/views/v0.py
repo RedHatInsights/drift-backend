@@ -238,7 +238,11 @@ def create_baseline(system_baseline_in):
         )
         facts = []
         for fact in parsed_profile:
-            if fact not in ["id", "name"] and parsed_profile[fact] not in ["N/A"]:
+            if fact not in ["id", "name"] and parsed_profile[fact] not in [
+                "N/A",
+                "None",
+                None,
+            ]:
                 facts.append({"name": fact, "value": parsed_profile[fact]})
 
         baseline_facts = group_baselines(facts)
@@ -284,6 +288,20 @@ def update_baseline(baseline_ids, system_baseline_partial):
         raise "can only patch one baseline at a time"
 
     account_number = view_helpers.get_account_number(request)
+    # check if we are going to conflict with an existing record's name
+    if "display_name" in system_baseline_partial:
+        display_name_query = SystemBaseline.query.filter(
+            SystemBaseline.account == account_number,
+            SystemBaseline.display_name == system_baseline_partial["display_name"],
+        )
+        existing_display_name = display_name_query.first()
+        if existing_display_name and existing_display_name.id is not baseline_ids[0]:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="display_name %s is in use by another record"
+                % system_baseline_partial["display_name"],
+            )
+
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
     )

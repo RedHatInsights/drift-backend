@@ -129,6 +129,20 @@ class ApiPatchTests(unittest.TestCase):
                 self.assertNotIn("value", fact)  # confirm we got rid of non-nested data
                 self.assertEqual(len(fact["values"]), 2)
 
+        # create a second baseline
+        self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_ONE_LOAD,
+        )
+        # attempt to rename the first baseline to the second
+        response = self.client.patch(
+            "api/system-baseline/v0/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PARTIAL_CONFLICT,
+        )
+        self.assertEqual(response.status_code, 400)
+
 
 class CreateFromInventoryTests(unittest.TestCase):
     def setUp(self):
