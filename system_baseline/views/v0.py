@@ -3,6 +3,8 @@ from http import HTTPStatus
 import json
 from uuid import UUID
 
+from sqlalchemy.orm.session import make_transient
+
 from kerlescan import view_helpers
 from kerlescan import profile_parser
 from kerlescan.exceptions import HTTPError
@@ -258,6 +260,29 @@ def create_baseline(system_baseline_in):
     return baseline.to_json()
 
 
+@metrics.baseline_create_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def copy_baseline_by_id(baseline_id, display_name):
+    """
+    create a new baseline given an existing ID
+    """
+    _validate_uuids([baseline_id])
+
+    account_number = view_helpers.get_account_number(request)
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
+    )
+
+    copy_baseline = query.first_or_404()
+    db.session.expunge(copy_baseline)
+    make_transient(copy_baseline)
+    copy_baseline.id = None
+    copy_baseline.display_name = display_name
+    db.session.add(copy_baseline)
+    db.session.commit()
+    return copy_baseline.to_json()
+
+
 def _merge_baselines(baseline, baseline_updates):
     """
     update a baseline with a partial update set.
@@ -279,13 +304,11 @@ def _merge_baselines(baseline, baseline_updates):
     return baseline
 
 
-def update_baseline(baseline_ids, system_baseline_partial):
+def update_baseline(baseline_id, system_baseline_partial):
     """
     update a baseline
     """
-    _validate_uuids(baseline_ids)
-    if len(baseline_ids) > 1:
-        raise "can only patch one baseline at a time"
+    _validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
     # check if we are going to conflict with an existing record's name
@@ -295,7 +318,7 @@ def update_baseline(baseline_ids, system_baseline_partial):
             SystemBaseline.display_name == system_baseline_partial["display_name"],
         )
         existing_display_name = display_name_query.first()
-        if existing_display_name and existing_display_name.id is not baseline_ids[0]:
+        if existing_display_name and existing_display_name.id is not baseline_id:
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST,
                 message="display_name %s is in use by another record"
@@ -303,7 +326,7 @@ def update_baseline(baseline_ids, system_baseline_partial):
             )
 
     query = SystemBaseline.query.filter(
-        SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
     existing_baseline = query.first_or_404()
     new_baseline = existing_baseline
@@ -316,7 +339,7 @@ def update_baseline(baseline_ids, system_baseline_partial):
 
     # pull baseline again so we have the correct updated timestamp and fact count
     query = SystemBaseline.query.filter(
-        SystemBaseline.account == account_number, SystemBaseline.id == baseline_ids[0]
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
     return [query.first().to_json()]
 

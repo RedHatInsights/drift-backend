@@ -59,6 +59,55 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(result["meta"]["count"], 2)
 
 
+class CopyBaselineTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+        self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_ONE_LOAD,
+        )
+        self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_TWO_LOAD,
+        )
+
+    def tearDown(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            response = self.client.delete(
+                "api/system-baseline/v0/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_copy_baseline(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        source_uuid = result["data"][0]["id"]
+
+        response = self.client.post(
+            "api/system-baseline/v0/baselines/%s?display_name=copy" % source_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data)["meta"]["count"], 3)
+
+
 class ApiPatchTests(unittest.TestCase):
     def setUp(self):
         test_connexion_app = app.create_app()

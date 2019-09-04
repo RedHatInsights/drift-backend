@@ -74,6 +74,24 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: delete one or more baselines
+      description: "delete one or more baselines"
+      operationId: system_baseline.views.v0.delete_baselines_by_ids
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
     patch:
       summary: update a baseline
       description: "update a baseline"
@@ -98,17 +116,24 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    delete:
-      summary: delete one or more baselines
-      description: "delete one or more baselines"
-      operationId: system_baseline.views.v0.delete_baselines_by_ids
+    post:
+      summary: copy a baseline
+      description: "copy a baseline, returning a new ID"
+      operationId: system_baseline.views.v0.copy_baseline_by_id
+      parameters:
+        - in: query
+          name: display_name
+          required: true
+          schema:
+            type: string
+          description: display name of copied baseline
       responses:
         '200':
-          description: a success message
+          description: a created baseline object
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/Baseline"
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -291,3 +316,9 @@ components:
         type: array
         items:
           type: string
+    BaselineId:
+      in: path
+      name: baseline_id
+      required: true
+      schema:
+        type: string
