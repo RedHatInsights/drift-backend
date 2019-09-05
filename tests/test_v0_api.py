@@ -144,7 +144,7 @@ class ApiPatchTests(unittest.TestCase):
         response = self.client.patch(
             "api/system-baseline/v0/baselines/%s" % patched_uuid,
             headers=fixtures.AUTH_HEADER,
-            json=fixtures.BASELINE_PARTIAL_ONE,
+            json=fixtures.BASELINE_PATCH,
         )
         self.assertEqual(response.status_code, 200)
 
@@ -155,28 +155,7 @@ class ApiPatchTests(unittest.TestCase):
         )
         result = json.loads(response.data)
         for fact in result["data"][0]["baseline_facts"]:
-            self.assertTrue(fact["name"] in ("nested", "hello"))
-
-        # apply nested patch to data
-        response = self.client.patch(
-            "api/system-baseline/v0/baselines/%s" % patched_uuid,
-            headers=fixtures.AUTH_HEADER,
-            json=fixtures.BASELINE_PARTIAL_TWO,
-        )
-        self.assertEqual(response.status_code, 200)
-
-        # confirm patch landed
-        response = self.client.get(
-            "api/system-baseline/v0/baselines/%s" % patched_uuid,
-            headers=fixtures.AUTH_HEADER,
-        )
-        result = json.loads(response.data)
-        self.assertEqual("ABCDE", result["data"][0]["display_name"])
-        for fact in result["data"][0]["baseline_facts"]:
-            self.assertTrue(fact["name"] in ("nested", "hello"))
-            if fact["name"] == "hello":
-                self.assertNotIn("value", fact)  # confirm we got rid of non-nested data
-                self.assertEqual(len(fact["values"]), 2)
+            self.assertTrue(fact["name"] in ("nested", "nested fact 2"))
 
         # create a second baseline
         self.client.post(

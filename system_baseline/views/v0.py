@@ -1,6 +1,8 @@
 from flask import Blueprint, request, current_app, Response
 from http import HTTPStatus
 import json
+import jsonpatch
+import jsonpointer
 from uuid import UUID
 
 from sqlalchemy.orm.session import make_transient
@@ -283,58 +285,30 @@ def copy_baseline_by_id(baseline_id, display_name):
     return copy_baseline.to_json()
 
 
-def _merge_baselines(baseline, baseline_updates):
-    """
-    update a baseline with a partial update set.
-    """
-    # remove existing baseline facts with the same names
-    updated_fact_names = set()
-    for update in baseline_updates["baseline_facts"]:
-        updated_fact_names.add(update["name"])
-
-    existing_baseline_facts = []
-    for existing_fact in baseline.baseline_facts:
-        if existing_fact["name"] not in updated_fact_names:
-            existing_baseline_facts.append(existing_fact)
-
-    # merge remaining facts with new facts
-    baseline.baseline_facts = (
-        existing_baseline_facts + baseline_updates["baseline_facts"]
-    )
-    return baseline
-
-
-def update_baseline(baseline_id, system_baseline_partial):
+def update_baseline(baseline_id, system_baseline_patch):
     """
     update a baseline
     """
     _validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
-    # check if we are going to conflict with an existing record's name
-    if "display_name" in system_baseline_partial:
-        display_name_query = SystemBaseline.query.filter(
-            SystemBaseline.account == account_number,
-            SystemBaseline.display_name == system_baseline_partial["display_name"],
-        )
-        existing_display_name = display_name_query.first()
-        if existing_display_name and existing_display_name.id is not baseline_id:
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="display_name %s is in use by another record"
-                % system_baseline_partial["display_name"],
-            )
 
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
-    existing_baseline = query.first_or_404()
-    new_baseline = existing_baseline
-    if "baseline_facts" in system_baseline_partial:
-        new_baseline = _merge_baselines(existing_baseline, system_baseline_partial)
-    if "display_name" in system_baseline_partial:
-        new_baseline.display_name = system_baseline_partial["display_name"]
-    db.session.add(new_baseline)
+    baseline = query.first_or_404()
+    try:
+        baseline.baseline_facts = jsonpatch.apply_patch(
+            baseline.baseline_facts, system_baseline_patch["facts_patch"]
+        )
+    except (jsonpatch.JsonPatchException, jsonpointer.JsonPointerException):
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST, message="unable to apply patch to baseline"
+        )
+
+    baseline.display_name = system_baseline_patch["display_name"]
+
+    db.session.add(baseline)
     db.session.commit()
 
     # pull baseline again so we have the correct updated timestamp and fact count

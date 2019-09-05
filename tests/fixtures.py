@@ -135,19 +135,22 @@ BASELINE_THREE_LOAD = {
     "display_name": "cpu + mem baseline",
 }
 
-BASELINE_PARTIAL_ONE = {"baseline_facts": [{"name": "hello", "value": "world"}]}
-BASELINE_PARTIAL_TWO = {
+BASELINE_PATCH = {
     "display_name": "ABCDE",
-    "baseline_facts": [
+    "facts_patch": [
+        {"op": "replace", "path": "/0/values/0/value", "value": "32"},
+        {"op": "replace", "path": "/0/values/0/name", "value": "cpu_sockets_renamed"},
         {
-            "name": "hello",
-            "values": [
-                {"name": "nested_one", "value": "one"},
-                {"name": "nested_two", "value": "two"},
-            ],
-        }
+            "op": "add",
+            "path": "/1",
+            "value": {
+                "name": "nested fact 2",
+                "values": [{"name": "bowerbird", "value": "2"}],
+            },
+        },
     ],
 }
+
 BASELINE_PARTIAL_CONFLICT = {"display_name": "arch baseline"}
 CREATE_FROM_INVENTORY = {
     "display_name": "created_from_inventory",

@@ -28,6 +28,7 @@ flask-script = "*"
 flask-migrate = "*"
 kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.1"}
 bitmath = "*"
+jsonpatch = "*"
 
 [requires]
 python_version = "3.6"

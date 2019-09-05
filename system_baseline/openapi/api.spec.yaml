@@ -101,8 +101,18 @@ paths:
         content:
           application/json:
             schema:
-              x-body-name: system_baseline_partial
-              $ref: "#/components/schemas/BaselineInPartial"
+              x-body-name: system_baseline_patch
+              type: object
+              required:
+                - display_name
+                - facts_patch
+              properties:
+                display_name:
+                  type: string
+                facts_patch:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/JsonPatch"
       responses:
         '200':
           description: a list of updated Baseline objects
@@ -256,16 +266,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/BaselineFact"
-    BaselineInPartial:
+    JsonPatch:
+      description: a JSON patch
       type: object
-      additionalProperties: false
-      properties:
-        baseline_facts:
-          type: array
-          items:
-            $ref: "#/components/schemas/BaselineFact"
-        display_name:
-          type: string
     BaselineFact:
       type: object
       additionalProperties: false
