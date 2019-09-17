@@ -108,7 +108,7 @@ paths:
                 - facts_patch
               properties:
                 display_name:
-                  type: string
+                  $ref: "#/components/schemas/DisplayName"
                 facts_patch:
                   type: array
                   items:
@@ -135,7 +135,7 @@ paths:
           name: display_name
           required: true
           schema:
-            type: string
+            $ref: "#/components/schemas/DisplayName"
           description: display name of copied baseline
       responses:
         '200':
@@ -243,7 +243,7 @@ components:
           type: string
           format: date
         display_name:
-          type: string
+          $ref: "#/components/schemas/DisplayName"
         fact_count:
           type: integer
         id:
@@ -259,7 +259,7 @@ components:
         - display_name
       properties:
         display_name:
-          type: string
+          $ref: "#/components/schemas/DisplayName"
         inventory_uuid:
           type: string
         baseline_facts:
@@ -269,6 +269,11 @@ components:
     JsonPatch:
       description: a JSON patch
       type: object
+    DisplayName:
+      description: the baseline display name
+      type: string
+      minLength: 1
+      maxLength: 200
     BaselineFact:
       type: object
       additionalProperties: false
