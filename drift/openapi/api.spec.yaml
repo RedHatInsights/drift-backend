@@ -166,6 +166,9 @@ components:
         state:
           type: string
           enum: [SAME, DIFFERENT, N/A, INCOMPLETE_DATA]
+        redhat_priority:
+          type: string
+          enum: [low, medium, high]
         systems:
           type: array
           items:

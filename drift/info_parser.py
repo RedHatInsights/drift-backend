@@ -175,6 +175,7 @@ def _create_comparison(systems, info_name):
         "name": info_name,
         "state": info_comparison,
         "systems": sorted_system_id_values,
+        "redhat_priority": "low",
     }
 
 
