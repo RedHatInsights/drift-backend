@@ -74,6 +74,24 @@ class ApiTests(unittest.TestCase):
         # check that the ascending result is the inverse of the descending result
         self.assertEqual(desc_result["data"][::-1], asc_result["data"])
 
+    def test_fetch_baseline_search(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines?display_name=arch",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["meta"]["count"], 1)
+        self.assertEqual(result["data"][0]["display_name"], "arch baseline")
+
+        response = self.client.get(
+            "api/system-baseline/v0/baselines?display_name= ",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["meta"]["count"], 2)
+
 
 class CopyBaselineTests(unittest.TestCase):
     def setUp(self):

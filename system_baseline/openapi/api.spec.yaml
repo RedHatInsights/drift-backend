@@ -22,6 +22,7 @@ paths:
         - $ref: '#/components/parameters/limitParam'
         - $ref: '#/components/parameters/orderByParam'
         - $ref: '#/components/parameters/orderHowParam'
+        - $ref: '#/components/parameters/displayNameParam'
       responses:
         '200':
           description: a paginated list of baselines
@@ -140,7 +141,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/DisplayName"
-          description: display name of copied baseline
+          description: display name of the baseline
       responses:
         '200':
           description: a created baseline object
@@ -323,6 +324,13 @@ components:
           - ASC
           - DESC
       description: Direction of the ordering, defaults to ASC
+    displayNameParam:
+      name: display_name
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/DisplayName"
+      description: string to search for in display name
     offsetParam:
       name: offset
       in: query

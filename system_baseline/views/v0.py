@@ -178,12 +178,15 @@ def _create_ordering(order_by, order_how, query):
 
 @metrics.baseline_fetch_all_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines(limit, offset, order_by, order_how):
+def get_baselines(limit, offset, order_by, order_how, display_name=None):
     """
     return a list of baselines given their ID
     """
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
+
+    if display_name:
+        query = query.filter(SystemBaseline.display_name.contains(display_name))
 
     total_count = query.count()
 
