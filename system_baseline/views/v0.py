@@ -18,38 +18,56 @@ from system_baseline.models import SystemBaseline, db
 
 section = Blueprint("v0", __name__)
 
-pagination_link_template = "%s?limit=%s&offset=%s"
+pagination_link_template = "%s?limit=%s&offset=%s&order_by=%s&order_how=%s"
 
 
-def _create_first_link(path, limit, offset, total):
-    first_link = pagination_link_template % (path, limit, 0)
+def _create_first_link(path, limit, offset, total, order_by, order_how):
+    first_link = pagination_link_template % (path, limit, 0, order_by, order_how)
     return first_link
 
 
-def _create_previous_link(path, limit, offset, total):
+def _create_previous_link(path, limit, offset, total, order_by, order_how):
     # if we are at the beginning, do not create a previous link
     if offset == 0 or offset - limit < 0:
-        return _create_first_link(path, limit, offset, total)
-    previous_link = pagination_link_template % (request.path, limit, offset - limit)
+        return _create_first_link(path, limit, offset, total, order_by, order_how)
+    previous_link = pagination_link_template % (
+        request.path,
+        limit,
+        offset - limit,
+        order_by,
+        order_how,
+    )
     return previous_link
 
 
-def _create_next_link(path, limit, offset, total):
+def _create_next_link(path, limit, offset, total, order_by, order_how):
     # if we are at the end, do not create a next link
     if limit + offset >= total:
-        return _create_last_link(path, limit, offset, total)
-    next_link = pagination_link_template % (request.path, limit, limit + offset)
+        return _create_last_link(path, limit, offset, total, order_by, order_how)
+    next_link = pagination_link_template % (
+        request.path,
+        limit,
+        limit + offset,
+        order_by,
+        order_how,
+    )
     return next_link
 
 
-def _create_last_link(path, limit, offset, total):
+def _create_last_link(path, limit, offset, total, order_by, order_how):
     final_offset = total - limit if (total - limit) >= 0 else 0
-    last_link = pagination_link_template % (path, limit, final_offset)
+    last_link = pagination_link_template % (
+        path,
+        limit,
+        final_offset,
+        order_by,
+        order_how,
+    )
     return last_link
 
 
 def _build_paginated_baseline_list_response(
-    total, limit, offset, baseline_list, withhold_facts=False
+    total, limit, offset, order_by, order_how, baseline_list, withhold_facts=False
 ):
     json_baseline_list = [
         baseline.to_json(withhold_facts=withhold_facts) for baseline in baseline_list
@@ -58,6 +76,8 @@ def _build_paginated_baseline_list_response(
         "path": request.path,
         "limit": limit,
         "offset": offset,
+        "order_by": order_by,
+        "order_how": order_how,
         "total": total,
     }
     json_output = {
@@ -95,7 +115,7 @@ def _validate_uuids(baseline_ids):
 
 @metrics.baseline_fetch_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines_by_ids(baseline_ids, limit, offset):
+def get_baselines_by_ids(baseline_ids, limit, order_by, order_how, offset):
     """
     return a list of baselines given their ID
     """
@@ -106,12 +126,18 @@ def get_baselines_by_ids(baseline_ids, limit, offset):
     )
     total_count = query.count()
 
-    query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
+    query = _create_ordering(order_by, order_how, query)
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
     return _build_paginated_baseline_list_response(
-        total_count, limit, offset, query_results, withhold_facts=False
+        total_count,
+        limit,
+        offset,
+        order_by,
+        order_how,
+        query_results,
+        withhold_facts=False,
     )
 
 
@@ -131,9 +157,28 @@ def delete_baselines_by_ids(baseline_ids):
     return "OK"
 
 
+def _create_ordering(order_by, order_how, query):
+    """
+    helper method to set ordering on query. `order_by` and `order_how` are
+    guaranteed to be populated as "DESC" or "ASC" via the openapi definition.
+    """
+    if order_by == "display_name":
+        if order_how == "DESC":
+            query = query.order_by(SystemBaseline.display_name.desc())
+        elif order_how == "ASC":
+            query = query.order_by(SystemBaseline.display_name.asc())
+    elif order_by == "created_on":
+        if order_how == "DESC":
+            query = query.order_by(SystemBaseline.created_on.desc())
+        elif order_how == "ASC":
+            query = query.order_by(SystemBaseline.created_on.asc())
+
+    return query
+
+
 @metrics.baseline_fetch_all_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines(limit, offset):
+def get_baselines(limit, offset, order_by, order_how):
     """
     return a list of baselines given their ID
     """
@@ -142,12 +187,19 @@ def get_baselines(limit, offset):
 
     total_count = query.count()
 
-    query = query.order_by(SystemBaseline.created_on, SystemBaseline.id)
+    query = _create_ordering(order_by, order_how, query)
+
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
     return _build_paginated_baseline_list_response(
-        total_count, limit, offset, query_results, withhold_facts=True
+        total_count,
+        limit,
+        offset,
+        order_by,
+        order_how,
+        query_results,
+        withhold_facts=True,
     )
 
 

@@ -58,6 +58,22 @@ class ApiTests(unittest.TestCase):
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
 
+    def test_fetch_baseline_list_sort(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines?order_by=display_name",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        asc_result = json.loads(response.data)
+        response = self.client.get(
+            "api/system-baseline/v0/baselines?order_by=display_name&order_how=DESC",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        desc_result = json.loads(response.data)
+        # check that the ascending result is the inverse of the descending result
+        self.assertEqual(desc_result["data"][::-1], asc_result["data"])
+
 
 class CopyBaselineTests(unittest.TestCase):
     def setUp(self):
