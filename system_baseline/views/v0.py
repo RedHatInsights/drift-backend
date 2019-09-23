@@ -348,10 +348,24 @@ def update_baseline(baseline_id, system_baseline_patch):
 
     account_number = view_helpers.get_account_number(request)
 
+    existing_display_name_query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number,
+        SystemBaseline.id != baseline_id,
+        SystemBaseline.display_name == system_baseline_patch["display_name"],
+    )
+
+    if existing_display_name_query.count() > 0:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="display_name '%s' already used for this account"
+            % system_baseline_patch["display_name"],
+        )
+
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
     baseline = query.first_or_404()
+
     try:
         baseline.baseline_facts = jsonpatch.apply_patch(
             baseline.baseline_facts, system_baseline_patch["facts_patch"]
