@@ -22,6 +22,31 @@ class EmptyApiTests(unittest.TestCase):
         self.assertEqual(json.loads(response.data)["meta"]["count"], 0)
 
 
+class InvalidFactsTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+
+    def test_large_facts(self):
+        large_factset = []
+        for i in range(2 ** 15):  # 32K
+            large_factset.append({"name": str(i), "value": "lorem ipsum"})
+
+        large_baseline = {
+            "display_name": "large baseline",
+            "baseline_facts": large_factset,
+        }
+
+        response = self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=large_baseline,
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+
 class ApiTests(unittest.TestCase):
     def setUp(self):
         test_connexion_app = app.create_app()

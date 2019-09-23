@@ -4,8 +4,11 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.orm import validates
 
 db = SQLAlchemy()
+
+FACTS_MAXSIZE = 2 ** 19  # 512KB
 
 
 class SystemBaseline(db.Model):
@@ -27,6 +30,12 @@ class SystemBaseline(db.Model):
     @property
     def fact_count(self):
         return len(self.baseline_facts)
+
+    @validates("baseline_facts")
+    def validate_facts_length(self, key, value):
+        if len(str(value)) > FACTS_MAXSIZE:
+            raise RuntimeError("attempted to save fact list over %s" % FACTS_MAXSIZE)
+        return value
 
     def __init__(self, baseline_facts, display_name=display_name, account=account):
         self.baseline_facts = baseline_facts

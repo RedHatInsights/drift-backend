@@ -20,6 +20,8 @@ section = Blueprint("v0", __name__)
 
 pagination_link_template = "%s?limit=%s&offset=%s&order_by=%s&order_how=%s"
 
+FACTS_MAXSIZE = 2 ** 19  # 512KB
+
 
 def _create_first_link(path, limit, offset, total, order_by, order_how):
     first_link = pagination_link_template % (path, limit, 0, order_by, order_how)
@@ -306,6 +308,8 @@ def create_baseline(system_baseline_in):
 
         baseline_facts = group_baselines(facts)
 
+    _validate_baseline_facts_size(baseline_facts)
+
     baseline = SystemBaseline(
         account=account_number,
         display_name=system_baseline_in["display_name"],
@@ -315,6 +319,19 @@ def create_baseline(system_baseline_in):
     db.session.commit()  # commit now so we get a created/updated time before json conversion
 
     return baseline.to_json()
+
+
+def _validate_baseline_facts_size(baseline_facts):
+    """
+    helper method to check if a baseline is too large. This is also checked by
+    the model, but we check here before we start the DB transaction.
+    """
+
+    if len(str(baseline_facts)) > FACTS_MAXSIZE:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="system baseline facts are more than %s bytes" % FACTS_MAXSIZE,
+        )
 
 
 @metrics.baseline_create_requests.time()
@@ -367,9 +384,11 @@ def update_baseline(baseline_id, system_baseline_patch):
     baseline = query.first_or_404()
 
     try:
-        baseline.baseline_facts = jsonpatch.apply_patch(
+        updated_facts = jsonpatch.apply_patch(
             baseline.baseline_facts, system_baseline_patch["facts_patch"]
         )
+        _validate_baseline_facts_size(updated_facts)
+        baseline.baseline_facts = updated_facts
     except (jsonpatch.JsonPatchException, jsonpointer.JsonPointerException):
         raise HTTPError(
             HTTPStatus.BAD_REQUEST, message="unable to apply patch to baseline"
