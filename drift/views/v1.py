@@ -1,4 +1,7 @@
-from flask import Blueprint, jsonify, request, current_app
+import csv
+import io
+
+from flask import Blueprint, jsonify, request, current_app, make_response
 from http import HTTPStatus
 from uuid import UUID
 
@@ -38,7 +41,62 @@ def get_event_counters():
     }
 
 
-def comparison_report(system_ids, baseline_ids, auth_key):
+def _csvify(comparisons):
+    """
+    given a set of comparisons, return a CSV
+    """
+    # helper methods to generate CSV rows
+    def _get_value_for_id(record_id, systems):
+        for system in systems:
+            if system["id"] == record_id:
+                return system["value"]
+
+    def _populate_row(fact, indent=False, group_summary=False):
+        if indent:
+            row = {"name": "    %s" % fact["name"], "state": fact["state"]}
+        else:
+            row = {"name": fact["name"], "state": fact["state"]}
+
+        if not group_summary:
+            for record_id in record_ids:
+                row[record_id] = _get_value_for_id(record_id, fact["systems"])
+
+        return row
+
+    fieldnames = ["name", "state"]
+    record_ids = []
+    system_names = {}
+    # add baselines to the CSV dict, then systems
+    for baseline in comparisons["baselines"]:
+        record_ids.append(baseline["id"])
+        system_names[baseline["id"]] = baseline["display_name"]
+
+    for system in comparisons["systems"]:
+        record_ids.append(system["id"])
+        system_names[system["id"]] = system["display_name"]
+
+    output = io.StringIO()
+    csvwriter = csv.DictWriter(output, fieldnames=fieldnames + record_ids)
+    # write header. We do this manually in order to display system names and not UUIDS.
+    csvwriter.writerow({"name": "name", "state": "state", **system_names})
+
+    for fact in comparisons["facts"]:
+        if "systems" in fact:
+            row = _populate_row(fact)
+            csvwriter.writerow(row)
+        elif "comparisons" in fact:
+            row = _populate_row(fact, group_summary=True)
+            csvwriter.writerow(row)
+            for comparison in fact["comparisons"]:
+                row = _populate_row(comparison, indent=True)
+                csvwriter.writerow(row)
+
+    result = output.getvalue()
+    output.close()
+    return result
+
+
+def comparison_report(system_ids, baseline_ids, auth_key, data_format):
     """
     return a comparison report
     """
@@ -59,7 +117,14 @@ def comparison_report(system_ids, baseline_ids, auth_key):
             fetch_baselines(baseline_ids, auth_key, current_app.logger),
         )
         metrics.systems_compared.observe(len(system_ids))
-        return jsonify(comparisons)
+        if data_format == "csv":
+            output = make_response(_csvify(comparisons))
+            output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+            output.headers["Content-type"] = "text/csv"
+            return output
+        else:
+            return jsonify(comparisons)
+
     except ItemNotReturned as error:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
 
@@ -74,7 +139,11 @@ def comparison_report_get():
     baseline_ids = request.args.getlist("baseline_ids[]")
     auth_key = get_key_from_headers(request.headers)
 
-    return comparison_report(system_ids, baseline_ids, auth_key)
+    data_format = "json"
+    if "text/csv" in request.headers.get("accept", []):
+        data_format = "csv"
+
+    return comparison_report(system_ids, baseline_ids, auth_key, data_format)
 
 
 @metrics.comparison_report_requests.time()
@@ -89,7 +158,11 @@ def comparison_report_post():
         baseline_ids = request.json["baseline_ids"]
     auth_key = get_key_from_headers(request.headers)
 
-    return comparison_report(system_ids, baseline_ids, auth_key)
+    data_format = "json"
+    if "text/csv" in request.headers["accept"]:
+        data_format = "csv"
+
+    return comparison_report(system_ids, baseline_ids, auth_key, data_format)
 
 
 @section.before_app_request
