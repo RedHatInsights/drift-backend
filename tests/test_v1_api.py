@@ -1,5 +1,6 @@
-from io import StringIO
+import csv
 import logging
+from io import StringIO
 
 from drift import app
 from kerlescan.exceptions import ServiceError, ItemNotReturned
@@ -93,6 +94,24 @@ class ApiTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)
+
+    @mock.patch("drift.views.v1.fetch_systems_with_profiles")
+    def test_comparison_report_api_csv(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+            headers={**fixtures.AUTH_HEADER, "Accept": "text/csv"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-type"], "text/csv")
+        csv_data = StringIO(response.data.decode("ascii"))
+        reader = csv.DictReader(csv_data)
+        self.assertEqual(
+            ["name", "state", "hello", "fake_system_99.example.com", "hello"],
+            reader.fieldnames,
+        )
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_same_facts(self, mock_fetch_systems):
