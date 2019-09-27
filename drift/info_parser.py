@@ -26,7 +26,7 @@ def build_comparisons(systems_with_profiles, baselines):
     stripped_comparisons = [
         comparison
         for comparison in fact_comparisons
-        if comparison["name"] not in {"id", "system_profile_exists"}
+        if comparison["name"] not in {"id", "system_profile_exists", "is_baseline"}
     ]
 
     grouped_comparisons = _group_comparisons(stripped_comparisons)
@@ -110,7 +110,7 @@ def _select_applicable_info(systems_with_profiles, baselines):
         parsed_system_profile = profile_parser.parse_profile(
             system_with_profile["system_profile"], system_name, current_app.logger
         )
-        parsed_system_profiles.append(parsed_system_profile)
+        parsed_system_profiles.append({**parsed_system_profile, "is_baseline": False})
 
     # add baselines into parsed_system_profiles
     for baseline in baselines:
@@ -124,7 +124,7 @@ def _select_applicable_info(systems_with_profiles, baselines):
                     baseline_facts[prefix + "." + nested_fact["name"]] = nested_fact[
                         "value"
                     ]
-        parsed_system_profiles.append(baseline_facts)
+        parsed_system_profiles.append({**baseline_facts, "is_baseline": True})
 
     # find the set of all keys to iterate over
     all_keys = set()
@@ -153,6 +153,7 @@ def _create_comparison(systems, info_name):
             "id": system[SYSTEM_ID_KEY],
             "name": system["name"],
             "value": system.get(info_name, "N/A") or "N/A",
+            "is_baseline": system["is_baseline"],
         }
         for system in systems
     ]
@@ -161,8 +162,13 @@ def _create_comparison(systems, info_name):
         system_id_values, key=lambda system: system["name"]
     )
 
+    sorted_system_id_values = sorted(
+        sorted_system_id_values, key=lambda system: system["is_baseline"], reverse=True
+    )
+
     for sorted_system_id_value in sorted_system_id_values:
         del sorted_system_id_value["name"]
+        del sorted_system_id_value["is_baseline"]
 
     system_values = {system["value"] for system in system_id_values}
 
