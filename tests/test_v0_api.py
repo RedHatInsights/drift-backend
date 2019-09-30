@@ -22,6 +22,24 @@ class EmptyApiTests(unittest.TestCase):
         self.assertEqual(json.loads(response.data)["meta"]["count"], 0)
 
 
+class BadUUIDTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+
+    def test_delete_malformed_uuid(self):
+        response = self.client.delete(
+            "api/system-baseline/v0/baselines/MALFORMED-UUID",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            json.loads(response.data)["message"],
+            "malformed UUID requested (MALFORMED-UUID)",
+        )
+
+
 class InvalidFactsTests(unittest.TestCase):
     def setUp(self):
         test_connexion_app = app.create_app()
@@ -258,3 +276,37 @@ class CreateFromInventoryTests(unittest.TestCase):
             json=fixtures.CREATE_FROM_INVENTORY,
         )
         self.assertEqual(response.status_code, 200)
+
+
+class ApiDuplicateTests(unittest.TestCase):
+    def setUp(self):
+        test_connexion_app = app.create_app()
+        test_flask_app = test_connexion_app.app
+        self.client = test_flask_app.test_client()
+
+    def tearDown(self):
+        response = self.client.get(
+            "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
+        )
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            response = self.client.delete(
+                "api/system-baseline/v0/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_duplicate_baseline(self):
+        response = self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_DUPLICATES_LOAD,
+        )
+        self.assertIn("declared more than once", response.data.decode("utf-8"))
+
+        response = self.client.post(
+            "api/system-baseline/v0/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_DUPLICATES_TWO_LOAD,
+        )
+        self.assertIn("memory declared more than once", response.data.decode("utf-8"))

@@ -6,6 +6,8 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.orm import validates
 
+from system_baseline import validators
+
 db = SQLAlchemy()
 
 FACTS_MAXSIZE = 2 ** 19  # 512KB
@@ -32,9 +34,9 @@ class SystemBaseline(db.Model):
         return len(self.baseline_facts)
 
     @validates("baseline_facts")
-    def validate_facts_length(self, key, value):
-        if len(str(value)) > FACTS_MAXSIZE:
-            raise RuntimeError("attempted to save fact list over %s" % FACTS_MAXSIZE)
+    def validate_facts(self, key, value):
+        validators.check_facts_length(value)
+        validators.check_for_duplicate_names(value)
         return value
 
     def __init__(self, baseline_facts, display_name=display_name, account=account):

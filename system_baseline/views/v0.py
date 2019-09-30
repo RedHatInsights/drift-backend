@@ -3,7 +3,6 @@ from http import HTTPStatus
 import json
 import jsonpatch
 import jsonpointer
-from uuid import UUID
 
 from sqlalchemy.orm.session import make_transient
 
@@ -13,8 +12,9 @@ from kerlescan.exceptions import HTTPError
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 
-from system_baseline import metrics, app_config
+from system_baseline import metrics, app_config, validators
 from system_baseline.models import SystemBaseline, db
+from system_baseline.exceptions import FactValidationError
 
 section = Blueprint("v0", __name__)
 
@@ -98,21 +98,6 @@ def _build_paginated_baseline_list_response(
 
 def _build_json_response(json_data, status=200):
     return Response(json.dumps(json_data), status=status, mimetype="application/json")
-
-
-def _validate_uuids(baseline_ids):
-    """
-    helper method to test if a UUID is properly formatted. Will raise an
-    exception if format is wrong.
-    """
-    for baseline_id in baseline_ids:
-        try:
-            UUID(baseline_id)
-        except ValueError:
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="baseline_id %s is not a UUID" % baseline_id,
-            )
 
 
 @metrics.baseline_fetch_requests.time()
@@ -308,7 +293,11 @@ def create_baseline(system_baseline_in):
 
         baseline_facts = group_baselines(facts)
 
-    _validate_baseline_facts_size(baseline_facts)
+    try:
+        validators.check_facts_length(baseline_facts)
+        validators.check_for_duplicate_names(baseline_facts)
+    except FactValidationError as e:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
 
     baseline = SystemBaseline(
         account=account_number,
@@ -321,16 +310,16 @@ def create_baseline(system_baseline_in):
     return baseline.to_json()
 
 
-def _validate_baseline_facts_size(baseline_facts):
+def _validate_uuids(uuids):
     """
-    helper method to check if a baseline is too large. This is also checked by
-    the model, but we check here before we start the DB transaction.
+    helper method to raise user-friendly exception on UUID format errors
     """
-
-    if len(str(baseline_facts)) > FACTS_MAXSIZE:
+    try:
+        validators.check_uuids(uuids)
+    except ValueError:
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
-            message="system baseline facts are more than %s bytes" % FACTS_MAXSIZE,
+            message="malformed UUID requested (%s)" % ",".join(uuids),
         )
 
 
@@ -387,7 +376,7 @@ def update_baseline(baseline_id, system_baseline_patch):
         updated_facts = jsonpatch.apply_patch(
             baseline.baseline_facts, system_baseline_patch["facts_patch"]
         )
-        _validate_baseline_facts_size(updated_facts)
+        validators.check_facts_length(updated_facts)
         baseline.baseline_facts = updated_facts
     except (jsonpatch.JsonPatchException, jsonpointer.JsonPointerException):
         raise HTTPError(

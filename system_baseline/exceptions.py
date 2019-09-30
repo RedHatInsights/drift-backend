@@ -15,3 +15,14 @@ class HTTPError(Exception):
         super(HTTPError, self).__init__()
         self.message = message
         self.status_code = status_code
+
+
+class FactValidationError(Exception):
+    def __init__(self, message=""):
+        """
+        Raise this exception for fact validation errors
+
+        :param message:     optional error message for the exception
+        """
+        super(FactValidationError, self).__init__()
+        self.message = message
