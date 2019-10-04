@@ -209,8 +209,11 @@ components:
           type: object
           required:
             - count
+            - total_available
           properties:
             count:
+              type: integer
+            total_available:
               type: integer
     Error:
       type: object

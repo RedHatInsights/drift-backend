@@ -83,7 +83,7 @@ def _build_paginated_baseline_list_response(
         "total": total,
     }
     json_output = {
-        "meta": {"count": total},
+        "meta": {"count": total, "total_available": _get_total_baseline_count()},
         "links": {
             "first": _create_first_link(**link_params),
             "next": _create_next_link(**link_params),
@@ -98,6 +98,15 @@ def _build_paginated_baseline_list_response(
 
 def _build_json_response(json_data, status=200):
     return Response(json.dumps(json_data), status=status, mimetype="application/json")
+
+
+def _get_total_baseline_count():
+    """
+    return a count of total number of baselines available for an account
+    """
+    account_number = view_helpers.get_account_number(request)
+    query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
+    return query.count()
 
 
 @metrics.baseline_fetch_requests.time()

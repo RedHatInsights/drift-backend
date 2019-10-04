@@ -100,6 +100,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
+        self.assertEqual(result["meta"]["total_available"], 2)
 
     def test_fetch_baseline_list_sort(self):
         response = self.client.get(
@@ -125,6 +126,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 1)
+        self.assertEqual(result["meta"]["total_available"], 2)
         self.assertEqual(result["data"][0]["display_name"], "arch baseline")
 
         response = self.client.get(
