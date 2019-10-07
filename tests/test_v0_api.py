@@ -1,4 +1,5 @@
 import json
+import datetime
 
 from system_baseline import app
 
@@ -179,12 +180,27 @@ class CopyBaselineTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)
+        copied_baseline = json.loads(response.data)
+
+        response = self.client.get(
+            "api/system-baseline/v0/baselines/%s" % source_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        original_baseline = json.loads(response.data)
 
         response = self.client.get(
             "api/system-baseline/v0/baselines", headers=fixtures.AUTH_HEADER
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.data)["meta"]["count"], 3)
+
+        old_date = datetime.datetime.strptime(
+            original_baseline["data"][0]["created"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+        new_date = datetime.datetime.strptime(
+            copied_baseline["created"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+        self.assertNotEqual(old_date, new_date)
 
 
 class ApiPatchTests(unittest.TestCase):

@@ -349,6 +349,8 @@ def copy_baseline_by_id(baseline_id, display_name):
     db.session.expunge(copy_baseline)
     make_transient(copy_baseline)
     copy_baseline.id = None
+    copy_baseline.created_on = None
+    copy_baseline.modified_on = None
     copy_baseline.display_name = display_name
     db.session.add(copy_baseline)
     db.session.commit()

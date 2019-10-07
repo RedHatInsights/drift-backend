@@ -13,6 +13,7 @@ responses = "*"
 yamllint = "*"
 black = "*"
 ipdb = "*"
+podman-compose = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}
