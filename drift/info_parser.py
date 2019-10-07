@@ -208,4 +208,5 @@ def _baseline_mapping(baseline):
         "id": baseline["id"],
         "display_name": baseline["display_name"],
         "updated": baseline["updated"],
+        "system_profile_exists": True,
     }

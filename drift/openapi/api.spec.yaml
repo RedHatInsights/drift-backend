@@ -190,6 +190,7 @@ components:
         - display_name
         - id
         - updated
+        - system_profile_exists
       properties:
         display_name:
           type: string
@@ -199,6 +200,8 @@ components:
         updated:
           type: string
           format: date-time
+        system_profile_exists:
+          type: boolean
     System:
       description: "The system ID, display_name, and last updated timestamp for each
                     system in the report. The display_name will try to populate
