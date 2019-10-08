@@ -137,7 +137,6 @@ BASELINE_THREE_LOAD = {
 BASELINE_DUPLICATES_LOAD = {
     "baseline_facts": [
         {"name": "memory", "value": "64GB"},
-        {"name": "memory", "value": "128GB"},
         {
             "name": "nested",
             "values": [
@@ -159,6 +158,14 @@ BASELINE_DUPLICATES_TWO_LOAD = {
     "display_name": "duplicate cpu + mem baseline",
 }
 
+BASELINE_DUPLICATES_THREE_LOAD = {
+    "baseline_facts": [
+        {"name": "memory", "value": "128GB"},
+        {"name": "memory", "values": [{"name": "nested_cpu_sockets", "value": "32"}]},
+        {"name": "cpu_sockets", "value": "16"},
+    ],
+    "display_name": "duplicate cpu + mem baseline",
+}
 
 BASELINE_PATCH = {
     "display_name": "ABCDE",

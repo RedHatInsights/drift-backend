@@ -320,11 +320,22 @@ class ApiDuplicateTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
             json=fixtures.BASELINE_DUPLICATES_LOAD,
         )
-        self.assertIn("declared more than once", response.data.decode("utf-8"))
+        self.assertIn(
+            "name nested_cpu_sockets declared more than once",
+            response.data.decode("utf-8"),
+        )
 
         response = self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
             json=fixtures.BASELINE_DUPLICATES_TWO_LOAD,
         )
+        self.assertIn("memory declared more than once", response.data.decode("utf-8"))
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_DUPLICATES_THREE_LOAD,
+        )
+        self.assertEqual(response.status_code, 400)
         self.assertIn("memory declared more than once", response.data.decode("utf-8"))

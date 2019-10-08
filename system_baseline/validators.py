@@ -11,9 +11,8 @@ def check_for_duplicate_names(facts):
     """
     names = []
     for fact in facts:
-        if "value" in fact:
-            names.append(fact["name"])
-        elif "values" in fact:
+        names.append(fact["name"])
+        if "values" in fact:
             check_for_duplicate_names(fact["values"])
 
     for name in names:
