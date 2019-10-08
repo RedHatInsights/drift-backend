@@ -16,7 +16,7 @@ from system_baseline import metrics, app_config, validators
 from system_baseline.models import SystemBaseline, db
 from system_baseline.exceptions import FactValidationError
 
-section = Blueprint("v0", __name__)
+section = Blueprint("v1", __name__)
 
 pagination_link_template = "%s?limit=%s&offset=%s&order_by=%s&order_how=%s"
 

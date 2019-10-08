@@ -9,14 +9,14 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: "{{ path_prefix }}{{ app_name }}/v0"
+  - url: "{{ path_prefix }}{{ app_name }}/v1"
 
 paths:
   /baselines:
     get:
       summary: fetch list of Baseline IDs
       description: "Fetch the list of Baseline IDs"
-      operationId: system_baseline.views.v0.get_baselines
+      operationId: system_baseline.views.v1.get_baselines
       parameters:
         - $ref: '#/components/parameters/offsetParam'
         - $ref: '#/components/parameters/limitParam'
@@ -37,7 +37,7 @@ paths:
     post:
       summary: create a baseline
       description: "create a baseline"
-      operationId: system_baseline.views.v0.create_baseline
+      operationId: system_baseline.views.v1.create_baseline
       requestBody:
         required: true
         content:
@@ -62,7 +62,7 @@ paths:
     get:
       summary: fetch one or more Baseline objects
       description: "Fetch one or more Baseline objects"
-      operationId: system_baseline.views.v0.get_baselines_by_ids
+      operationId: system_baseline.views.v1.get_baselines_by_ids
       parameters:
         - $ref: '#/components/parameters/offsetParam'
         - $ref: '#/components/parameters/limitParam'
@@ -82,7 +82,7 @@ paths:
     delete:
       summary: delete one or more baselines
       description: "delete one or more baselines"
-      operationId: system_baseline.views.v0.delete_baselines_by_ids
+      operationId: system_baseline.views.v1.delete_baselines_by_ids
       responses:
         '200':
           description: a success message
@@ -100,7 +100,7 @@ paths:
     patch:
       summary: update a baseline
       description: "update a baseline"
-      operationId: system_baseline.views.v0.update_baseline
+      operationId: system_baseline.views.v1.update_baseline
       requestBody:
         required: true
         content:
@@ -134,7 +134,7 @@ paths:
     post:
       summary: copy a baseline
       description: "copy a baseline, returning a new ID"
-      operationId: system_baseline.views.v0.copy_baseline_by_id
+      operationId: system_baseline.views.v1.copy_baseline_by_id
       parameters:
         - in: query
           name: display_name

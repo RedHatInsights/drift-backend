@@ -58,7 +58,7 @@ This service is used by `drift-frontend`. This frontend app calls both `drift` a
 
 ## how do I use the service?
 
-You can list all of your baselines with GET a call to `/v0/baselines`. This will show your baselines but will not show their facts. You can then pull up an individual baseline with a GET call to `/v0/baselines/<UUID>`. A DELETE call will delete the baseline. POSTing to `/v0/baselines` will create a new baseline. The POST data to create two baselines at once looks like this:
+You can list all of your baselines with GET a call to `/v1/baselines`. This will show your baselines but will not show their facts. You can then pull up an individual baseline with a GET call to `/v1/baselines/<UUID>`. A DELETE call will delete the baseline. POSTing to `/v1/baselines` will create a new baseline. The POST data to create two baselines at once looks like this:
 
 ```json
 [
