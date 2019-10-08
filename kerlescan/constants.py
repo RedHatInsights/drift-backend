@@ -2,7 +2,7 @@ AUTH_HEADER_NAME = "X-RH-IDENTITY"
 FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_SYSTEMS_ENDPOINT = "/api/inventory/v1/hosts/%s"
 INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT = "/api/inventory/v1/hosts/%s/system_profile"
-BASELINE_SVC_ENDPOINT = "/api/system-baseline/v0/baselines/%s"
+BASELINE_SVC_ENDPOINT = "/api/system-baseline/v1/baselines/%s"
 SYSTEM_ID_KEY = "id"
 
 COMPARISON_SAME = "SAME"

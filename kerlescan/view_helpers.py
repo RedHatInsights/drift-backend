@@ -31,7 +31,7 @@ def _is_openapi_url(path, app_name):
     """
     small helper to test if URL is the openapi spec
     """
-    return path == "%s%s/v0/openapi.json" % (path_prefix, app_name)
+    return path == "%s%s/v1/openapi.json" % (path_prefix, app_name)
 
 
 def ensure_account_number(request, logger):
