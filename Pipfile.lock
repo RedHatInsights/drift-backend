@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ff082b25d6eb22cbfeae5b29d4d0e88099854f158ac2309c8996a9b28c77ba63"
+            "sha256": "cd39fa1507d8ac1678dbdc80a0444160b4b1bdcf81ee7093cab98190e65b4d2f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -32,18 +32,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:404acbecef8f4912f18312fcfaffe7eba7f10b3b7adf7853bdba59cdf2275ebb",
-                "sha256:c6e5a7e4548ce7586c354ff633f2a66ba3c471d15a8ae6a30f873122ab04e1cf"
+                "sha256:9b18eeb4f0943af80fc40cd480931e4900f7fb3850dfafe68903148fdd832e6b",
+                "sha256:a985ed608640f8f7be49f83f298172876b695cc2218e335334a9da3bf6b0a968"
             ],
             "index": "pypi",
-            "version": "==1.9.243"
+            "version": "==1.9.245"
         },
         "botocore": {
             "hashes": [
-                "sha256:397585a7881230274afb8d1877ef69a661b0a311745cd324f14a052fb2a2863a",
-                "sha256:4496f8da89cb496462a831897ad248e13e431d9fa7e41e06d426fd6658ab6e59"
+                "sha256:16a09307cef306312d4c3ea18ed3902ae1e084c905bda091db2689e9852753ef",
+                "sha256:b21b694a6bccbe12b64d3e452d081016b67172c92d0b1be2904f60cd4dd5598d"
             ],
-            "version": "==1.12.243"
+            "version": "==1.12.245"
         },
         "certifi": {
             "hashes": [
@@ -189,7 +189,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/beav/kerlescan.git",
-            "ref": "daf4a48bd1666b670154a49edcabcd069484c033"
+            "ref": "194e8be0a65d49d9c25a2a8ac1034d9e6c196ee9"
         },
         "mako": {
             "hashes": [
@@ -478,7 +478,6 @@
                 "sha256:c4ab005921641e40a68e405e286e7a1fcc464497e14d81b6914b4fd95e5dee9b",
                 "sha256:dd76831f065f17bddd7eaa5c781f5ea32de5ef217592cf019e34043b56895aa1"
             ],
-            "markers": "python_version >= '3.4'",
             "version": "==7.8.0"
         },
         "ipython-genutils": {
