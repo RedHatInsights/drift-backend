@@ -313,6 +313,7 @@ def create_baseline(system_baseline_in):
         display_name=system_baseline_in["display_name"],
         baseline_facts=baseline_facts,
     )
+    baseline.baseline_facts = _sort_baseline_facts(baseline.baseline_facts)
     db.session.add(baseline)
     db.session.commit()  # commit now so we get a created/updated time before json conversion
 
@@ -330,6 +331,17 @@ def _validate_uuids(uuids):
             HTTPStatus.BAD_REQUEST,
             message="malformed UUID requested (%s)" % ",".join(uuids),
         )
+
+
+def _sort_baseline_facts(baseline_facts):
+    """
+    helper method to sort baseline facts by name before saving to the DB.
+    """
+    sorted_baseline_facts = sorted(baseline_facts, key=lambda fact: fact["name"])
+    for fact in sorted_baseline_facts:
+        if "values" in fact:
+            fact["values"] = sorted(fact["values"], key=lambda fact: fact["name"])
+    return sorted_baseline_facts
 
 
 @metrics.baseline_create_requests.time()
@@ -396,6 +408,7 @@ def update_baseline(baseline_id, system_baseline_patch):
 
     baseline.display_name = system_baseline_patch["display_name"]
 
+    baseline.baseline_facts = _sort_baseline_facts(baseline.baseline_facts)
     db.session.add(baseline)
     db.session.commit()
 
