@@ -109,8 +109,9 @@ class ApiSortTests(unittest.TestCase):
                 {
                     "name": "B-name",
                     "values": [
-                        {"name": "A-nested_cpu_sockets", "value": "32"},
-                        {"name": "B-nested_cpu_sockets", "value": "32"},
+                        {"name": "a-nested_cpu_sockets", "value": "32"},
+                        {"name": "b-nested_cpu_sockets", "value": "32"},
+                        {"name": "Z-nested_cpu_sockets", "value": "32"},
                     ],
                 },
                 {"name": "C-name", "value": "128GB"},

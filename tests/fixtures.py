@@ -174,8 +174,9 @@ BASELINE_UNSORTED_LOAD = {
         {
             "name": "B-name",
             "values": [
-                {"name": "B-nested_cpu_sockets", "value": "32"},
-                {"name": "A-nested_cpu_sockets", "value": "32"},
+                {"name": "b-nested_cpu_sockets", "value": "32"},
+                {"name": "Z-nested_cpu_sockets", "value": "32"},
+                {"name": "a-nested_cpu_sockets", "value": "32"},
             ],
         },
         {"name": "D-name", "value": "16"},
