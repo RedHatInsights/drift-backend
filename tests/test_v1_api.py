@@ -230,6 +230,12 @@ class CopyBaselineTests(unittest.TestCase):
         source_uuid = result["data"][0]["id"]
 
         response = self.client.post(
+            "api/system-baseline/v1/baselines/%s?display_name=" % source_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(
             "api/system-baseline/v1/baselines/%s?display_name=copy" % source_uuid,
             headers=fixtures.AUTH_HEADER,
         )

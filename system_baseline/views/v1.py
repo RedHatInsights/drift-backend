@@ -356,6 +356,12 @@ def copy_baseline_by_id(baseline_id, display_name):
     """
     _validate_uuids([baseline_id])
 
+    # ensure display_name is not null
+    if not display_name:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST, message="no value given for display_name"
+        )
+
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
