@@ -263,17 +263,7 @@ def create_baseline(system_baseline_in):
             message="'values' and 'value' cannot both be defined for system baseline",
         )
 
-    query = SystemBaseline.query.filter(
-        SystemBaseline.account == account_number,
-        SystemBaseline.display_name == system_baseline_in["display_name"],
-    )
-
-    if query.count() > 0:
-        raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="display_name '%s' already used for this account"
-            % system_baseline_in["display_name"],
-        )
+    _check_for_existing_display_name(system_baseline_in["display_name"], account_number)
 
     baseline_facts = []
     if "baseline_facts" in system_baseline_in:
@@ -320,6 +310,23 @@ def create_baseline(system_baseline_in):
     return baseline.to_json()
 
 
+def _check_for_existing_display_name(display_name, account_number):
+    """
+    check to see if a display name already exists for an account, and raise an exception if so.
+    """
+
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number,
+        SystemBaseline.display_name == display_name,
+    )
+
+    if query.count() > 0:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="display_name '%s' already used for this account" % display_name,
+        )
+
+
 def _validate_uuids(uuids):
     """
     helper method to raise user-friendly exception on UUID format errors
@@ -363,6 +370,8 @@ def copy_baseline_by_id(baseline_id, display_name):
         )
 
     account_number = view_helpers.get_account_number(request)
+    _check_for_existing_display_name(display_name, account_number)
+
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
@@ -387,6 +396,8 @@ def update_baseline(baseline_id, system_baseline_patch):
 
     account_number = view_helpers.get_account_number(request)
 
+    # this query is a bit different than what's in _check_for_existing_display_name,
+    # since it's OK if the display name is used by the baseline we are updating
     existing_display_name_query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number,
         SystemBaseline.id != baseline_id,
