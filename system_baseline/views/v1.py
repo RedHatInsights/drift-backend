@@ -168,6 +168,11 @@ def _create_ordering(order_by, order_how, query):
             query = query.order_by(SystemBaseline.created_on.desc())
         elif order_how == "ASC":
             query = query.order_by(SystemBaseline.created_on.asc())
+    elif order_by == "updated":
+        if order_how == "DESC":
+            query = query.order_by(SystemBaseline.modified_on.desc())
+        elif order_how == "ASC":
+            query = query.order_by(SystemBaseline.modified_on.asc())
 
     return query
 

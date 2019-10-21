@@ -157,7 +157,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(result["meta"]["count"], 2)
         self.assertEqual(result["meta"]["total_available"], 2)
 
-    def test_fetch_baseline_list_sort(self):
+    def test_fetch_baseline_list_sort_display_name(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines?order_by=display_name",
             headers=fixtures.AUTH_HEADER,
@@ -166,6 +166,37 @@ class ApiTests(unittest.TestCase):
         asc_result = json.loads(response.data)
         response = self.client.get(
             "api/system-baseline/v1/baselines?order_by=display_name&order_how=DESC",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        desc_result = json.loads(response.data)
+        # check that the ascending result is the inverse of the descending result
+        self.assertEqual(desc_result["data"][::-1], asc_result["data"])
+
+    def test_fetch_baseline_list_sort_updated(self):
+        # modify one baseline
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        uuid_to_modify = json.loads(response.data)["data"][0]["id"]
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % uuid_to_modify,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_TOUCH,
+        )
+        self.assertEqual(response.status_code, 200)
+        # ensure modified baseline is in the right place of the sort
+        response = self.client.get(
+            "api/system-baseline/v1/baselines?order_by=updated",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        asc_result = json.loads(response.data)
+        self.assertEqual(asc_result["data"][1]["id"], uuid_to_modify)
+
+        response = self.client.get(
+            "api/system-baseline/v1/baselines?order_by=updated&order_how=DESC",
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)

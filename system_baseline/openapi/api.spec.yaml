@@ -315,6 +315,7 @@ components:
         enum:
           - display_name
           - created_on
+          - updated
       description: Ordering field name, defaults to display_name
     orderHowParam:
       name: order_how
