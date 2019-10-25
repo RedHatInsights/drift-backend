@@ -223,6 +223,14 @@ class ApiTests(unittest.TestCase):
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
 
+        response = self.client.get(
+            "api/system-baseline/v1/baselines?display_name=a_ch",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["meta"]["count"], 0)
+
 
 class CopyBaselineTests(unittest.TestCase):
     def setUp(self):

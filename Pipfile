@@ -30,6 +30,7 @@ flask-migrate = "*"
 kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.3"}
 bitmath = "*"
 jsonpatch = "*"
+sqlalchemy-utils = "*"
 
 [requires]
 python_version = "3.6"
