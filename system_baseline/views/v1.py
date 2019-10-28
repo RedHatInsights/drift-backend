@@ -145,13 +145,32 @@ def delete_baselines_by_ids(baseline_ids):
     delete a list of baselines given their ID
     """
     _validate_uuids(baseline_ids)
+    _delete_baselines(baseline_ids)
+    return "OK"
+
+
+@metrics.baseline_delete_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def delete_baselines_by_list(baseline_ids_list):
+    """
+    delete a list of baselines given their IDs as a list
+    """
+    baseline_ids = baseline_ids_list["baseline_ids"]
+    _validate_uuids(baseline_ids)
+    _delete_baselines(baseline_ids)
+    return "OK"
+
+
+def _delete_baselines(baseline_ids):
+    """
+    delete baselines
+    """
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
     query.delete(synchronize_session="fetch")
     db.session.commit()
-    return "OK"
 
 
 def _create_ordering(order_by, order_how, query):
