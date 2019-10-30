@@ -231,6 +231,21 @@ class ApiTests(unittest.TestCase):
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 0)
 
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_UNDERSCORE_LOAD,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            "api/system-baseline/v1/baselines?display_name=has_an_underscore",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["meta"]["count"], 1)
+
 
 class CopyBaselineTests(unittest.TestCase):
     def setUp(self):

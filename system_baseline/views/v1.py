@@ -5,7 +5,6 @@ import jsonpatch
 import jsonpointer
 
 from sqlalchemy.orm.session import make_transient
-from sqlalchemy_utils import escape_like
 
 from kerlescan import view_helpers
 from kerlescan import profile_parser
@@ -208,7 +207,7 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
 
     if display_name:
         query = query.filter(
-            SystemBaseline.display_name.contains(escape_like(display_name))
+            SystemBaseline.display_name.contains(display_name, autoescape=True)
         )
 
     total_count = query.count()

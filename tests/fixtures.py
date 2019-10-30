@@ -134,6 +134,12 @@ BASELINE_THREE_LOAD = {
     ],
     "display_name": "cpu + mem baseline",
 }
+BASELINE_UNDERSCORE_LOAD = {
+    "baseline_facts": [
+        {"name": "nested", "values": [{"name": "cpu_sockets", "value": "16"}]}
+    ],
+    "display_name": "has_an_underscore",
+}
 BASELINE_DUPLICATES_LOAD = {
     "baseline_facts": [
         {"name": "memory", "value": "64GB"},
