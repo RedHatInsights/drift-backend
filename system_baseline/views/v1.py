@@ -8,7 +8,7 @@ from sqlalchemy.orm.session import make_transient
 
 from kerlescan import view_helpers
 from kerlescan import profile_parser
-from kerlescan.exceptions import HTTPError
+from kerlescan.exceptions import HTTPError, ItemNotReturned
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 
@@ -293,12 +293,19 @@ def create_baseline(system_baseline_in):
         baseline_facts = system_baseline_in["baseline_facts"]
     elif "inventory_uuid" in system_baseline_in:
         auth_key = get_key_from_headers(request.headers)
-        system_with_profile = fetch_systems_with_profiles(
-            [system_baseline_in["inventory_uuid"]],
-            auth_key,
-            current_app.logger,
-            get_event_counters(),
-        )[0]
+        try:
+            system_with_profile = fetch_systems_with_profiles(
+                [system_baseline_in["inventory_uuid"]],
+                auth_key,
+                current_app.logger,
+                get_event_counters(),
+            )[0]
+        except ItemNotReturned:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="inventory UUID %s not available"
+                % system_baseline_in["inventory_uuid"],
+            )
 
         system_name = profile_parser.get_name(system_with_profile)
         parsed_profile = profile_parser.parse_profile(

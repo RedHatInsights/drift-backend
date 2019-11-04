@@ -229,9 +229,20 @@ BASELINE_PATCH_EMPTY_NAME = {
 
 
 BASELINE_PARTIAL_CONFLICT = {"display_name": "arch baseline", "facts_patch": []}
+# >200 char in display_name
+BASELINE_PATCH_LONG_NAME = {
+    "display_name": "arch baseline33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333",  # noqa: E501
+    "facts_patch": [],
+}
 BASELINE_TOUCH = {"display_name": "updated baseline", "facts_patch": []}
 CREATE_FROM_INVENTORY = {
     "display_name": "created_from_inventory",
+    "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
+}
+
+# >200 chars in display_name
+CREATE_FROM_INVENTORY_LONG_NAME = {
+    "display_name": "created_from_inventoryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",  # noqa: E501
     "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
 }
 

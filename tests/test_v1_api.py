@@ -2,6 +2,7 @@ import json
 import datetime
 
 from system_baseline import app
+from kerlescan.exceptions import ItemNotReturned
 
 import unittest
 from mock import patch
@@ -417,6 +418,12 @@ class ApiPatchTests(unittest.TestCase):
             "value for cpu_sockets_renamed cannot be empty",
             response.data.decode("utf-8"),
         )
+        # attempt to rename the baseline to a bad name
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_LONG_NAME,
+        )
         self.assertEqual(response.status_code, 400)
 
 
@@ -447,6 +454,27 @@ class CreateFromInventoryTests(unittest.TestCase):
             json=fixtures.CREATE_FROM_INVENTORY,
         )
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.CREATE_FROM_INVENTORY_LONG_NAME,
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_create_from_inventory_not_found(self, mock_fetch):
+        mock_fetch.side_effect = ItemNotReturned("not found!")
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.CREATE_FROM_INVENTORY,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "inventory UUID df925152-c45d-11e9-a1f0-c85b761454fa not available",
+            response.data.decode("utf-8"),
+        )
 
 
 class ApiDuplicateTests(unittest.TestCase):
