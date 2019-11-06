@@ -392,7 +392,7 @@ class ApiPatchTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
             json=fixtures.BASELINE_PATCH_EMPTY_NAME,
         )
-        self.assertIn("empty name in fact set", response.data.decode("utf-8"))
+        self.assertIn("fact name cannot be empty", response.data.decode("utf-8"))
         self.assertEqual(response.status_code, 400)
 
         # attempt to use an empty fact value
@@ -402,7 +402,7 @@ class ApiPatchTests(unittest.TestCase):
             json=fixtures.BASELINE_PATCH_EMPTY_VALUE,
         )
         self.assertIn(
-            "empty value in fact set for cpu_sockets_renamed",
+            "value for cpu_sockets_renamed cannot be empty",
             response.data.decode("utf-8"),
         )
         self.assertEqual(response.status_code, 400)

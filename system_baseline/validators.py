@@ -27,10 +27,10 @@ def check_for_empty_name_values(facts):
     for fact in facts:
         if "values" in fact:
             check_for_empty_name_values(fact["values"])
-        elif "name" in fact and not fact["name"]:
-            raise FactValidationError("empty name in fact set")
+        if "name" in fact and not fact["name"]:
+            raise FactValidationError("fact name cannot be empty")
         elif "value" in fact and not fact["value"]:
-            raise FactValidationError("empty value in fact set for %s" % fact["name"])
+            raise FactValidationError("value for %s cannot be empty" % fact["name"])
 
 
 def check_facts_length(facts):
