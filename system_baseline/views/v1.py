@@ -321,6 +321,7 @@ def create_baseline(system_baseline_in):
     try:
         validators.check_facts_length(baseline_facts)
         validators.check_for_duplicate_names(baseline_facts)
+        validators.check_for_empty_name_values(baseline_facts)
     except FactValidationError as e:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
 
@@ -447,7 +448,11 @@ def update_baseline(baseline_id, system_baseline_patch):
             baseline.baseline_facts, system_baseline_patch["facts_patch"]
         )
         validators.check_facts_length(updated_facts)
+        validators.check_for_duplicate_names(updated_facts)
+        validators.check_for_empty_name_values(updated_facts)
         baseline.baseline_facts = updated_facts
+    except FactValidationError as e:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
     except (jsonpatch.JsonPatchException, jsonpointer.JsonPointerException):
         raise HTTPError(
             HTTPStatus.BAD_REQUEST, message="unable to apply patch to baseline"

@@ -206,6 +206,17 @@ BASELINE_PATCH = {
     ],
 }
 
+BASELINE_PATCH_EMPTY_VALUE = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/value", "value": ""}],
+}
+
+BASELINE_PATCH_EMPTY_NAME = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/name", "value": ""}],
+}
+
+
 BASELINE_PARTIAL_CONFLICT = {"display_name": "arch baseline", "facts_patch": []}
 BASELINE_TOUCH = {"display_name": "updated baseline", "facts_patch": []}
 CREATE_FROM_INVENTORY = {

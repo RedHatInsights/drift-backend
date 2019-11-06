@@ -386,6 +386,27 @@ class ApiPatchTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+        # attempt to use an empty fact name
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_EMPTY_NAME,
+        )
+        self.assertIn("empty name in fact set", response.data.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)
+
+        # attempt to use an empty fact value
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_EMPTY_VALUE,
+        )
+        self.assertIn(
+            "empty value in fact set for cpu_sockets_renamed",
+            response.data.decode("utf-8"),
+        )
+        self.assertEqual(response.status_code, 400)
+
 
 class CreateFromInventoryTests(unittest.TestCase):
     def setUp(self):

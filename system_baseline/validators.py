@@ -20,6 +20,19 @@ def check_for_duplicate_names(facts):
             raise FactValidationError("name %s declared more than once" % name)
 
 
+def check_for_empty_name_values(facts):
+    """
+    check if any names are duplicated; raises an exception if duplicates are found.
+    """
+    for fact in facts:
+        if "values" in fact:
+            check_for_empty_name_values(fact["values"])
+        elif "name" in fact and not fact["name"]:
+            raise FactValidationError("empty name in fact set")
+        elif "value" in fact and not fact["value"]:
+            raise FactValidationError("empty value in fact set for %s" % fact["name"])
+
+
 def check_facts_length(facts):
     """
     check if fact length is greater than FACTS_MAXSIZE
