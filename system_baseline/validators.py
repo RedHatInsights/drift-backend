@@ -20,6 +20,19 @@ def check_for_duplicate_names(facts):
             raise FactValidationError("name %s declared more than once" % name)
 
 
+def check_for_value_values(facts):
+    """
+    check if any fields have "value" and "values" both defined
+    """
+    for fact in facts:
+        if "values" in fact and "value" in fact:
+            raise FactValidationError(
+                "fact %s cannot have value and values defined" % fact["name"]
+            )
+        elif "values" in fact:
+            check_for_value_values(fact["values"])
+
+
 def check_for_empty_name_values(facts):
     """
     check if any names are duplicated; raises an exception if duplicates are found.

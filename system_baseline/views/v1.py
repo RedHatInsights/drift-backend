@@ -316,9 +316,7 @@ def create_baseline(system_baseline_in):
         baseline_facts = group_baselines(facts)
 
     try:
-        validators.check_facts_length(baseline_facts)
-        validators.check_for_duplicate_names(baseline_facts)
-        validators.check_for_empty_name_values(baseline_facts)
+        _validate_facts(baseline_facts)
     except FactValidationError as e:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
 
@@ -444,9 +442,7 @@ def update_baseline(baseline_id, system_baseline_patch):
         updated_facts = jsonpatch.apply_patch(
             baseline.baseline_facts, system_baseline_patch["facts_patch"]
         )
-        validators.check_facts_length(updated_facts)
-        validators.check_for_duplicate_names(updated_facts)
-        validators.check_for_empty_name_values(updated_facts)
+        _validate_facts(updated_facts)
         baseline.baseline_facts = updated_facts
     except FactValidationError as e:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
@@ -466,6 +462,16 @@ def update_baseline(baseline_id, system_baseline_patch):
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
     return [query.first().to_json()]
+
+
+def _validate_facts(facts):
+    """
+    helper to run common validations
+    """
+    validators.check_facts_length(facts)
+    validators.check_for_duplicate_names(facts)
+    validators.check_for_empty_name_values(facts)
+    validators.check_for_value_values(facts)
 
 
 @section.before_app_request

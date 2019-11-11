@@ -148,6 +148,18 @@ class ApiTests(unittest.TestCase):
             )
             self.assertEqual(response.status_code, 200)
 
+    def test_value_values(self):
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_VALUE_VALUES_LOAD,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "fact arch cannot have value and values defined",
+            response.data.decode("utf-8"),
+        )
+
     def test_fetch_baseline_list(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER

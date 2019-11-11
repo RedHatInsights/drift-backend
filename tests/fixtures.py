@@ -190,6 +190,17 @@ BASELINE_UNSORTED_LOAD = {
     "display_name": "duplicate cpu + mem baseline",
 }
 
+BASELINE_VALUE_VALUES_LOAD = {
+    "baseline_facts": [
+        {
+            "name": "arch",
+            "value": "x86_64",
+            "values": [{"name": "XXXXXX", "value": "YYYY"}],
+        }
+    ],
+    "display_name": "value values baseline",
+}
+
 BASELINE_PATCH = {
     "display_name": "ABCDE",
     "facts_patch": [
