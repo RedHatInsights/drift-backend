@@ -23,15 +23,15 @@ pagination_link_template = "%s?limit=%s&offset=%s&order_by=%s&order_how=%s"
 FACTS_MAXSIZE = 2 ** 19  # 512KB
 
 
-def _create_first_link(path, limit, offset, total, order_by, order_how):
+def _create_first_link(path, limit, offset, count, order_by, order_how):
     first_link = pagination_link_template % (path, limit, 0, order_by, order_how)
     return first_link
 
 
-def _create_previous_link(path, limit, offset, total, order_by, order_how):
+def _create_previous_link(path, limit, offset, count, order_by, order_how):
     # if we are at the beginning, do not create a previous link
     if offset == 0 or offset - limit < 0:
-        return _create_first_link(path, limit, offset, total, order_by, order_how)
+        return _create_first_link(path, limit, offset, count, order_by, order_how)
     previous_link = pagination_link_template % (
         request.path,
         limit,
@@ -42,10 +42,10 @@ def _create_previous_link(path, limit, offset, total, order_by, order_how):
     return previous_link
 
 
-def _create_next_link(path, limit, offset, total, order_by, order_how):
+def _create_next_link(path, limit, offset, count, order_by, order_how):
     # if we are at the end, do not create a next link
-    if limit + offset >= total:
-        return _create_last_link(path, limit, offset, total, order_by, order_how)
+    if limit + offset >= count:
+        return _create_last_link(path, limit, offset, count, order_by, order_how)
     next_link = pagination_link_template % (
         request.path,
         limit,
@@ -56,8 +56,8 @@ def _create_next_link(path, limit, offset, total, order_by, order_how):
     return next_link
 
 
-def _create_last_link(path, limit, offset, total, order_by, order_how):
-    final_offset = total - limit if (total - limit) >= 0 else 0
+def _create_last_link(path, limit, offset, count, order_by, order_how):
+    final_offset = count - limit if (count - limit) >= 0 else 0
     last_link = pagination_link_template % (
         path,
         limit,
@@ -69,7 +69,7 @@ def _create_last_link(path, limit, offset, total, order_by, order_how):
 
 
 def _build_paginated_baseline_list_response(
-    total, limit, offset, order_by, order_how, baseline_list, withhold_facts=False
+    count, limit, offset, order_by, order_how, baseline_list, withhold_facts=False
 ):
     json_baseline_list = [
         baseline.to_json(withhold_facts=withhold_facts) for baseline in baseline_list
@@ -80,10 +80,10 @@ def _build_paginated_baseline_list_response(
         "offset": offset,
         "order_by": order_by,
         "order_how": order_how,
-        "total": total,
+        "count": count,
     }
     json_output = {
-        "meta": {"count": total, "total_available": _get_total_baseline_count()},
+        "meta": {"count": count, "total_available": _get_total_baseline_count()},
         "links": {
             "first": _create_first_link(**link_params),
             "next": _create_next_link(**link_params),
@@ -120,14 +120,13 @@ def get_baselines_by_ids(baseline_ids, limit, order_by, order_how, offset):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
-    total_count = query.count()
 
     query = _create_ordering(order_by, order_how, query)
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
     return _build_paginated_baseline_list_response(
-        total_count,
+        len(query_results),
         limit,
         offset,
         order_by,
@@ -210,15 +209,13 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
             SystemBaseline.display_name.contains(display_name, autoescape=True)
         )
 
-    total_count = query.count()
-
     query = _create_ordering(order_by, order_how, query)
 
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
     return _build_paginated_baseline_list_response(
-        total_count,
+        len(query_results),
         limit,
         offset,
         order_by,
