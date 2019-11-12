@@ -12,6 +12,18 @@ servers:
   - url: "{{ path_prefix }}{{ app_name }}/v1"
 
 paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: system_baseline.views.v1.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
   /baselines:
     get:
       summary: fetch list of Baseline IDs
@@ -338,6 +350,12 @@ components:
                 type: string
               value:
                 type: string
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
   parameters:
     orderByParam:
       name: order_by
