@@ -266,7 +266,7 @@ def get_event_counters():
     small helper to create a dict of event counters
     """
     return {
-        "systems_compared_no_sysprofile": metrics.systems_compared_no_sysprofile,
+        "systems_compared_no_sysprofile": metrics.inventory_service_no_profile,
         "inventory_service_requests": metrics.inventory_service_requests,
         "inventory_service_exceptions": metrics.inventory_service_exceptions,
     }

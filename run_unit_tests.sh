@@ -11,4 +11,8 @@ BASELINE_DB_NAME=testdb FLASK_APP=system_baseline.app:get_flask_app_with_migrati
 
 BASELINE_DB_NAME=testdb prometheus_multiproc_dir=$TEMPDIR nosetests -sx --with-coverage --cover-package system_baseline  --cover-min-percentage 90 --cover-erase && rm -rf $TEMPDIR
 
+result=$?
+
 psql 'postgresql://insights:insights@localhost:5432' -c 'drop database testdb;'
+
+exit $result

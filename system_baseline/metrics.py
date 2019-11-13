@@ -1,7 +1,7 @@
-from prometheus_client import Counter, Histogram
+from prometheus_client import Counter, Histogram, Gauge
 
 api_exceptions = Counter(
-    "system_baseline_api_exceptions", "count of exceptions raised on public API"
+    "baseline_api_exceptions", "count of exceptions raised on public API"
 )
 
 baseline_create_requests = Histogram(
@@ -21,15 +21,43 @@ baseline_delete_requests = Histogram(
 )
 
 inventory_service_requests = Histogram(
-    "drift_inventory_service_requests", "inventory service call stats"
+    "baseline_inventory_service_requests", "inventory service call stats"
 )
 
 inventory_service_exceptions = Counter(
-    "drift_inventory_service_exceptions", "count of exceptions raised by inv service"
+    "baseline_inventory_service_exceptions", "count of exceptions raised by inv service"
 )
 
-systems_compared_no_sysprofile = Histogram(
-    "drift_systems_compared_no_sysprofile",
-    "count of systems without system profile" "compared in each request",
-    buckets=[2, 4, 8, 16, 32, 64, 128, 256],
+
+inventory_service_no_profile = Counter(
+    "baseline_inventory_service_no_profile",
+    "count of systems fetched without a profile",
+)
+
+baseline_count = Gauge(
+    "baseline_count", "count of total number of baselines", multiprocess_mode="max"
+)
+
+baseline_account_count = Gauge(
+    "baseline_account_count",
+    "count of total number of accounts with baselines",
+    multiprocess_mode="max",
+)
+
+baseline_account_count_ones = Gauge(
+    "baseline_account_count_ones",
+    "number of accounts with zero to ten baselines",
+    multiprocess_mode="max",
+)
+
+baseline_account_count_tens = Gauge(
+    "baseline_account_count_tens",
+    "number of accounts with ten to one hundred baselines",
+    multiprocess_mode="max",
+)
+
+baseline_account_count_hundred_plus = Gauge(
+    "baseline_account_count_hundred_plus",
+    "number of accounts with over one hundred baselines",
+    multiprocess_mode="max",
 )
