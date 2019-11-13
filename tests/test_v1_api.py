@@ -476,6 +476,15 @@ class CreateFromInventoryTests(unittest.TestCase):
             response.data.decode("utf-8"),
         )
 
+    def test_create_from_inventory_bad_uuid(self):
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.CREATE_FROM_INVENTORY_MALFORMED_UUID,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("malformed UUID requested", response.data.decode("utf-8"))
+
 
 class ApiDuplicateTests(unittest.TestCase):
     def setUp(self):

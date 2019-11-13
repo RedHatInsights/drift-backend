@@ -246,6 +246,11 @@ CREATE_FROM_INVENTORY_LONG_NAME = {
     "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
 }
 
+CREATE_FROM_INVENTORY_MALFORMED_UUID = {
+    "display_name": "created_from_inventory",
+    "inventory_uuid": "this is not a uuid",
+}
+
 
 SYSTEM_WITH_PROFILE = {
     "account": "9876543",

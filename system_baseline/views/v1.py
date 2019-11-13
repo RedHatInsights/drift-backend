@@ -292,6 +292,7 @@ def create_baseline(system_baseline_in):
     if "baseline_facts" in system_baseline_in:
         baseline_facts = system_baseline_in["baseline_facts"]
     elif "inventory_uuid" in system_baseline_in:
+        _validate_uuids([system_baseline_in["inventory_uuid"]])
         auth_key = get_key_from_headers(request.headers)
         try:
             system_with_profile = fetch_systems_with_profiles(
