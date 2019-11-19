@@ -28,8 +28,8 @@ inventory_service_exceptions = Counter(
     "baseline_inventory_service_exceptions", "count of exceptions raised by inv service"
 )
 
-
-inventory_service_no_profile = Counter(
+# kerlescan expects this to be Histogram
+inventory_service_no_profile = Histogram(
     "baseline_inventory_service_no_profile",
     "count of systems fetched without a profile",
 )
