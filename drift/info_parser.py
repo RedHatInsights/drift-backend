@@ -23,11 +23,11 @@ def build_comparisons(systems_with_profiles, baselines):
     )
 
     # remove system metadata that we put into to the comparison earlier
-    stripped_comparisons = [
-        comparison
-        for comparison in fact_comparisons
-        if comparison["name"] not in {"id", "system_profile_exists", "is_baseline"}
-    ]
+    stripped_comparisons = []
+    metadata_fields = {"name", "id", "system_profile_exists", "is_baseline"}
+    for comparison in fact_comparisons:
+        if comparison["name"] not in metadata_fields:
+            stripped_comparisons.append(comparison)
 
     grouped_comparisons = _group_comparisons(stripped_comparisons)
     sorted_comparisons = sorted(
@@ -166,16 +166,21 @@ def _create_comparison(systems, info_name):
         sorted_system_id_values, key=lambda system: system["is_baseline"], reverse=True
     )
 
-    for sorted_system_id_value in sorted_system_id_values:
-        del sorted_system_id_value["name"]
-        del sorted_system_id_value["is_baseline"]
-
     system_values = {system["value"] for system in system_id_values}
 
     if "N/A" in system_values:
         info_comparison = COMPARISON_INCOMPLETE_DATA
     elif len(system_values) == 1:
         info_comparison = COMPARISON_SAME
+
+    # change baseline "N/A" to empty string for better display, and remove
+    # fields we added to assist with sorting
+    for system_id_value in sorted_system_id_values:
+        if system_id_value["is_baseline"] and system_id_value["value"] == "N/A":
+            system_id_value["value"] = ""
+
+        del system_id_value["name"]
+        del system_id_value["is_baseline"]
 
     return {
         "name": info_name,

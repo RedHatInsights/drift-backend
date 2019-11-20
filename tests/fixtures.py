@@ -114,6 +114,28 @@ AUTH_HEADER_NO_ACCT = {
     "JpbnRlcm5hbCI6eyJvcmdfaWQiOiI5OTk5In19fQo="
 }
 
+FETCH_BASELINES_RESULT = [
+    {
+        "id": "ff35596c-f98e-11e9-aea9-98fa9b07d419",
+        "account": "1212729",
+        "display_name": "baseline1",
+        "fact_count": 1,
+        "created": "2019-10-17T16:23:34.238952Z",
+        "updated": "2019-10-17T16:25:34.041645Z",
+        "baseline_facts": [{"name": "fqdn", "value": "test.example1.com"}],
+    },
+    {
+        "id": "89df6310-f98e-11e9-8a65-98fa9b07d419",
+        "account": "1212729",
+        "display_name": "baseline2",
+        "fact_count": 1,
+        "created": "2019-10-17T16:23:34.238952Z",
+        "updated": "2019-10-17T16:25:34.041645Z",
+        "baseline_facts": [{"name": "arch", "value": "golden"}],
+    },
+]
+
+
 FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
     {
         "account": "9876543",
