@@ -115,4 +115,18 @@ You can also use PATCH calls to a UUID with data like so:
     }
 ```
 
+# contributing to this repo
+
+Please ensure the following when making PRs:
+
+ * tests pass (`./run_unit_tests.sh`)
+ * commit is of the following form (see https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits):
+
+```
+fix: patch title
+
+summary of fix
+
+```
+
 
