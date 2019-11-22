@@ -217,6 +217,20 @@ class ApiTests(unittest.TestCase):
         # check that the ascending result is the inverse of the descending result
         self.assertEqual(desc_result["data"][::-1], asc_result["data"])
 
+    def test_fetch_duplicate_uuid(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines?display_name=arch",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        uuid = result["data"][0]["id"]
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/%s,%s" % (uuid, uuid),
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 400)
+
     def test_fetch_baseline_search(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines?display_name=arch",

@@ -377,6 +377,12 @@ def _validate_uuids(uuids):
             message="malformed UUID requested (%s)" % ",".join(uuids),
         )
 
+    uuid_set = set(uuids)
+    if len(uuid_set) < len(uuids):
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST, message="duplicate UUIDs specified in request"
+        )
+
 
 def _sort_baseline_facts(baseline_facts):
     """
