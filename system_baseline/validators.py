@@ -56,6 +56,25 @@ def check_facts_length(facts):
         )
 
 
+def check_name_value_length(facts):
+    """
+    check the following lengths:
+        * name is over 500 char
+        * value is over 1000 char
+    """
+    for fact in facts:
+        if "values" in fact:
+            check_name_value_length(fact["values"])
+        if "name" in fact and len(fact["name"]) > 500:
+            raise FactValidationError(
+                "fact name %s is over 500 characters" % fact["name"]
+            )
+        elif "value" in fact and len(fact["value"]) > 1000:
+            raise FactValidationError(
+                "value %s is over 1000 characters" % fact["value"]
+            )
+
+
 def check_uuids(baseline_ids):
     """
     helper method to test if a UUID is properly formatted. Will raise an

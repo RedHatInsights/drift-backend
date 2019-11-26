@@ -494,6 +494,7 @@ def _validate_facts(facts):
     validators.check_for_duplicate_names(facts)
     validators.check_for_empty_name_values(facts)
     validators.check_for_value_values(facts)
+    validators.check_name_value_length(facts)
 
 
 @section.before_app_request

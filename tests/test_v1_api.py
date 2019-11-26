@@ -66,6 +66,27 @@ class InvalidFactsTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    def test_long_name_value(self):
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_LONG_NAME_LOAD,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "is over 500 characters", response.data.decode("utf-8"),
+        )
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_LONG_VALUE_LOAD,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "is over 1000 characters", response.data.decode("utf-8"),
+        )
+
 
 class ApiSortTests(unittest.TestCase):
     def setUp(self):
