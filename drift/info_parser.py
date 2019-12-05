@@ -208,18 +208,18 @@ def _is_unique_rec_name(info_name):
     UNIQUE_INFO_SUFFIXES = [".ipv4_addresses", ".ipv6_addresses", ".mac_address"]
     UNIQUE_INFO_PREFIXES = ["fqdn"]
 
-    if not info_name.startswith("network_interfaces"):
-        return
-    elif info_name.startswith("network_interfaces.lo."):
-        return
+    if info_name.startswith("network_interfaces.lo."):
+        return False
+
+    for prefix in UNIQUE_INFO_PREFIXES:
+        if info_name.startswith(prefix):
+            return True
 
     for suffix in UNIQUE_INFO_SUFFIXES:
         if info_name.endswith(suffix):
             return True
 
-    for prefix in UNIQUE_INFO_PREFIXES:
-        if info_name.startswith(prefix):
-            return True
+    return False
 
 
 def _is_no_rec_name(info_name):
