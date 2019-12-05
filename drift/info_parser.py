@@ -173,6 +173,17 @@ def _create_comparison(systems, info_name):
     elif len(system_values) == 1:
         info_comparison = COMPARISON_SAME
 
+    # override comparison logic for certain fact names
+    if _is_unique_rec_name(info_name):
+        system_values_with_duplicates = [system["value"] for system in system_id_values]
+        if len(system_values) == len(system_values_with_duplicates):
+            info_comparison = COMPARISON_SAME
+        else:
+            info_comparison = COMPARISON_DIFFERENT
+
+    if _is_no_rec_name(info_name):
+        info_comparison = COMPARISON_INCOMPLETE_DATA
+
     # change baseline "N/A" to empty string for better display, and remove
     # fields we added to assist with sorting
     for system_id_value in sorted_system_id_values:
@@ -187,6 +198,36 @@ def _create_comparison(systems, info_name):
         "state": info_comparison,
         "systems": sorted_system_id_values,
     }
+
+
+def _is_unique_rec_name(info_name):
+    """
+    helper method to see if we should use the uniqueness recommendation on the
+    fact comparison
+    """
+    UNIQUE_INFO_SUFFIXES = [".ipv4_addresses", ".ipv6_addresses", ".mac_address"]
+    UNIQUE_INFO_PREFIXES = ["fqdn"]
+
+    if not info_name.startswith("network_interfaces"):
+        return
+    elif info_name.startswith("network_interfaces.lo."):
+        return
+
+    for suffix in UNIQUE_INFO_SUFFIXES:
+        if info_name.endswith(suffix):
+            return True
+
+    for prefix in UNIQUE_INFO_PREFIXES:
+        if info_name.startswith(prefix):
+            return True
+
+
+def _is_no_rec_name(info_name):
+    """
+    helper method to see if we should not provide any recommendation
+    """
+    if info_name == "last_boot_time":
+        return True
 
 
 def _system_mapping(system):

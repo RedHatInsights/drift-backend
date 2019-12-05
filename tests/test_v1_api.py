@@ -95,6 +95,30 @@ class ApiTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)
+        comparisons = json.loads(response.data)
+        # we hard-code the index lookup since we know the fixture layout
+        network_comparisons = comparisons["facts"][12]["comparisons"]
+        ipv4_comparison = [
+            comparison
+            for comparison in network_comparisons
+            if comparison["name"] == "eth99.ipv4_addresses"
+        ][0]
+        self.assertEqual(ipv4_comparison["state"], "DIFFERENT")
+
+        ipv6_comparison = [
+            comparison
+            for comparison in network_comparisons
+            if comparison["name"] == "eth99.ipv6_addresses"
+        ][0]
+        self.assertEqual(ipv6_comparison["state"], "DIFFERENT")
+
+        fqdn_comparison = comparisons["facts"][7]
+        self.assertEqual(fqdn_comparison["name"], "fqdn")
+        self.assertEqual(fqdn_comparison["state"], "DIFFERENT")
+
+        fqdn_comparison = comparisons["facts"][11]
+        self.assertEqual(fqdn_comparison["name"], "last_boot_time")
+        self.assertEqual(fqdn_comparison["state"], "INCOMPLETE_DATA")
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_csv(self, mock_fetch_systems):
@@ -110,7 +134,13 @@ class ApiTests(unittest.TestCase):
         csv_data = StringIO(response.data.decode("ascii"))
         reader = csv.DictReader(csv_data)
         self.assertEqual(
-            ["name", "state", "hello", "fake_system_99.example.com", "hello"],
+            [
+                "name",
+                "state",
+                "fake_system_99.example.com",
+                "hostname_one",
+                "hostname_one",
+            ],
             reader.fieldnames,
         )
 
