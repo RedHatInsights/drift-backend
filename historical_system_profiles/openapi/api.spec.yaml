@@ -1,0 +1,35 @@
+---
+openapi: 3.0.1
+
+info:
+  version: "0.1"
+  title: Historical system profile service
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+
+servers:
+  - url: "{{ path_prefix }}{{ app_name }}/v0"
+
+paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: historical_system_profiles.views.v0.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+components:
+  schemas:
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
