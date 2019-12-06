@@ -1,0 +1,16 @@
+[requires]
+python_version = "3.6"
+
+[packages]
+connexion = "*"
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.3"}
+prometheus-client = "*"
+watchtower = "*"
+flake8 = "*"
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+
+[pipenv]
+allow_prereleases = true
