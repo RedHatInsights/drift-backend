@@ -7,6 +7,7 @@ kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref =
 prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"
+gunicorn = "*"
 
 [dev-packages]
 black = "*"
