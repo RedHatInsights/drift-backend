@@ -32,6 +32,7 @@ def create_connexion_app():
     connexion_app.add_api(
         "api.spec.yaml", strict_validation=True, validate_responses=True
     )
+    connexion_app.add_api("mgmt_api.spec.yaml")
     flask_app = connexion_app.app
 
     # set up logging ASAP
