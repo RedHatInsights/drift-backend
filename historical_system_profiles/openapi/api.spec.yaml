@@ -25,11 +25,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
+  /systems/{inventory_ids}:
+    parameters:
+      - $ref: '#/components/parameters/InventoryIds'
+    get:
+      summary: fetch the list of profiles available for a given system inventory ids
+      description: "Fetch the list of profiles available for a given system inventory ids"
+      operationId: historical_system_profiles.views.v0.get_pits_by_inventory_id
+      responses:
+        '200':
+          description: a list of historical profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalProfiles'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
+  responses:
+    InternalServerError:
+      description: "An internal server error has occurred."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: "The server could could not process the current request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - detail
+        - status
+        - title
+        - type
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+    HistoricalProfiles:
+      # TODO: need to fill this in!
+      type: object
     Version:
       required:
         - version
       properties:
         version:
           type: string
+  parameters:
+    InventoryIds:
+      in: path
+      name: inventory_ids
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 32
+          maxLength: 36
