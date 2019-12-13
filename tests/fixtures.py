@@ -152,6 +152,7 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
         "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
         "system_profile": {
             "salutation": "hello",
+            "fqdn": "hostname_two",
             "installed_packages": [
                 "0:bash-4.4.23-6.fc29.x86_64",
                 "this isn't parsable",
@@ -160,7 +161,15 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
             "cpu_flags": ["maryland"],
             "system_memory_bytes": 640,
             "yum_repos": [{"name": "yummy", "enabled": False}, {"no_name": "bleh"}],
-            "network_interfaces": [{"name": "eth99", "mtu": 3}, {"no_name": "foo"}],
+            "network_interfaces": [
+                {
+                    "name": "eth99",
+                    "mtu": 3,
+                    "ipv4_addresses": ["8.7.6.5"],
+                    "ipv6_addresses": ["00:00:02"],
+                },
+                {"no_name": "foo"},
+            ],
             "system_profile_exists": True,
             "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
         },
@@ -182,8 +191,18 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
         "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
         "system_profile": {
             "salutation": "hi",
+            "fqdn": "hostname_one",
             "system_profile_exists": True,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "network_interfaces": [
+                {
+                    "name": "eth99",
+                    "mtu": 3,
+                    "ipv4_addresses": ["8.7.6.5"],
+                    "ipv6_addresses": ["00:00:01"],
+                },
+                {"no_name": "foo"},
+            ],
         },
         "tags": [],
         "updated": "2018-01-31T14:00:00.500000Z",
@@ -193,7 +212,7 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
         "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
         "created": "2018-01-31T13:00:00.100010Z",
         "display_name": None,
-        "fqdn": None,
+        "fqdn": "hostname_one",
         "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
         "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
         "ip_addresses": ["10.0.0.3", "2620:52:0:2598:5054:ff:fecd:ae15"],
@@ -203,8 +222,18 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
         "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
         "system_profile": {
             "salutation": "hi",
+            "fqdn": "hostname_one",
             "system_profile_exists": False,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "network_interfaces": [
+                {
+                    "name": "eth99",
+                    "mtu": 3,
+                    "ipv4_addresses": ["8.7.6.5"],
+                    "ipv6_addresses": ["00:00:01"],
+                },
+                {"no_name": "foo"},
+            ],
         },
         "tags": [],
         "updated": "2018-01-31T14:00:00.500000Z",
