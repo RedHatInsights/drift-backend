@@ -43,6 +43,24 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /profiles/{profile_ids}:
+    parameters:
+      - $ref: '#/components/parameters/ProfileIds'
+    get:
+      summary: fetch the list of profiles available for the given profile ids
+      description: "Fetch the list of profiles available for the given profile ids"
+      operationId: historical_system_profiles.views.v0.get_pits_by_ids
+      responses:
+        '200':
+          description: a list of historical profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalProfiles'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   responses:
     InternalServerError:
@@ -89,6 +107,18 @@ components:
       in: path
       name: inventory_ids
       required: true
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 32
+          maxLength: 36
+    ProfileIds:
+      in: path
+      name: profile_ids
+      required: true
+      # TODO: deduplicate with above
+      # TODO: unsure why this is not validating, "100" should be invalid
       schema:
         type: array
         items:
