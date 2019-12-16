@@ -38,6 +38,14 @@ paths:
               format: uuid
           required: false
           description: list of baseline IDs to generate report for
+        - name: pit_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          required: false
+          description: list of pit IDs to generate report for
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -115,6 +123,10 @@ components:
           type: array
           items:
             type: string
+        pit_ids:
+          type: array
+          items:
+            type: string
     Error:
       required:
         - detail
@@ -147,6 +159,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Baseline"
+        pits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pit"
     FactComparison:
       description: "A list of fact names, states, and systems. This is useful
                     for displaying rows of facts to compare. Note that if the
@@ -196,6 +212,20 @@ components:
         id:
           type: string
           format: uuid
+        updated:
+          type: string
+          format: date-time
+    Pit:
+      description: "Display information for the pits used"
+      required:
+        - display_name
+        - id
+        - updated
+      properties:
+        display_name:
+          type: string
+        id:
+          type: string
         updated:
           type: string
           format: date-time

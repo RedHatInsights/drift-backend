@@ -22,7 +22,7 @@ prometheus_client = "*"
 bitmath = "*"
 boto3 = "*"
 watchtower = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.3"}
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.4"}
 
 [requires]
 python_version = "3.6"

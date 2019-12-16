@@ -7,6 +7,7 @@ from uuid import UUID
 
 from drift import info_parser, metrics, app_config
 from drift.baseline_service_interface import fetch_baselines
+from drift.pit_service_interface import fetch_pits
 
 from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
@@ -96,7 +97,7 @@ def _csvify(comparisons):
     return result
 
 
-def comparison_report(system_ids, baseline_ids, auth_key, data_format):
+def comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format):
     """
     return a comparison report
     """
@@ -110,10 +111,12 @@ def comparison_report(system_ids, baseline_ids, auth_key, data_format):
     _validate_uuids(baseline_ids)
 
     try:
+        systems_with_profiles = fetch_systems_with_profiles(
+            system_ids, auth_key, current_app.logger, get_event_counters()
+        ) + fetch_pits(pit_ids, auth_key, current_app.logger)
+
         comparisons = info_parser.build_comparisons(
-            fetch_systems_with_profiles(
-                system_ids, auth_key, current_app.logger, get_event_counters()
-            ),
+            systems_with_profiles,
             fetch_baselines(baseline_ids, auth_key, current_app.logger),
         )
         metrics.systems_compared.observe(len(system_ids))
@@ -137,13 +140,14 @@ def comparison_report_get():
     """
     system_ids = request.args.getlist("system_ids[]")
     baseline_ids = request.args.getlist("baseline_ids[]")
+    pit_ids = request.args.getlist("pit_ids[]")
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
     if "text/csv" in request.headers.get("accept", []):
         data_format = "csv"
 
-    return comparison_report(system_ids, baseline_ids, auth_key, data_format)
+    return comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format)
 
 
 @metrics.comparison_report_requests.time()
@@ -156,13 +160,16 @@ def comparison_report_post():
     baseline_ids = []
     if "baseline_ids" in request.json:
         baseline_ids = request.json["baseline_ids"]
+    pit_ids = []
+    if "pit_ids" in request.json:
+        pit_ids = request.json["pit_ids"]
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
     if "text/csv" in request.headers["accept"]:
         data_format = "csv"
 
-    return comparison_report(system_ids, baseline_ids, auth_key, data_format)
+    return comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format)
 
 
 @section.before_app_request
