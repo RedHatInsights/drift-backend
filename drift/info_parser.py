@@ -234,7 +234,6 @@ def _system_mapping(system):
     """
     create a header mapping for one system
     """
-
     system_profile_exists = system["system_profile"]["system_profile_exists"]
 
     return {

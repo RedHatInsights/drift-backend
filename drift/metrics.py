@@ -9,6 +9,10 @@ baseline_service_exceptions = Counter(
     "count of exceptions raised by baseline service",
 )
 
+pit_service_exceptions = Counter(
+    "drift_pit_service_exceptions", "count of exceptions raised by pit service"
+)
+
 api_exceptions = Counter(
     "drift_api_exceptions", "count of exceptions raised on public API"
 )
@@ -32,6 +36,7 @@ comparison_report_requests = Histogram(
 baseline_service_requests = Histogram(
     "drift_baseline_service_requests", "baseline service call stats"
 )
+pit_service_requests = Histogram("drift_pit_service_requests", "pit service call stats")
 inventory_service_requests = Histogram(
     "drift_inventory_service_requests", "inventory service call stats"
 )
