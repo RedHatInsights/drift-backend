@@ -1,6 +1,9 @@
 import bitmath
 import ipaddress
+import re
+
 from ipaddress import AddressValueError
+from insights.parsers.installed_rpms import InstalledRpm
 
 from kerlescan.constants import SYSTEM_ID_KEY
 from kerlescan.constants import SYSTEM_PROFILE_STRINGS, SYSTEM_PROFILE_INTEGERS
@@ -144,22 +147,25 @@ def parse_profile(system_profile, display_name, logger):
 def _get_name_vra_from_string(rpm_string):
     """
     small helper to pull name + version/release/arch from string
+
+    This supports two styles: ENVRA and NEVRA. The latter is preferred.
     """
-    split_nevra = rpm_string.split("-")
-    if len(split_nevra) < 3:
+    try:
+        if re.match("^[0-9]+:", rpm_string):
+            _, remainder = rpm_string.split(":", maxsplit=1)
+            rpm = InstalledRpm.from_package(remainder)
+        else:
+            rpm = InstalledRpm.from_package(rpm_string)
+    except TypeError:
         raise UnparsableNEVRAError("unable to parse %s into nevra" % rpm_string)
-    # grab the version-release.arch
-    vra = "-".join(split_nevra[-2:])
 
-    # grab the epoch:name
-    epoch_name = "-".join(split_nevra[:-2])
-    if ":" in epoch_name:
-        # drop the 'epoch:' if it exists
-        name = ":".join(epoch_name.split(":")[1:])
-    else:
-        name = epoch_name
+    vra = rpm.version if rpm.version else ""
+    if rpm.release:
+        vra = vra + "-" + rpm.release
+    if rpm.arch:
+        vra = vra + "." + rpm.arch
 
-    return name, vra
+    return rpm.name, vra
 
 
 def get_name(system):

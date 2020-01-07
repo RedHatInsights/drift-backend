@@ -6,6 +6,7 @@ python:
 script:
   - flake8
   - black . --check -t py36
+  - nosetests
 
 install:
   - pip install pipenv
