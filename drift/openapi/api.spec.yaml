@@ -12,6 +12,18 @@ servers:
   - url: "{{ path_prefix }}{{ app_name }}/v1"
 
 paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: drift.views.v1.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
   /comparison_report:
     get:
       summary: fetch comparison report
@@ -111,6 +123,12 @@ components:
       name: "x-rh-identity"
       type: "apiKey"
   schemas:
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
     ComparisonRequest:
       required:
         - system_ids

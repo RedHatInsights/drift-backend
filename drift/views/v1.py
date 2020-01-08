@@ -6,6 +6,7 @@ from http import HTTPStatus
 from uuid import UUID
 
 from drift import info_parser, metrics, app_config
+from drift.version import app_version
 from drift.baseline_service_interface import fetch_baselines
 from drift.pit_service_interface import fetch_pits
 
@@ -29,6 +30,13 @@ def _validate_uuids(system_ids):
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST, message="%s is not a UUID" % system_id
             )
+
+
+def get_version():
+    """
+    return the service version
+    """
+    return {"version": app_version}
 
 
 def get_event_counters():
