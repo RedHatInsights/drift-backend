@@ -11,7 +11,7 @@ before_install:
   - psql -c "ALTER USER insights CREATEDB"
 # we use `testdb` for the tests; this is just to create a place for insights user to have
   - psql -c 'create database insights;' -U postgres
-  - wget http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
+  - wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
 
 script:
   - .travis/check-manifest.sh
