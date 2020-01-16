@@ -9,7 +9,6 @@ from kerlescan.exceptions import UnparsableNEVRAError
 class InfoParserTests(unittest.TestCase):
     def test_package_parsing(self):
         tests = {
-            "epoch:name-version-release.arch": ("name", "version-release.arch"),
             "0:bluejeans-1.37.22-1": ("bluejeans", "1.37.22-1"),
             "0:brscan4-0.4.7-1": ("brscan4", "0.4.7-1"),
             "0:epel-release-7-11": ("epel-release", "7-11"),
