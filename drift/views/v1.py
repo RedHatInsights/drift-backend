@@ -8,7 +8,7 @@ from uuid import UUID
 from drift import info_parser, metrics, app_config
 from drift.version import app_version
 from drift.baseline_service_interface import fetch_baselines
-from drift.pit_service_interface import fetch_pits
+from drift.historical_sys_profile_service_interface import fetch_historical_sys_profiles
 
 from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
@@ -105,7 +105,9 @@ def _csvify(comparisons):
     return result
 
 
-def comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format):
+def comparison_report(
+    system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+):
     """
     return a comparison report
     """
@@ -121,11 +123,14 @@ def comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format):
     try:
         systems_with_profiles = fetch_systems_with_profiles(
             system_ids, auth_key, current_app.logger, get_event_counters()
-        ) + fetch_pits(pit_ids, auth_key, current_app.logger)
+        )
 
         comparisons = info_parser.build_comparisons(
             systems_with_profiles,
             fetch_baselines(baseline_ids, auth_key, current_app.logger),
+            fetch_historical_sys_profiles(
+                historical_sys_profile_ids, auth_key, current_app.logger
+            ),
         )
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
@@ -148,14 +153,16 @@ def comparison_report_get():
     """
     system_ids = request.args.getlist("system_ids[]")
     baseline_ids = request.args.getlist("baseline_ids[]")
-    pit_ids = request.args.getlist("pit_ids[]")
+    historical_sys_profile_ids = request.args.getlist("historical_system_profile_ids[]")
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
     if "text/csv" in request.headers.get("accept", []):
         data_format = "csv"
 
-    return comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format)
+    return comparison_report(
+        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+    )
 
 
 @metrics.comparison_report_requests.time()
@@ -168,16 +175,18 @@ def comparison_report_post():
     baseline_ids = []
     if "baseline_ids" in request.json:
         baseline_ids = request.json["baseline_ids"]
-    pit_ids = []
-    if "pit_ids" in request.json:
-        pit_ids = request.json["pit_ids"]
+    historical_sys_profile_ids = []
+    if "historical_system_profile_ids" in request.json:
+        historical_sys_profile_ids = request.json["historical_system_profile_ids"]
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
     if "text/csv" in request.headers["accept"]:
         data_format = "csv"
 
-    return comparison_report(system_ids, baseline_ids, pit_ids, auth_key, data_format)
+    return comparison_report(
+        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+    )
 
 
 @section.before_app_request
