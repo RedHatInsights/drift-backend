@@ -38,7 +38,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HistoricalProfiles'
+                type: object
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -56,7 +56,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HistoricalProfiles'
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /profiles:
+    post:
+      summary: create a profile
+      description: "create a profile"
+      operationId: historical_system_profiles.views.v0.create_profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: the created profile
+          content:
+            application/json:
+              schema:
+                 type: object
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -94,6 +116,9 @@ components:
         type:
           type: string
     HistoricalProfiles:
+      # TODO: need to fill this in!
+      type: array
+    HistoricalProfile:
       # TODO: need to fill this in!
       type: object
     Version:

@@ -8,6 +8,11 @@ prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"
 gunicorn = "*"
+flask-sqlalchemy = "*"
+alembic = "*"
+flask-script = "*"
+flask-migrate = "*"
+psycopg2 = "*"
 
 [dev-packages]
 black = "*"
