@@ -25,12 +25,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
-  /systems/{inventory_ids}:
+  /systems/{inventory_id}:
     parameters:
-      - $ref: '#/components/parameters/InventoryIds'
+      - $ref: '#/components/parameters/InventoryId'
     get:
-      summary: fetch the list of profiles available for a given system inventory ids
-      description: "Fetch the list of profiles available for a given system inventory ids"
+      summary: fetch the list of profiles available for a given system inventory id
+      description: "Fetch the list of profiles available for a given system inventory id"
       operationId: historical_system_profiles.views.v0.get_pits_by_inventory_id
       responses:
         '200':
@@ -128,16 +128,14 @@ components:
         version:
           type: string
   parameters:
-    InventoryIds:
+    InventoryId:
       in: path
-      name: inventory_ids
+      name: inventory_id
       required: true
       schema:
-        type: array
-        items:
-          type: string
-          minLength: 32
-          maxLength: 36
+        type: string
+        minLength: 32
+        maxLength: 36
     ProfileIds:
       in: path
       name: profile_ids

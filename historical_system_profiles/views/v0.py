@@ -26,17 +26,18 @@ def get_pits_by_ids(profile_ids):
         HistoricalSystemProfile.account == account_number,
         HistoricalSystemProfile.id.in_(profile_ids),
     )
-
     query_results = query.all()
 
-    result = query_results[0]
-    result.system_profile["id"] = profile_ids[0]
-    result.id = profile_ids[0]
+    result = []
+    for query_result in query_results:
+        historical_sys_profile = query_result
+        historical_sys_profile.system_profile["id"] = historical_sys_profile.id
+        result.append(historical_sys_profile.to_json())
 
-    return {"data": [result.to_json()]}
+    return {"data": result}
 
 
-def get_pits_by_inventory_id(inventory_ids):
+def get_pits_by_inventory_id(inventory_id):
     """
     return a list of historical system profiles for a given inventory id
     """
@@ -44,19 +45,22 @@ def get_pits_by_inventory_id(inventory_ids):
 
     query = HistoricalSystemProfile.query.filter(
         HistoricalSystemProfile.account == account_number,
-        HistoricalSystemProfile.inventory_id.in_(inventory_ids),
+        HistoricalSystemProfile.inventory_id == inventory_id,
     )
 
     query_results = query.all()
-    results = {
-        "inventory_uuid": inventory_ids[0],
-        "display_name": query_results[0].system_profile["display_name"],
-    }
-
-    profiles = [{"created": p.created_on, "id": p.id} for p in query_results]
-    results["profiles"] = profiles
-
-    return {"data": [results]}
+    if len(query_results) == 0:
+        return {"data": []}
+    else:
+        result = {
+            "inventory_uuid": inventory_id,
+            "display_name": query_results[0].system_profile[
+                "display_name"
+            ],  # TODO: pull this from inventory instead of from the first record
+        }
+        profiles = [{"created": p.created_on, "id": p.id} for p in query_results]
+        result["profiles"] = profiles
+        return {"data": [result]}
 
 
 def create_profile(body):
