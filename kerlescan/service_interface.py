@@ -22,7 +22,7 @@ def _validate_service_response(response, logger):
         raise ServiceError("Error received from backend service")
 
 
-def _fetch_url(url, auth_header, logger, time_metric, exception_metric):
+def fetch_url(url, auth_header, logger, time_metric, exception_metric):
     """
     helper to make a single request
     """
@@ -48,7 +48,7 @@ def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metr
 
     while len(object_ids_to_fetch) > 0:
         object_id_batch = object_ids_to_fetch[:BATCH_SIZE]
-        response_json = _fetch_url(
+        response_json = fetch_url(
             url % (",".join(object_id_batch)),
             auth_header,
             logger,

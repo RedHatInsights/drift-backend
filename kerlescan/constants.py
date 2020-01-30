@@ -3,6 +3,7 @@ FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_SYSTEMS_ENDPOINT = "/api/inventory/v1/hosts/%s"
 INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT = "/api/inventory/v1/hosts/%s/system_profile"
 BASELINE_SVC_ENDPOINT = "/api/system-baseline/v1/baselines/%s"
+RBAC_SVC_ENDPOINT = "/api/rbac/v1/access/?application=%s"
 PIT_SVC_ENDPOINT = "/api/historical-system-profiles/v0/profiles/%s"
 SYSTEM_ID_KEY = "id"
 

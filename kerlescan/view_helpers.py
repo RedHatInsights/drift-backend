@@ -6,6 +6,7 @@ from http import HTTPStatus
 
 from kerlescan.config import path_prefix
 from kerlescan.service_interface import get_key_from_headers
+from kerlescan.rbac_service_interface import get_roles
 from kerlescan.exceptions import HTTPError
 
 
@@ -43,6 +44,33 @@ def ensure_account_number(request, logger):
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST,
                 message="account number not found on identity token",
+            )
+
+
+def ensure_has_role(**kwargs):
+    """
+    ensure role exists. kwargs needs to contain:
+        role, application, app_name, request, logger, request_metric, exception_metric
+    """
+    request = kwargs["request"]
+    if _is_mgmt_url(request.path) or _is_openapi_url(request.path, kwargs["app_name"]):
+        return  # allow request
+
+    auth_key = get_key_from_headers(request.headers)
+    if auth_key:
+        roles = get_roles(
+            kwargs["application"],
+            auth_key,
+            kwargs["logger"],
+            kwargs["request_metric"],
+            kwargs["exception_metric"],
+        )
+        if kwargs["role"] in roles:
+            return  # allow
+        else:
+            raise HTTPError(
+                HTTPStatus.FORBIDDEN,
+                message="user does not have access to %s" % kwargs["role"],
             )
 
 
