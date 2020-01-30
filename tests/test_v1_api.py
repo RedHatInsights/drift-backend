@@ -10,12 +10,23 @@ from mock import patch
 from . import fixtures
 
 
-class EmptyApiTests(unittest.TestCase):
+class ApiTest(unittest.TestCase):
     def setUp(self):
+        self.rbac_patcher = patch(
+            "system_baseline.views.v1.view_helpers.ensure_has_role"
+        )
+        patched_rbac = self.rbac_patcher.start()
+        patched_rbac.return_value = None  # validate all RBAC requests
+        self.addCleanup(self.stopPatches)
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
 
+    def stopPatches(self):
+        self.rbac_patcher.stop()
+
+
+class EmptyApiTests(ApiTest):
     def test_fetch_empty_baseline_list(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
@@ -24,12 +35,7 @@ class EmptyApiTests(unittest.TestCase):
         self.assertEqual(json.loads(response.data)["meta"]["count"], 0)
 
 
-class BadUUIDTests(unittest.TestCase):
-    def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
-
+class BadUUIDTests(ApiTest):
     def test_delete_malformed_uuid(self):
         response = self.client.delete(
             "api/system-baseline/v1/baselines/MALFORMED-UUID",
@@ -42,12 +48,7 @@ class BadUUIDTests(unittest.TestCase):
         )
 
 
-class InvalidFactsTests(unittest.TestCase):
-    def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
-
+class InvalidFactsTests(ApiTest):
     def test_large_facts(self):
         large_factset = []
         for i in range(2 ** 15):  # 32K
@@ -88,11 +89,9 @@ class InvalidFactsTests(unittest.TestCase):
         )
 
 
-class ApiSortTests(unittest.TestCase):
+class ApiSortTests(ApiTest):
     def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        super(ApiSortTests, self).setUp()
         self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -100,6 +99,7 @@ class ApiSortTests(unittest.TestCase):
         )
 
     def tearDown(self):
+        super(ApiSortTests, self).tearDown()
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
         )
@@ -142,11 +142,9 @@ class ApiSortTests(unittest.TestCase):
         )
 
 
-class ApiTests(unittest.TestCase):
+class ApiGeneralTests(ApiTest):
     def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        super(ApiGeneralTests, self).setUp()
         self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -159,6 +157,7 @@ class ApiTests(unittest.TestCase):
         )
 
     def tearDown(self):
+        super(ApiGeneralTests, self).tearDown()
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
         )
@@ -295,11 +294,9 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(result["meta"]["count"], 1)
 
 
-class CopyBaselineTests(unittest.TestCase):
+class CopyBaselineTests(ApiTest):
     def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        super(CopyBaselineTests, self).setUp()
         self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -312,6 +309,7 @@ class CopyBaselineTests(unittest.TestCase):
         )
 
     def tearDown(self):
+        super(CopyBaselineTests, self).tearDown()
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
         )
@@ -371,11 +369,9 @@ class CopyBaselineTests(unittest.TestCase):
         self.assertNotEqual(old_date, new_date)
 
 
-class ApiPatchTests(unittest.TestCase):
+class ApiPatchTests(ApiTest):
     def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        super(ApiPatchTests, self).setUp()
         self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -383,6 +379,7 @@ class ApiPatchTests(unittest.TestCase):
         )
 
     def tearDown(self):
+        super(ApiPatchTests, self).tearDown()
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
         )
@@ -462,12 +459,7 @@ class ApiPatchTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class CreateFromInventoryTests(unittest.TestCase):
-    def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
-
+class CreateFromInventoryTests(ApiTest):
     def tearDown(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
@@ -479,6 +471,7 @@ class CreateFromInventoryTests(unittest.TestCase):
                 headers=fixtures.AUTH_HEADER,
             )
             self.assertEqual(response.status_code, 200)
+        super(CreateFromInventoryTests, self).tearDown()
 
     @patch("system_baseline.views.v1.fetch_systems_with_profiles")
     def test_create_from_inventory(self, mock_fetch):
@@ -521,12 +514,7 @@ class CreateFromInventoryTests(unittest.TestCase):
         self.assertIn("malformed UUID requested", response.data.decode("utf-8"))
 
 
-class ApiDuplicateTests(unittest.TestCase):
-    def setUp(self):
-        test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
-
+class ApiDuplicateTests(ApiTest):
     def tearDown(self):
         response = self.client.get(
             "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
@@ -538,6 +526,7 @@ class ApiDuplicateTests(unittest.TestCase):
                 headers=fixtures.AUTH_HEADER,
             )
             self.assertEqual(response.status_code, 200)
+        super(ApiDuplicateTests, self).tearDown()
 
     def test_duplicate_baseline(self):
         response = self.client.post(

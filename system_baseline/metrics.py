@@ -61,3 +61,8 @@ baseline_account_count_hundred_plus = Gauge(
     "number of accounts with over one hundred baselines",
     multiprocess_mode="max",
 )
+
+rbac_requests = Histogram("baseline_rbac_service_requests", "rbac service call stats")
+rbac_exceptions = Counter(
+    "baseline_rbac_exceptions", "count of exceptions raised by rbac service"
+)
