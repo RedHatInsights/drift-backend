@@ -202,5 +202,18 @@ def ensure_entitled():
 
 
 @section.before_app_request
+def ensure_rbac():
+    return view_helpers.ensure_has_role(
+        role="drift:*:*",
+        application="drift",
+        app_name="drift",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )
+
+
+@section.before_app_request
 def ensure_account_number():
     return view_helpers.ensure_account_number(request, current_app.logger)
