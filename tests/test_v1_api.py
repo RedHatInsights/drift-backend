@@ -13,9 +13,16 @@ import unittest
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
+        self.rbac_patcher = mock.patch("drift.views.v1.view_helpers.ensure_has_role")
+        patched_rbac = self.rbac_patcher.start()
+        patched_rbac.return_value = None  # validate all RBAC requests
+        self.addCleanup(self.stopPatches)
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
+
+    def stopPatches(self):
+        self.rbac_patcher.stop()
 
     def test_comparison_report_api_no_args_or_header(self):
         response = self.client.get("api/drift/v1/comparison_report")

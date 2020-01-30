@@ -13,6 +13,9 @@ historical_sys_profile_service_exceptions = Counter(
     "drift_historical_sys_profile_service_exceptions",
     "count of exceptions raised by HSP service",
 )
+rbac_exceptions = Counter(
+    "drift_rbac_exceptions", "count of exceptions raised by rbac service"
+)
 
 api_exceptions = Counter(
     "drift_api_exceptions", "count of exceptions raised on public API"
@@ -41,6 +44,7 @@ historical_sys_profile_service_requests = Histogram(
     "drift_historical_sys_profile_service_requests",
     "historical_sys_profile service call stats",
 )
+rbac_requests = Histogram("drift_rbac_service_requests", "rbac service call stats")
 inventory_service_requests = Histogram(
     "drift_inventory_service_requests", "inventory service call stats"
 )
