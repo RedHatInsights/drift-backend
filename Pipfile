@@ -15,15 +15,16 @@ ipython = "*"
 openapi-spec-validator = "*"
 
 [packages]
-connexion = {extras = ["swagger-ui"],version = "*"}
+connexion = {extras = ["swagger-ui"],version = "==2.5.1"} # 2.6.0 is stricter, need to fix openapi spec to upgrade
 Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
 bitmath = "*"
 boto3 = "*"
 watchtower = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.5"}
 insights-core = "*"
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.6"}
+
 
 [requires]
 python_version = "3.6"
