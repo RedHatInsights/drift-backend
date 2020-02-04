@@ -23,7 +23,7 @@ bitmath = "*"
 boto3 = "*"
 watchtower = "*"
 insights-core = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.6"}
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.7"}
 
 
 [requires]
