@@ -1,4 +1,5 @@
 from flask import current_app
+from dateutil.parser import parse as dateparse
 
 from kerlescan.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
@@ -41,11 +42,17 @@ def build_comparisons(systems_with_profiles, baselines, historical_sys_profiles)
         system_mappings, key=lambda system: system["display_name"]
     )
 
+    sorted_historical_sys_profile_mappings = sorted(
+        historical_sys_profile_mappings,
+        key=lambda hsp: dateparse(hsp["updated"]),
+        reverse=True,
+    )
+
     return {
         "facts": sorted_comparisons,
         "systems": sorted_system_mappings,
         "baselines": baseline_mappings,
-        "historical_system_profiles": historical_sys_profile_mappings,
+        "historical_system_profiles": sorted_historical_sys_profile_mappings,
     }
 
 
