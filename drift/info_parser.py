@@ -289,4 +289,5 @@ def _historical_sys_profile_mapping(historical_sys_profile):
         "id": historical_sys_profile["id"],
         "display_name": historical_sys_profile["display_name"],
         "updated": historical_sys_profile["updated"],
+        "system_id": historical_sys_profile["inventory_id"],
     }
