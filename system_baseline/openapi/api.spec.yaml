@@ -46,28 +46,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    delete:
-      summary: delete one or more baselines
-      description: "delete one or more baselines"
-      operationId: system_baseline.views.v1.delete_baselines_by_list
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BaselineIdsList"
-              x-body-name: baseline_ids_list
-      responses:
-        '200':
-          description: a success message
-          content:
-            application/json:
-              schema:
-                type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
     post:
       summary: create a baseline
       description: "create a baseline"
@@ -86,6 +64,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/deletion_request:
+    post:
+      summary: create a request to delete one or more baselines
+      description: "create a request to delete one or more baselines"
+      operationId: system_baseline.views.v1.create_deletion_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BaselineIdsList"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':

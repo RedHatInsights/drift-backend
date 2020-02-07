@@ -157,11 +157,11 @@ def delete_baselines_by_ids(baseline_ids):
 
 @metrics.baseline_delete_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def delete_baselines_by_list(baseline_ids_list):
+def create_deletion_request(body):
     """
     delete a list of baselines given their IDs as a list
     """
-    baseline_ids = baseline_ids_list["baseline_ids"]
+    baseline_ids = body["baseline_ids"]
     _validate_uuids(baseline_ids)
     _delete_baselines(baseline_ids)
     return "OK"

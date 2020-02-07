@@ -206,6 +206,20 @@ class ApiGeneralTests(ApiTest):
         # check that the ascending result is the inverse of the descending result
         self.assertEqual(desc_result["data"][::-1], asc_result["data"])
 
+    def test_create_deletion_request(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        ids_to_delete = [b["id"] for b in result["data"]]
+        response = self.client.post(
+            "api/system-baseline/v1/baselines/deletion_request",
+            headers=fixtures.AUTH_HEADER,
+            json={"baseline_ids": ids_to_delete},
+        )
+        self.assertEqual(response.status_code, 200)
+
     def test_fetch_baseline_list_sort_updated(self):
         # modify one baseline
         response = self.client.get(
