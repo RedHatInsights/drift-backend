@@ -31,7 +31,7 @@ paths:
     get:
       summary: fetch the list of profiles available for a given system inventory id
       description: "Fetch the list of profiles available for a given system inventory id"
-      operationId: historical_system_profiles.views.v0.get_pits_by_inventory_id
+      operationId: historical_system_profiles.views.v0.get_hsps_by_inventory_id
       responses:
         '200':
           description: a list of historical profiles
@@ -49,7 +49,7 @@ paths:
     get:
       summary: fetch the list of profiles available for the given profile ids
       description: "Fetch the list of profiles available for the given profile ids"
-      operationId: historical_system_profiles.views.v0.get_pits_by_ids
+      operationId: historical_system_profiles.views.v0.get_hsps_by_ids
       responses:
         '200':
           description: a list of historical profiles

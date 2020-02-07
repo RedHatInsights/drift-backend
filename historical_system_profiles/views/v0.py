@@ -16,7 +16,7 @@ def get_version():
     return {"version": "0.0.1"}
 
 
-def get_pits_by_ids(profile_ids):
+def get_hsps_by_ids(profile_ids):
     """
     return a list of historical system profiles for the given profile IDs
     """
@@ -37,7 +37,7 @@ def get_pits_by_ids(profile_ids):
     return {"data": result}
 
 
-def get_pits_by_inventory_id(inventory_id):
+def get_hsps_by_inventory_id(inventory_id):
     """
     return a list of historical system profiles for a given inventory id
     """
@@ -69,13 +69,10 @@ def create_profile(body):
     """
     account_number = view_helpers.get_account_number(request)
 
-    # TODO no idea why this is needed..
-    profile_in = json.loads(request.data.decode("utf-8"))
-
     profile = HistoricalSystemProfile(
         account=account_number,
-        inventory_id=profile_in["inventory_id"],
-        system_profile=profile_in["profile"],
+        inventory_id=body["inventory_id"],
+        system_profile=body["profile"],
     )
     db.session.add(profile)
     db.session.commit()  # commit now so we get a created/updated time before json conversion

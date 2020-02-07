@@ -2,8 +2,8 @@
 python_version = "3.6"
 
 [packages]
-connexion = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.3"}
+connexion = "~=2.6"
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.7"}
 prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"
@@ -17,6 +17,8 @@ psycopg2 = "*"
 [dev-packages]
 black = "*"
 flake8 = "*"
+nose = "*"
+coverage = "*"
 
 [pipenv]
 allow_prereleases = true
