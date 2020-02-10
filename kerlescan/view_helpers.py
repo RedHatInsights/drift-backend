@@ -4,7 +4,7 @@ import base64
 
 from http import HTTPStatus
 
-from kerlescan.config import path_prefix
+from kerlescan.config import path_prefix, enable_rbac
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.rbac_service_interface import get_roles
 from kerlescan.exceptions import HTTPError
@@ -52,6 +52,9 @@ def ensure_has_role(**kwargs):
     ensure role exists. kwargs needs to contain:
         role, application, app_name, request, logger, request_metric, exception_metric
     """
+    if not enable_rbac:
+        return
+
     request = kwargs["request"]
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, kwargs["app_name"]):
         return  # allow request
