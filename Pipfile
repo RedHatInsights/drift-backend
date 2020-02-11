@@ -2,7 +2,7 @@
 python_version = "3.6"
 
 [packages]
-connexion = "~=2.6"
+connexion = {extras = ["swagger-ui"],version = "~=2.6"}
 kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.7"}
 prometheus-client = "*"
 watchtower = "*"
@@ -19,6 +19,8 @@ black = "*"
 flake8 = "*"
 nose = "*"
 coverage = "*"
+codecov = "*"
+yamllint = "*"
 
 [pipenv]
 allow_prereleases = true

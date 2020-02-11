@@ -29,8 +29,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/InventoryId'
     get:
-      summary: fetch the list of profiles available for a given system inventory id
-      description: "Fetch the list of profiles available for a given system inventory id"
+      summary: fetch the list of profiles available for a given system id
+      description: "Fetch the list of profiles available for a given system id"
       operationId: historical_system_profiles.views.v0.get_hsps_by_inventory_id
       responses:
         '200':
@@ -48,7 +48,7 @@ paths:
       - $ref: '#/components/parameters/ProfileIds'
     get:
       summary: fetch the list of profiles available for the given profile ids
-      description: "Fetch the list of profiles available for the given profile ids"
+      description: "Fetch the list of profiles available for the given ids"
       operationId: historical_system_profiles.views.v0.get_hsps_by_ids
       responses:
         '200':
@@ -78,7 +78,7 @@ paths:
           content:
             application/json:
               schema:
-                 type: object
+                type: object
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -115,9 +115,6 @@ components:
           type: string
         type:
           type: string
-    HistoricalProfiles:
-      # TODO: need to fill this in!
-      type: array
     HistoricalProfile:
       # TODO: need to fill this in!
       type: object

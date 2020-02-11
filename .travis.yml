@@ -1,0 +1,33 @@
+language: python
+
+services:
+  - postgresql
+
+python:
+ - "3.6"
+
+before_install:
+  - psql -c "CREATE USER insights WITH PASSWORD 'insights';"
+  - psql -c "ALTER USER insights CREATEDB"
+# we use `testdb` for the tests; this is just to create a place for insights user to have
+  - psql -c 'create database insights;' -U postgres
+  - wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
+
+script:
+  - .travis/check-manifest.sh
+  - ./run_unit_tests.sh
+  - flake8
+  - black . --check -t py36
+  - yamllint historical_system_profiles/openapi/mgmt_api.spec.yaml
+  - yamllint historical_system_profiles/openapi/api.spec.yaml
+  - openapi-spec-validator historical_system_profiles/openapi/mgmt_api.spec.yaml
+  - openapi-spec-validator historical_system_profiles/openapi/api.spec.yaml
+  - java -jar openapi-generator-cli-4.1.1.jar validate -i historical_system_profiles/openapi/api.spec.yaml
+
+install:
+  - pip install pipenv
+  - pipenv install --dev
+  - pip install codecov
+
+after_success:
+  - codecov

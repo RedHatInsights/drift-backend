@@ -1,7 +1,7 @@
 """initial DB
 
 Revision ID: 5d803f844a03
-Revises: 
+Revises:
 Create Date: 2020-01-09 16:25:25.100053
 
 """

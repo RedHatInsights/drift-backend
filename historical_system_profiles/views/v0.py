@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-import json
 
 from kerlescan import view_helpers
 
@@ -31,7 +30,6 @@ def get_hsps_by_ids(profile_ids):
     result = []
     for query_result in query_results:
         historical_sys_profile = query_result
-        historical_sys_profile.system_profile["id"] = historical_sys_profile.id
         result.append(historical_sys_profile.to_json())
 
     return {"data": result}
@@ -75,6 +73,6 @@ def create_profile(body):
         system_profile=body["profile"],
     )
     db.session.add(profile)
-    db.session.commit()  # commit now so we get a created/updated time before json conversion
+    db.session.commit()
 
     return profile.to_json()

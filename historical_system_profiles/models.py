@@ -20,9 +20,13 @@ class HistoricalSystemProfile(db.Model):
     system_profile = db.Column(JSONB)
 
     def __init__(self, system_profile, inventory_id, account):
-        self.system_profile = system_profile
         self.inventory_id = inventory_id
         self.account = account
+        self.system_profile = system_profile
+        # set the ID here so we can override the system profile's id with the historical profile
+        generated_id = str(uuid.uuid4())
+        self.id = generated_id
+        self.system_profile["id"] = generated_id
 
     @property
     def display_name(self):

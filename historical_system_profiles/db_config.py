@@ -4,7 +4,7 @@ import os
 
 _db_user = os.getenv("HSP_DB_USER", "insights")
 _db_password = os.getenv("HSP_DB_PASS", "insights")
-_db_host = os.getenv("HSP_DB_HOST", "localhost:5433")
+_db_host = os.getenv("HSP_DB_HOST", "localhost:5432")
 _db_name = os.getenv("HSP_DB_NAME", "insights")
 
 db_uri = f"postgresql://{_db_user}:{_db_password}@{_db_host}/{_db_name}"

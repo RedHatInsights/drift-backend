@@ -5,8 +5,14 @@
 
 TEMPDIR=`mktemp -d`
 
+psql 'postgresql://insights:insights@localhost:5432' -c 'create database testdb;'
+
+BASELINE_DB_NAME=testdb FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade
+
 prometheus_multiproc_dir=$TEMPDIR nosetests -sx --with-coverage --cover-package historical_system_profiles  --cover-min-percentage 90 --cover-erase && rm -rf $TEMPDIR
 
 result=$?
+
+psql 'postgresql://insights:insights@localhost:5432' -c 'drop database testdb;'
 
 exit $result

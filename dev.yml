@@ -8,4 +8,4 @@ services:
             POSTGRES_USER: insights
             POSTGRES_DB: insights
         ports: 
-            - "5433:5432"
+            - "5432:5432"
