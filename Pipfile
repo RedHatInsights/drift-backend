@@ -21,6 +21,7 @@ nose = "*"
 coverage = "*"
 codecov = "*"
 yamllint = "*"
+mock = "*"
 
 [pipenv]
 allow_prereleases = true
