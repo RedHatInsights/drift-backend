@@ -45,6 +45,8 @@ def ensure_account_number(request, logger):
                 HTTPStatus.BAD_REQUEST,
                 message="account number not found on identity token",
             )
+    else:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
 def ensure_has_role(**kwargs):
@@ -75,6 +77,9 @@ def ensure_has_role(**kwargs):
                 HTTPStatus.FORBIDDEN,
                 message="user does not have access to %s" % kwargs["role"],
             )
+    else:
+        # if we got here, reject the request
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
 def ensure_entitled(request, app_name, logger):
