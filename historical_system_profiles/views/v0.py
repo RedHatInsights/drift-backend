@@ -1,8 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 
 from kerlescan import view_helpers
 
 from historical_system_profiles.models import HistoricalSystemProfile, db
+from historical_system_profiles import metrics
 
 
 section = Blueprint("v0", __name__)
@@ -76,3 +77,21 @@ def create_profile(body):
     db.session.commit()
 
     return profile.to_json()
+
+
+@section.before_app_request
+def ensure_account_number():
+    return view_helpers.ensure_account_number(request, current_app.logger)
+
+
+@section.before_app_request
+def ensure_rbac():
+    return view_helpers.ensure_has_role(
+        role="drift:*:*",
+        application="drift",
+        app_name="historical-system-profiles",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )

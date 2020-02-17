@@ -3,6 +3,7 @@ import json
 from historical_system_profiles import app
 
 import unittest
+import mock
 from . import fixtures
 
 
@@ -11,9 +12,21 @@ class ApiTests(unittest.TestCase):
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
+        self.rbac_patcher = mock.patch(
+            "historical_system_profiles.views.v0.view_helpers.ensure_has_role"
+        )
+        patched_rbac = self.rbac_patcher.start()
+        patched_rbac.return_value = None  # validate all RBAC requests
+        self.addCleanup(self.stopPatches)
+
+    def stopPatches(self):
+        self.rbac_patcher.stop()
 
     def test_status_bad_uuid(self):
-        response = self.client.get("/api/historical-system-profiles/v0/profiles/1")
+        response = self.client.get(
+            "/api/historical-system-profiles/v0/profiles/1",
+            headers=fixtures.AUTH_HEADER,
+        )
         self.assertEqual(response.status_code, 400)
         self.assertIn("too short", json.loads(response.data)["detail"])
 
