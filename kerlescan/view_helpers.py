@@ -36,6 +36,9 @@ def _is_openapi_url(path, app_name):
 
 
 def ensure_account_number(request, logger):
+    if _is_mgmt_url(request.path):  # TODO: pass in app_name for openapi url check
+        return  # allow request
+
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
         identity = json.loads(base64.b64decode(auth_key))["identity"]
