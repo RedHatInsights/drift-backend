@@ -186,14 +186,8 @@ components:
           type: string
     HistoricalProfilesForSystem:
       required:
-        - inventory_uuid
-        - display_name
         - profiles
       properties:
-        inventory_uuid:
-          type: string
-        display_name:
-          type: string
         profiles:
           type: array
           items:

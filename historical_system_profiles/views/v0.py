@@ -48,18 +48,10 @@ def get_hsps_by_inventory_id(inventory_id):
     )
 
     query_results = query.all()
-    if len(query_results) == 0:
-        return {"data": []}
-    else:
-        result = {
-            "inventory_uuid": inventory_id,
-            "display_name": query_results[0].system_profile[
-                "display_name"
-            ],  # TODO: pull this from inventory instead of from the first record
-        }
-        profiles = [{"created": p.created_on, "id": p.id} for p in query_results]
-        result["profiles"] = profiles
-        return {"data": [result]}
+    result = {
+        "profiles": [{"created": p.created_on, "id": p.id} for p in query_results],
+    }
+    return {"data": [result]}
 
 
 def create_profile(body):
