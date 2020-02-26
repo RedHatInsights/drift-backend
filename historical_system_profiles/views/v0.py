@@ -1,6 +1,8 @@
 from flask import Blueprint, request, current_app
 
 from kerlescan import view_helpers
+from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.service_interface import get_key_from_headers
 
 from historical_system_profiles.models import HistoricalSystemProfile, db
 from historical_system_profiles import metrics
@@ -26,14 +28,30 @@ def get_hsps_by_ids(profile_ids):
         HistoricalSystemProfile.account == account_number,
         HistoricalSystemProfile.id.in_(profile_ids),
     )
-    query_results = query.all()
+    result = query.all()
 
-    result = []
-    for query_result in query_results:
-        historical_sys_profile = query_result
-        result.append(historical_sys_profile.to_json())
+    result_with_updated_names = _get_current_names_for_profiles(result)
 
-    return {"data": result}
+    return {"data": [r.to_json() for r in result_with_updated_names]}
+
+
+def _get_current_names_for_profiles(hsps):
+    # make a unique list of inventory IDs
+    inventory_ids = list({str(h.inventory_id) for h in hsps})
+
+    auth_key = get_key_from_headers(request.headers)
+
+    systems = fetch_systems_with_profiles(
+        inventory_ids, auth_key, current_app.logger, _get_event_counters(),
+    )
+    display_names = {system["id"]: system["display_name"] for system in systems}
+    enriched_hsps = []
+    for hsp in hsps:
+        current_display_name = display_names[str(hsp.inventory_id)]
+        hsp.system_profile["display_name"] = current_display_name
+        enriched_hsps.append(hsp)
+
+    return enriched_hsps
 
 
 def get_hsps_by_inventory_id(inventory_id):
@@ -89,3 +107,14 @@ def ensure_rbac():
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
     )
+
+
+def _get_event_counters():
+    """
+    small helper to create a dict of event counters
+    """
+    return {
+        "systems_compared_no_sysprofile": metrics.inventory_no_sysprofile,
+        "inventory_service_requests": metrics.inventory_requests,
+        "inventory_service_exceptions": metrics.inventory_exceptions,
+    }

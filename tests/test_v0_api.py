@@ -39,7 +39,9 @@ class HSPApiTests(ApiTest):
         self.assertEqual(response.status_code, 400)
         self.assertIn("too short", json.loads(response.data)["detail"])
 
-    def test_valid_post(self):
+    @mock.patch("historical_system_profiles.views.v0.fetch_systems_with_profiles")
+    def test_valid_post(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         response = self.client.post(
             "/api/historical-system-profiles/v0/profiles",
             json=fixtures.HISTORICAL_PROFILE,
@@ -58,4 +60,9 @@ class HSPApiTests(ApiTest):
             headers=fixtures.AUTH_HEADER,
         )
         fetched_profile = json.loads(response.data)["data"][0]
+        # confirm we have the updated display name from inventory
+        self.assertEqual("tartuffe", fetched_profile["display_name"])
+        # set the display name to the old value so we can compare that no other values changed
+        fetched_profile["system_profile"]["display_name"] = "test-system"
+        fetched_profile["display_name"] = "test-system"
         self.assertEqual(profile, fetched_profile)

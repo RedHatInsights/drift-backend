@@ -54,3 +54,37 @@ HISTORICAL_PROFILE = {
         "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
     },
 }
+
+FETCH_SYSTEMS_WITH_PROFILES_RESULT = (
+    {
+        "account": "9876543",
+        "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
+        "created": "2018-01-31T13:00:00.100010Z",
+        "display_name": "tartuffe",
+        "fqdn": "hostname_one",
+        "id": "cd54d888-4ccb-11ea-8627-98fa9b07d419",
+        "insights_id": "00000000-28af-11e9-9ab0-c85b761454fa",
+        "ip_addresses": ["10.0.0.3", "2620:52:0:2598:5054:ff:fecd:ae15"],
+        "mac_addresses": ["52:54:00:cd:ae:00", "00:00:00:00:00:00"],
+        "rhel_machine_id": None,
+        "satellite_id": None,
+        "subscription_manager_id": "RHN Classic and Red Hat Subscription Management",
+        "system_profile": {
+            "salutation": "hi",
+            "fqdn": "hostname_one",
+            "system_profile_exists": False,
+            "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "network_interfaces": [
+                {
+                    "name": "eth99",
+                    "mtu": 3,
+                    "ipv4_addresses": ["8.7.6.5"],
+                    "ipv6_addresses": ["00:00:01"],
+                },
+                {"no_name": "foo"},
+            ],
+        },
+        "tags": [],
+        "updated": "2018-01-31T14:00:00.500000Z",
+    },
+)
