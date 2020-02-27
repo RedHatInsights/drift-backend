@@ -25,3 +25,7 @@ prometheus_multiproc_dir = os.getenv("prometheus_multiproc_dir", None)
 path_prefix = os.getenv("PATH_PREFIX", "/api/")
 
 enable_rbac = str_to_bool(os.getenv("ENABLE_RBAC", "True"))
+
+enable_smart_mgmt_check = str_to_bool(
+    os.getenv("ENABLE_SMART_MANAGEMENT_ENTITLEMENT_CHECK", "False")
+)

@@ -4,7 +4,7 @@ import base64
 
 from http import HTTPStatus
 
-from kerlescan.config import path_prefix, enable_rbac
+from kerlescan.config import path_prefix, enable_rbac, enable_smart_mgmt_check
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.rbac_service_interface import get_roles
 from kerlescan.exceptions import HTTPError
@@ -90,6 +90,11 @@ def ensure_entitled(request, app_name, logger):
     check if the request is entitled. We run this on all requests and bail out
     if the URL is whitelisted. Returning 'None' allows the request to go through.
     """
+
+    entitlement_key = "insights"
+    if enable_smart_mgmt_check:
+        entitlement_key = "smart_management"
+
     # TODO: Blueprint.before_request was not working as expected, using
     # before_app_request and checking URL here instead.
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
@@ -98,18 +103,17 @@ def ensure_entitled(request, app_name, logger):
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
         entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
-        if "smart_management" in entitlements:
-            if entitlements["smart_management"].get("is_entitled"):
-                logger.debug("enabled smart management entitlement found on header")
+        if entitlement_key in entitlements:
+            if entitlements[entitlement_key].get("is_entitled"):
+                logger.debug("enabled entitlement found on header")
                 return  # allow request
     else:
         logger.debug("identity header not sent for request")
 
     # if we got here, reject the request
-    logger.debug("smart management entitlement not found for account.")
+    logger.debug("entitlement not found for account.")
     raise HTTPError(
-        HTTPStatus.BAD_REQUEST,
-        message="Smart management entitlement not found for account.",
+        HTTPStatus.BAD_REQUEST, message="Entitlement not found for account."
     )
 
 
