@@ -32,6 +32,13 @@ class HistoricalSystemProfile(db.Model):
     def display_name(self):
         return self.system_profile["display_name"]
 
+    @property
+    def captured_date(self):
+        if "captured_date" in self.system_profile:
+            return self.system_profile["captured_date"]
+        else:
+            return self.created_on
+
     def to_json(self):
         json_dict = {}
         json_dict["id"] = str(self.id)
@@ -41,4 +48,5 @@ class HistoricalSystemProfile(db.Model):
         json_dict["updated"] = self.modified_on.isoformat() + "Z"
         json_dict["system_profile"] = self.system_profile
         json_dict["display_name"] = self.display_name
+        json_dict["captured_date"] = self.captured_date
         return json_dict

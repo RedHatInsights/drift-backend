@@ -154,6 +154,7 @@ components:
         - inventory_id
         - system_profile
         - updated
+        - captured_date
       properties:
         account:
           type: string
@@ -168,6 +169,8 @@ components:
         system_profile:
           type: object
         updated:
+          type: string
+        captured_date:
           type: string
     Version:
       required:
@@ -192,10 +195,11 @@ components:
           type: array
           items:
             type: object
+            additionalProperties: false
             properties:
               id:
                 type: string
-              created:
+              captured_date:
                 type: string
   parameters:
     InventoryId:

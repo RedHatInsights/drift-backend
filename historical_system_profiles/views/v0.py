@@ -49,7 +49,9 @@ def get_hsps_by_inventory_id(inventory_id):
 
     query_results = query.all()
     result = {
-        "profiles": [{"created": p.created_on, "id": p.id} for p in query_results],
+        "profiles": [
+            {"captured_date": p.captured_date, "id": p.id} for p in query_results
+        ],
     }
     return {"data": [result]}
 
