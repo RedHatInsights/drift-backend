@@ -19,7 +19,7 @@ decoded AUTH_HEADER (newlines added for readability):
         }
     }
     "entitlements": {
-        "smart_management": {
+        "insights": {
             "is_entitled": true
         }
     }
@@ -27,17 +27,14 @@ decoded AUTH_HEADER (newlines added for readability):
 """
 
 AUTH_HEADER = {
-    "X-RH-IDENTITY": "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6"
-    "IjEyMzQiLCJpbnRlcm5hbCI6eyJvcmdfaWQiOiI1"
-    "Njc4In0sInR5cGUiOiJVc2VyIiwidXNlciI6eyJl"
-    "bWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJmaXJz"
-    "dF9uYW1lIjoiRmlyc3RuYW1lIiwiaXNfYWN0aXZl"
-    "Ijp0cnVlLCJpc19pbnRlcm5hbCI6dHJ1ZSwiaXNf"
-    "b3JnX2FkbWluIjpmYWxzZSwibGFzdF9uYW1lIjoi"
-    "TGFzdG5hbWUiLCJsb2NhbGUiOiJlbl9VUyIsInVz"
-    "ZXJuYW1lIjoidGVzdF91c2VybmFtZSJ9fSwiZW50"
-    "aXRsZW1lbnRzIjogeyJzbWFydF9tYW5hZ2VtZW50"
-    "IjogeyJpc19lbnRpdGxlZCI6IHRydWUgfX19Cg=="
+    "X-RH-IDENTITY": "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6I"
+    "jEyMzQiLCJpbnRlcm5hbCI6eyJvcmdfaWQiOiI1Njc4In0sInR5cGUiOiJ"
+    "Vc2VyIiwidXNlciI6eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJma"
+    "XJzdF9uYW1lIjoiRmlyc3RuYW1lIiwiaXNfYWN0aXZlIjp0cnVlLCJpc19"
+    "pbnRlcm5hbCI6dHJ1ZSwiaXNfb3JnX2FkbWluIjpmYWxzZSwibGFzdF9uY"
+    "W1lIjoiTGFzdG5hbWUiLCJsb2NhbGUiOiJlbl9VUyIsInVzZXJuYW1lIjo"
+    "idGVzdF91c2VybmFtZSJ9fSwiZW50aXRsZW1lbnRzIjp7Imluc2lnaHRzI"
+    "jp7ImlzX2VudGl0bGVkIjp0cnVlfX19Cg=="
 }
 
 
