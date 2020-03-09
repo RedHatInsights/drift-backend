@@ -4,13 +4,13 @@ import connexion
 from flask_migrate import Migrate
 
 
-from kerlescan import config
+from kerlescan import config as kerlescan_config
 from kerlescan.cloudwatch import setup_cw_logging
 from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
-from historical_system_profiles import db_config, app_config
+from historical_system_profiles import config, app_config
 from historical_system_profiles.views import v0
 from historical_system_profiles.models import db
 
@@ -26,7 +26,7 @@ def create_app():
 
 def create_connexion_app():
     openapi_args = {
-        "path_prefix": config.path_prefix,
+        "path_prefix": kerlescan_config.path_prefix,
         "app_name": app_config.get_app_name(),
     }
     connexion_app = connexion.App(
@@ -47,9 +47,9 @@ def create_connexion_app():
     # set up DB
     flask_app.config["SQLALCHEMY_ECHO"] = False
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_config.db_uri
-    flask_app.config["SQLALCHEMY_POOL_SIZE"] = db_config.db_pool_size
-    flask_app.config["SQLALCHEMY_POOL_TIMEOUT"] = db_config.db_pool_timeout
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = config.db_uri
+    flask_app.config["SQLALCHEMY_POOL_SIZE"] = config.db_pool_size
+    flask_app.config["SQLALCHEMY_POOL_TIMEOUT"] = config.db_pool_timeout
     db.init_app(flask_app)
 
     flask_app.register_blueprint(v0.section)

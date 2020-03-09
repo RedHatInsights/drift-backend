@@ -4,8 +4,7 @@ from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 
-from historical_system_profiles.models import HistoricalSystemProfile, db
-from historical_system_profiles import metrics
+from historical_system_profiles import metrics, db_interface
 
 
 section = Blueprint("v0", __name__)
@@ -24,11 +23,7 @@ def get_hsps_by_ids(profile_ids):
     """
     account_number = view_helpers.get_account_number(request)
 
-    query = HistoricalSystemProfile.query.filter(
-        HistoricalSystemProfile.account == account_number,
-        HistoricalSystemProfile.id.in_(profile_ids),
-    )
-    result = query.all()
+    result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
 
     result_with_updated_names = _get_current_names_for_profiles(result)
 
@@ -59,13 +54,8 @@ def get_hsps_by_inventory_id(inventory_id):
     return a list of historical system profiles for a given inventory id
     """
     account_number = view_helpers.get_account_number(request)
+    query_results = db_interface.get_hsps_by_inventory_id(inventory_id, account_number)
 
-    query = HistoricalSystemProfile.query.filter(
-        HistoricalSystemProfile.account == account_number,
-        HistoricalSystemProfile.inventory_id == inventory_id,
-    )
-
-    query_results = query.all()
     result = {
         "profiles": [
             {"captured_date": p.captured_date, "id": p.id} for p in query_results
@@ -80,13 +70,9 @@ def create_profile(body):
     """
     account_number = view_helpers.get_account_number(request)
 
-    profile = HistoricalSystemProfile(
-        account=account_number,
-        inventory_id=body["inventory_id"],
-        system_profile=body["profile"],
+    profile = db_interface.create_profile(
+        body["inventory_id"], body["profile"], account_number
     )
-    db.session.add(profile)
-    db.session.commit()
 
     return profile.to_json()
 
