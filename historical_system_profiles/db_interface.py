@@ -20,6 +20,14 @@ def get_hsps_by_inventory_id(inventory_id, account_number):
     return query_results
 
 
+def delete_hsps_by_inventory_id(inventory_id):
+    query = HistoricalSystemProfile.query.filter(
+        HistoricalSystemProfile.inventory_id == inventory_id,
+    )
+    query.delete(synchronize_session="fetch")
+    db.session.commit()
+
+
 def get_hsps_by_profile_ids(profile_ids, account_number):
     query = HistoricalSystemProfile.query.filter(
         HistoricalSystemProfile.account == account_number,

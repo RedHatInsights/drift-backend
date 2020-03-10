@@ -13,6 +13,8 @@ alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
 psycopg2 = "*"
+kafka = "*"
+logstash-formatter = "*"
 
 [dev-packages]
 black = "*"
@@ -22,6 +24,7 @@ coverage = "*"
 codecov = "*"
 yamllint = "*"
 mock = "*"
+ipdb = "*"
 
 [pipenv]
 allow_prereleases = true

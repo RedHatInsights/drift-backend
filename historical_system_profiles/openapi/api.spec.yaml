@@ -78,28 +78,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /profiles:
-    post:
-      summary: create a profile
-      description: "create a profile"
-      operationId: historical_system_profiles.views.v0.create_profile
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HistoricalProfileIn'
-      responses:
-        '200':
-          description: the created profile
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HistoricalProfile'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
 components:
   responses:
     InternalServerError:

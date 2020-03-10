@@ -64,19 +64,6 @@ def get_hsps_by_inventory_id(inventory_id):
     return {"data": [result]}
 
 
-def create_profile(body):
-    """
-    return a list of historical system profiles for a given inventory id
-    """
-    account_number = view_helpers.get_account_number(request)
-
-    profile = db_interface.create_profile(
-        body["inventory_id"], body["profile"], account_number
-    )
-
-    return profile.to_json()
-
-
 @section.before_app_request
 def ensure_account_number():
     return view_helpers.ensure_account_number(request, current_app.logger)

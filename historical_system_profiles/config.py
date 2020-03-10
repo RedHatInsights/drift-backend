@@ -14,3 +14,10 @@ db_pool_size = int(os.getenv("HSP_DB_POOL_SIZE", "5"))
 bootstrap_servers = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092").split(",")
 consume_topic = os.getenv("CONSUME_TOPIC", None)
 group_id = os.getenv("GROUP_ID", None)
+listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
+
+# logging params used outside of flask
+aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
+aws_secret_access_key = os.getenv("CW_AWS_SECRET_ACCESS_KEY", None)
+aws_region_name = os.getenv("CW_AWS_REGION_NAME", "us-east-1")
+log_group = os.getenv("LOG_GROUP", "platform-dev")
