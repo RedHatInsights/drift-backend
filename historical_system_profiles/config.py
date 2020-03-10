@@ -1,7 +1,21 @@
+import logging
 import os
 
-# please ensure these are all documented in README.md
+# pull the app name from the env var; we are not fully initialized yet
+app_name = os.getenv("APP_NAME", "historical-system-profiles")
+logger = logging.getLogger(app_name)
 
+
+def get_namespace():
+    try:
+        with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
+            namespace = f.read()
+        return namespace
+    except EnvironmentError:
+        logger.info("Not running in openshift")
+
+
+# please ensure these are all documented in README.md
 _db_user = os.getenv("HSP_DB_USER", "insights")
 _db_password = os.getenv("HSP_DB_PASS", "insights")
 _db_host = os.getenv("HSP_DB_HOST", "localhost:5432")
@@ -21,3 +35,4 @@ aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
 aws_secret_access_key = os.getenv("CW_AWS_SECRET_ACCESS_KEY", None)
 aws_region_name = os.getenv("CW_AWS_REGION_NAME", "us-east-1")
 log_group = os.getenv("LOG_GROUP", "platform-dev")
+namespace = get_namespace()

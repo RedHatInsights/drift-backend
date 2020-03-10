@@ -17,7 +17,7 @@ if [ -z "$PORT" ];
 fi
 
 if [ -z "$SERVICE_MODE" ];
-  then SERVICE_MODE=REST
+  then SERVICE_MODE=REST_API
 fi
 
 if [ "$SERVICE_MODE" == "REST_API" ];
