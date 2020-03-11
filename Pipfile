@@ -15,6 +15,8 @@ flask-migrate = "*"
 psycopg2 = "*"
 kafka = "*"
 logstash-formatter = "*"
+python-dateutil = "*"
+pytz = "*"
 
 [dev-packages]
 black = "*"

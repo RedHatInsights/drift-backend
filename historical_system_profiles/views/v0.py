@@ -1,10 +1,15 @@
+import dateutil
+import datetime
+import pytz
+
 from flask import Blueprint, request, current_app
+from dateutil.relativedelta import relativedelta
 
 from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 
-from historical_system_profiles import metrics, db_interface
+from historical_system_profiles import metrics, db_interface, config
 
 
 section = Blueprint("v0", __name__)
@@ -15,19 +20,6 @@ def get_version():
     return the service version
     """
     return {"version": "0.0.1"}
-
-
-def get_hsps_by_ids(profile_ids):
-    """
-    return a list of historical system profiles for the given profile IDs
-    """
-    account_number = view_helpers.get_account_number(request)
-
-    result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
-
-    result_with_updated_names = _get_current_names_for_profiles(result)
-
-    return {"data": [r.to_json() for r in result_with_updated_names]}
 
 
 def _get_current_names_for_profiles(hsps):
@@ -49,18 +41,69 @@ def _get_current_names_for_profiles(hsps):
     return enriched_hsps
 
 
+def _get_utc_aware_dt(datetime_in):
+    """
+    from https://docs.python.org/3/library/datetime.html#determining-if-an-object-is-aware-or-naive
+
+    assume UTC if no timezone exists for captured_date. This field is read from
+    `date --utc` on the client system; some records are in UTC but don't have a
+    TZ due to a bug I introduced that's since been fixed.
+
+    """
+    if datetime_in.tzinfo is None or datetime_in.tzinfo.utcoffset(datetime_in) is None:
+        return pytz.utc.localize(datetime_in)
+    else:
+        return datetime_in
+
+
+def _filter_old_hsps(hsps):
+    """
+    removes any HSPs with a captured_date older than now minus the valid profile age
+
+    This compares "apples to apples"; the captured_date is always in UTC, and
+    we pull the current time in UTC.
+    """
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cutoff = now - relativedelta(days=config.valid_profile_age_days)
+
+    valid_hsps = []
+    for hsp in hsps:
+        captured_date = _get_utc_aware_dt(dateutil.parser.parse(hsp.captured_date))
+        if captured_date > cutoff:
+            valid_hsps.append(hsp)
+
+    return valid_hsps
+
+
+def get_hsps_by_ids(profile_ids):
+    """
+    return a list of historical system profiles for the given profile IDs
+    """
+    account_number = view_helpers.get_account_number(request)
+
+    result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
+    filtered_result = _filter_old_hsps(result)
+
+    result_with_updated_names = _get_current_names_for_profiles(filtered_result)
+
+    return {"data": [r.to_json() for r in result_with_updated_names]}
+
+
 def get_hsps_by_inventory_id(inventory_id):
     """
     return a list of historical system profiles for a given inventory id
     """
     account_number = view_helpers.get_account_number(request)
     query_results = db_interface.get_hsps_by_inventory_id(inventory_id, account_number)
+    valid_profiles = _filter_old_hsps(query_results)
 
-    result = {
-        "profiles": [
-            {"captured_date": p.captured_date, "id": p.id} for p in query_results
-        ],
-    }
+    profile_metadata = []
+    for profile in valid_profiles:
+        profile_metadata.append(
+            {"captured_date": profile.captured_date, "id": profile.id}
+        )
+
+    result = {"profiles": profile_metadata}
     return {"data": [result]}
 
 

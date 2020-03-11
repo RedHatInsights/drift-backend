@@ -36,3 +36,5 @@ aws_secret_access_key = os.getenv("CW_AWS_SECRET_ACCESS_KEY", None)
 aws_region_name = os.getenv("CW_AWS_REGION_NAME", "us-east-1")
 log_group = os.getenv("LOG_GROUP", "platform-dev")
 namespace = get_namespace()
+
+valid_profile_age_days = float(os.getenv("VALID_PROFILE_AGE_DAYS", 7.0))
