@@ -1,6 +1,4 @@
-import dateutil
 import datetime
-import pytz
 
 from flask import Blueprint, request, current_app
 from dateutil.relativedelta import relativedelta
@@ -41,21 +39,6 @@ def _get_current_names_for_profiles(hsps):
     return enriched_hsps
 
 
-def _get_utc_aware_dt(datetime_in):
-    """
-    from https://docs.python.org/3/library/datetime.html#determining-if-an-object-is-aware-or-naive
-
-    assume UTC if no timezone exists for captured_date. This field is read from
-    `date --utc` on the client system; some records are in UTC but don't have a
-    TZ due to a bug I introduced that's since been fixed.
-
-    """
-    if datetime_in.tzinfo is None or datetime_in.tzinfo.utcoffset(datetime_in) is None:
-        return pytz.utc.localize(datetime_in)
-    else:
-        return datetime_in
-
-
 def _filter_old_hsps(hsps):
     """
     removes any HSPs with a captured_date older than now minus the valid profile age
@@ -68,8 +51,7 @@ def _filter_old_hsps(hsps):
 
     valid_hsps = []
     for hsp in hsps:
-        captured_date = _get_utc_aware_dt(dateutil.parser.parse(hsp.captured_date))
-        if captured_date > cutoff:
+        if hsp.captured_date > cutoff:
             valid_hsps.append(hsp)
 
     return valid_hsps

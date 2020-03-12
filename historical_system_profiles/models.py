@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime
+import pytz
+import dateutil
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -28,24 +30,44 @@ class HistoricalSystemProfile(db.Model):
         self.id = generated_id
         self.system_profile["id"] = generated_id
 
+    def _get_utc_aware_dt(self, datetime_in):
+        """
+        https://docs.python.org/3/library/datetime.html#determining-if-an-object-is-aware-or-naive
+
+        assume UTC if no timezone exists for captured_date. This field is read from
+        `date --utc` on the client system; some records are in UTC but don't have a
+        TZ due to a bug I introduced that's since been fixed.
+
+        """
+        if (
+            datetime_in.tzinfo is None
+            or datetime_in.tzinfo.utcoffset(datetime_in) is None
+        ):
+            return pytz.utc.localize(datetime_in)
+        else:
+            return datetime_in
+
     @property
     def display_name(self):
         return self.system_profile["display_name"]
 
     @property
     def captured_date(self):
-        if "captured_date" in self.system_profile:
-            return self.system_profile["captured_date"]
-        else:
-            return self.created_on
+        captured_dt = self.created_on
+        if self.system_profile.get("captured_date", None):
+            captured_dt = dateutil.parser.parse(self.system_profile["captured_date"])
+
+        return self._get_utc_aware_dt(captured_dt)
 
     def to_json(self):
+        created_dt = self._get_utc_aware_dt(self.created_on)
+        updated_dt = self._get_utc_aware_dt(self.modified_on)
         json_dict = {}
         json_dict["id"] = str(self.id)
         json_dict["account"] = self.account
         json_dict["inventory_id"] = self.inventory_id
-        json_dict["created"] = self.created_on.isoformat() + "Z"
-        json_dict["updated"] = self.modified_on.isoformat() + "Z"
+        json_dict["created"] = created_dt.isoformat()
+        json_dict["updated"] = updated_dt.isoformat()
         json_dict["system_profile"] = self.system_profile
         json_dict["display_name"] = self.display_name
         json_dict["captured_date"] = self.captured_date
