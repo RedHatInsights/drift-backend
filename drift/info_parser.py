@@ -1,4 +1,5 @@
 from flask import current_app
+from dateutil.parser import parse as dateparse
 
 from kerlescan.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
@@ -6,20 +7,13 @@ from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 from kerlescan import profile_parser
 
 
-def build_comparisons(systems_with_profiles, baselines):
+def build_comparisons(systems_with_profiles, baselines, historical_sys_profiles):
     """
     given a list of system profile dicts and fact namespace, return a dict of
     comparisons, along with a dict of system data
     """
-    fact_comparisons = _select_applicable_info(systems_with_profiles, baselines)
-
-    system_mappings = [
-        _system_mapping(system_with_profile)
-        for system_with_profile in systems_with_profiles
-    ]
-
-    sorted_system_mappings = sorted(
-        system_mappings, key=lambda system: system["display_name"]
+    fact_comparisons = _select_applicable_info(
+        systems_with_profiles, baselines, historical_sys_profiles
     )
 
     # remove system metadata that we put into to the comparison earlier
@@ -34,12 +28,31 @@ def build_comparisons(systems_with_profiles, baselines):
         grouped_comparisons, key=lambda comparison: comparison["name"]
     )
 
+    # create metadata
     baseline_mappings = [_baseline_mapping(baseline) for baseline in baselines]
+    historical_sys_profile_mappings = [
+        _historical_sys_profile_mapping(historical_sys_profile)
+        for historical_sys_profile in historical_sys_profiles
+    ]
+    system_mappings = [
+        _system_mapping(system_with_profile)
+        for system_with_profile in systems_with_profiles
+    ]
+    sorted_system_mappings = sorted(
+        system_mappings, key=lambda system: system["display_name"]
+    )
+
+    sorted_historical_sys_profile_mappings = sorted(
+        historical_sys_profile_mappings,
+        key=lambda hsp: dateparse(hsp["updated"]),
+        reverse=True,
+    )
 
     return {
         "facts": sorted_comparisons,
         "systems": sorted_system_mappings,
         "baselines": baseline_mappings,
+        "historical_system_profiles": sorted_historical_sys_profile_mappings,
     }
 
 
@@ -96,7 +109,7 @@ def _group_comparisons(comparisons):
     return grouped_comparisons
 
 
-def _select_applicable_info(systems_with_profiles, baselines):
+def _select_applicable_info(systems_with_profiles, baselines, historical_sys_profiles):
     """
     Take a list of systems with profiles, and output a "pivoted" list of
     profile facts, where each fact key has a dict of systems and their values. This is
@@ -111,6 +124,17 @@ def _select_applicable_info(systems_with_profiles, baselines):
             system_with_profile["system_profile"], system_name, current_app.logger
         )
         parsed_system_profiles.append({**parsed_system_profile, "is_baseline": False})
+
+    for historical_sys_profile in historical_sys_profiles:
+        historical_sys_profile_name = historical_sys_profile["display_name"]
+        parsed_historical_sys_profile = profile_parser.parse_profile(
+            historical_sys_profile["system_profile"],
+            historical_sys_profile_name,
+            current_app.logger,
+        )
+        parsed_system_profiles.append(
+            {**parsed_historical_sys_profile, "is_baseline": False}
+        )
 
     # add baselines into parsed_system_profiles
     for baseline in baselines:
@@ -234,7 +258,6 @@ def _system_mapping(system):
     """
     create a header mapping for one system
     """
-
     system_profile_exists = system["system_profile"]["system_profile_exists"]
 
     return {
@@ -254,4 +277,17 @@ def _baseline_mapping(baseline):
         "id": baseline["id"],
         "display_name": baseline["display_name"],
         "updated": baseline["updated"],
+    }
+
+
+def _historical_sys_profile_mapping(historical_sys_profile):
+    """
+    create a header mapping for one historical profile
+    """
+
+    return {
+        "id": historical_sys_profile["id"],
+        "display_name": historical_sys_profile["display_name"],
+        "updated": historical_sys_profile["updated"],
+        "system_id": historical_sys_profile["inventory_id"],
     }
