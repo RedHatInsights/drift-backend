@@ -50,6 +50,14 @@ paths:
               format: uuid
           required: false
           description: list of baseline IDs to generate report for
+        - name: historical_system_profile_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          required: false
+          description: list of historical system profile IDs to generate report for
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -133,6 +141,10 @@ components:
           type: array
           items:
             type: string
+        historical_system_profile_ids:
+          type: array
+          items:
+            type: string
     Error:
       required:
         - detail
@@ -165,6 +177,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Baseline"
+        historical_system_profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoricalSystemProfile"
     FactComparison:
       description: "A list of fact names, states, and systems. This is useful
                     for displaying rows of facts to compare. Note that if the
@@ -214,6 +230,20 @@ components:
         id:
           type: string
           format: uuid
+        updated:
+          type: string
+          format: date-time
+    HistoricalSystemProfile:
+      description: "Display information for the HSPs used"
+      required:
+        - display_name
+        - id
+        - updated
+      properties:
+        display_name:
+          type: string
+        id:
+          type: string
         updated:
           type: string
           format: date-time
