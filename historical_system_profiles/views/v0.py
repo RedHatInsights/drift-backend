@@ -82,7 +82,11 @@ def get_hsps_by_inventory_id(inventory_id):
     profile_metadata = []
     for profile in valid_profiles:
         profile_metadata.append(
-            {"captured_date": profile.captured_date, "id": profile.id}
+            {
+                "captured_date": profile.captured_date,
+                "id": profile.id,
+                "system_id": profile.inventory_id,
+            }
         )
 
     result = {"profiles": profile_metadata}

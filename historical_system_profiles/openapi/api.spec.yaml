@@ -179,6 +179,8 @@ components:
                 type: string
               captured_date:
                 type: string
+              system_id:
+                type: string
   parameters:
     InventoryId:
       in: path
