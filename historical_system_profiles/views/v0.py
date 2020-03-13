@@ -89,7 +89,9 @@ def get_hsps_by_inventory_id(inventory_id):
             }
         )
 
-    sorted_profile_metadata = sorted(profile_metadata, key=lambda p: p["captured_date"])
+    sorted_profile_metadata = sorted(
+        profile_metadata, key=lambda p: p["captured_date"], reverse=True
+    )
     result = {"profiles": sorted_profile_metadata}
     return {"data": [result]}
 
