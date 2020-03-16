@@ -28,9 +28,12 @@ def archiver_event_loop(flask_app, logger):
             for data in consumer:
                 try:
                     host = data.value["host"]
+                    profile = host["system_profile"]
+                    # fqdn is on the host but we need it in the profile as well
+                    profile["fqdn"] = host["fqdn"]
                     db_interface.create_profile(
                         inventory_id=host["id"],
-                        profile=host["system_profile"],
+                        profile=profile,
                         account_number=host["account"],
                     )
                     logger.info(
