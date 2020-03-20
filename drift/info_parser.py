@@ -283,11 +283,14 @@ def _baseline_mapping(baseline):
 def _historical_sys_profile_mapping(historical_sys_profile):
     """
     create a header mapping for one historical profile
-    """
 
+    note that we use "captured_date" for the "updated" field, to retain API
+    compatability. Users are typically interested in the captured_date here and
+    not the internal updated timestamp.
+    """
     return {
         "id": historical_sys_profile["id"],
         "display_name": historical_sys_profile["display_name"],
-        "updated": historical_sys_profile["updated"],
+        "updated": historical_sys_profile["captured_date"],
         "system_id": historical_sys_profile["inventory_id"],
     }
