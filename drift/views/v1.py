@@ -117,6 +117,12 @@ def comparison_report(
             message="duplicate UUID specified in system_ids list",
         )
 
+    if len(baseline_ids) > len(set(baseline_ids)):
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="duplicate UUID specified in baseline_ids list",
+        )
+
     _validate_uuids(system_ids)
     _validate_uuids(baseline_ids)
 
