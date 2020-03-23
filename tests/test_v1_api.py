@@ -83,6 +83,16 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    def test_comparison_report_duplicate_baseline_uuid(self):
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0"
+            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 400)
+
     def test_comparison_report_bad_uuid(self):
         response = self.client.get(
             "api/drift/v1/comparison_report?"
