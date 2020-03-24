@@ -58,6 +58,12 @@ paths:
               type: string
           required: false
           description: list of historical system profile IDs to generate report for
+        - name: reference_id
+          in: query
+          schema:
+            type: string
+          required: false
+          description: reference ID (could be system, baseline, or HSP)
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -145,6 +151,8 @@ components:
           type: array
           items:
             type: string
+        reference_id:
+          type: string
     Error:
       required:
         - detail
