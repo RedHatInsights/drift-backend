@@ -106,7 +106,12 @@ def _csvify(comparisons):
 
 
 def comparison_report(
-    system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+    system_ids,
+    baseline_ids,
+    historical_sys_profile_ids,
+    reference_id,
+    auth_key,
+    data_format,
 ):
     """
     return a comparison report
@@ -131,6 +136,7 @@ def comparison_report(
             fetch_historical_sys_profiles(
                 historical_sys_profile_ids, auth_key, current_app.logger
             ),
+            reference_id,
         )
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
@@ -154,6 +160,7 @@ def comparison_report_get():
     system_ids = request.args.getlist("system_ids[]")
     baseline_ids = request.args.getlist("baseline_ids[]")
     historical_sys_profile_ids = request.args.getlist("historical_system_profile_ids[]")
+    reference_id = request.args.get("reference_id", None)
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
@@ -161,7 +168,12 @@ def comparison_report_get():
         data_format = "csv"
 
     return comparison_report(
-        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+        system_ids,
+        baseline_ids,
+        historical_sys_profile_ids,
+        auth_key,
+        reference_id,
+        data_format,
     )
 
 
@@ -172,12 +184,10 @@ def comparison_report_post():
     small wrapper over comparison_report for POSTs
     """
     system_ids = request.json["system_ids"]
-    baseline_ids = []
-    if "baseline_ids" in request.json:
-        baseline_ids = request.json["baseline_ids"]
-    historical_sys_profile_ids = []
-    if "historical_system_profile_ids" in request.json:
-        historical_sys_profile_ids = request.json["historical_system_profile_ids"]
+    baseline_ids = request.json.get("baseline_ids", [])
+    historical_sys_profile_ids = request.json.get("historical_system_profile_ids", [])
+    reference_id = request.json.get("reference_id", None)
+
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
@@ -185,7 +195,12 @@ def comparison_report_post():
         data_format = "csv"
 
     return comparison_report(
-        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+        system_ids,
+        baseline_ids,
+        historical_sys_profile_ids,
+        reference_id,
+        auth_key,
+        data_format,
     )
 
 
