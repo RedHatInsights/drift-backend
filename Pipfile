@@ -13,6 +13,7 @@ yamllint = "*"
 black = "==19.3b0"
 ipython = "*"
 openapi-spec-validator = "*"
+ipdb = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "==2.5.1"} # 2.6.0 is stricter, need to fix openapi spec to upgrade
