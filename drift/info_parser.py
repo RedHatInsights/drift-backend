@@ -259,12 +259,15 @@ def _system_mapping(system):
     create a header mapping for one system
     """
     system_profile_exists = system["system_profile"]["system_profile_exists"]
-
+    captured_or_updated = system.get("updated", None)
+    if system_profile_exists:
+        if "captured_date" in system["system_profile"]:
+            captured_or_updated = system["system_profile"]["captured_date"]
     return {
         "id": system[SYSTEM_ID_KEY],
         "display_name": profile_parser.get_name(system),
         "system_profile_exists": system_profile_exists,
-        "last_updated": system.get("updated", None),
+        "last_updated": captured_or_updated,
     }
 
 
