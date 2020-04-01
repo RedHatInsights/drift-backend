@@ -75,7 +75,7 @@ def _csvify(comparisons):
     fieldnames = ["name", "state"]
     record_ids = []
     system_names = {}
-    # add baselines to the CSV dict, then systems
+    # add baselines to the CSV dict, then systems, then historical system profiles
     for baseline in comparisons["baselines"]:
         record_ids.append(baseline["id"])
         system_names[baseline["id"]] = baseline["display_name"]
@@ -83,6 +83,12 @@ def _csvify(comparisons):
     for system in comparisons["systems"]:
         record_ids.append(system["id"])
         system_names[system["id"]] = system["display_name"]
+
+    for historical_sys_profile in comparisons["historical_system_profiles"]:
+        record_ids.append(historical_sys_profile["id"])
+        system_names[historical_sys_profile["id"]] = historical_sys_profile[
+            "display_name"
+        ]
 
     output = io.StringIO()
     csvwriter = csv.DictWriter(output, fieldnames=fieldnames + record_ids)
