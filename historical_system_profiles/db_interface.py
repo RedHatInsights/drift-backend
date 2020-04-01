@@ -1,7 +1,27 @@
 from datetime import datetime, timedelta
+
+from sqlalchemy.exc import SQLAlchemyError
+
 from historical_system_profiles.models import HistoricalSystemProfile, db
 
 
+def rollback_on_exception(func):
+    """
+    any method that does a commit should have this decorator. It will roll back
+    ORM transactions in the event of an exception.
+    """
+
+    def wrapper_rollback(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except SQLAlchemyError:
+            db.session.rollback()
+            raise
+
+    return wrapper_rollback
+
+
+@rollback_on_exception
 def create_profile(inventory_id, profile, account_number):
     profile = HistoricalSystemProfile(
         account=account_number, inventory_id=inventory_id, system_profile=profile,
@@ -21,6 +41,7 @@ def get_hsps_by_inventory_id(inventory_id, account_number):
     return query_results
 
 
+@rollback_on_exception
 def delete_hsps_by_inventory_id(inventory_id):
     query = HistoricalSystemProfile.query.filter(
         HistoricalSystemProfile.inventory_id == inventory_id,
@@ -39,6 +60,7 @@ def get_hsps_by_profile_ids(profile_ids, account_number):
     return query_results
 
 
+@rollback_on_exception
 def clean_expired_records(days_til_expired):
     now = datetime.now()
     expired_time = now - timedelta(days=days_til_expired)
