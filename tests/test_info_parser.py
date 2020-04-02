@@ -35,3 +35,11 @@ class PackageParserTests(unittest.TestCase):
     def test_bad_package_parsing(self):
         with self.assertRaises(UnparsableNEVRAError):
             profile_parser._get_name_vra_from_string("this-will_not_parse")
+
+
+class IntegerParserTests(unittest.TestCase):
+    def test_cores_per_socket_parsing(self):
+        tests = {"id": "548f28c4-752d-11ea-b35c-54e1add9c7a0"}
+
+        parsed_profiles = profile_parser.parse_profile(tests, "fake-name", None)
+        self.assertEqual(parsed_profiles["cores_per_socket"], "N/A")

@@ -102,7 +102,7 @@ def parse_profile(system_profile, display_name, logger):
 
     # add all integers, converting to str
     for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_BOOLEANS:
-        parsed_profile[key] = str(system_profile.get(key, None))
+        parsed_profile[key] = str(system_profile.get(key, "N/A"))
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, "enabled")
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, "installed")
