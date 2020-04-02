@@ -174,12 +174,12 @@ def comparison_report_get():
         data_format = "csv"
 
     return comparison_report(
-        system_ids,
-        baseline_ids,
-        historical_sys_profile_ids,
-        auth_key,
-        reference_id,
-        data_format,
+        system_ids=system_ids,
+        baseline_ids=baseline_ids,
+        historical_sys_profile_ids=historical_sys_profile_ids,
+        reference_id=reference_id,
+        auth_key=auth_key,
+        data_format=data_format,
     )
 
 
@@ -201,12 +201,12 @@ def comparison_report_post():
         data_format = "csv"
 
     return comparison_report(
-        system_ids,
-        baseline_ids,
-        historical_sys_profile_ids,
-        reference_id,
-        auth_key,
-        data_format,
+        system_ids=system_ids,
+        baseline_ids=baseline_ids,
+        historical_sys_profile_ids=historical_sys_profile_ids,
+        reference_id=reference_id,
+        auth_key=auth_key,
+        data_format=data_format,
     )
 
 
