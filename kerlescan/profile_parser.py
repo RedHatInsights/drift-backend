@@ -121,7 +121,8 @@ def parse_profile(system_profile, display_name, logger):
     for package in system_profile.get("installed_packages", []):
         try:
             name, vra = _get_name_vra_from_string(package)
-            parsed_profile["installed_packages." + name] = vra
+            if name != "gpg-pubkey":
+                parsed_profile["installed_packages." + name] = vra
         except UnparsableNEVRAError as e:
             logger.warn(e.message)
 

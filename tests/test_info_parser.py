@@ -36,6 +36,19 @@ class PackageParserTests(unittest.TestCase):
         with self.assertRaises(UnparsableNEVRAError):
             profile_parser._get_name_vra_from_string("this-will_not_parse")
 
+    def test_gpg_pubkey_parsing(self):
+        tests = {
+            "id": "548f28c4-752d-11ea-b35c-54e1add9c7a0",
+            "installed_packages": [
+                "gpg-pubkey-c481937a-5bc4662d",
+                "bash-5.0.11-1.fc31.x86_64",
+            ],
+        }
+
+        parsed_profiles = profile_parser.parse_profile(tests, "fake-name", None)
+        self.assertIn("installed_packages.bash", parsed_profiles)
+        self.assertNotIn("installed_packages.gpg-pubkey", parsed_profiles)
+
 
 class IntegerParserTests(unittest.TestCase):
     def test_cores_per_socket_parsing(self):
