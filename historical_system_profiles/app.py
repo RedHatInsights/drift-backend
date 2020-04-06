@@ -46,6 +46,8 @@ def create_connexion_app():
 
     # set up DB
     flask_app.config["SQLALCHEMY_ECHO"] = False
+    if config.log_sql_statements:
+        flask_app.config["SQLALCHEMY_ECHO"] = True
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = config.db_uri
     flask_app.config["SQLALCHEMY_POOL_SIZE"] = config.db_pool_size

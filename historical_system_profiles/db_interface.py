@@ -13,7 +13,8 @@ def rollback_on_exception(func):
 
     def wrapper_rollback(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            retval = func(*args, **kwargs)
+            return retval
         except SQLAlchemyError:
             db.session.rollback()
             raise

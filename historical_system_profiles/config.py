@@ -1,6 +1,8 @@
 import logging
 import os
 
+from kerlescan.config import str_to_bool
+
 # pull the app name from the env var; we are not fully initialized yet
 app_name = os.getenv("APP_NAME", "historical-system-profiles")
 logger = logging.getLogger(app_name)
@@ -35,6 +37,7 @@ aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
 aws_secret_access_key = os.getenv("CW_AWS_SECRET_ACCESS_KEY", None)
 aws_region_name = os.getenv("CW_AWS_REGION_NAME", "us-east-1")
 log_group = os.getenv("LOG_GROUP", "platform-dev")
+log_sql_statements = str_to_bool(os.getenv("LOG_SQL_STATEMENTS", "False"))
 namespace = get_namespace()
 
 valid_profile_age_days = float(os.getenv("VALID_PROFILE_AGE_DAYS", 7.0))
