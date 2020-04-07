@@ -45,13 +45,20 @@ def create_connexion_app():
     setup_cw_logging(flask_app.logger)
 
     # set up DB
+    engine_options = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+        "pool_size": config.db_pool_size,
+        "pool_timeout": config.db_pool_timeout,
+    }
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = config.db_uri
+    flask_app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
+
     flask_app.config["SQLALCHEMY_ECHO"] = False
     if config.log_sql_statements:
         flask_app.config["SQLALCHEMY_ECHO"] = True
-    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    flask_app.config["SQLALCHEMY_DATABASE_URI"] = config.db_uri
-    flask_app.config["SQLALCHEMY_POOL_SIZE"] = config.db_pool_size
-    flask_app.config["SQLALCHEMY_POOL_TIMEOUT"] = config.db_pool_timeout
+
     db.init_app(flask_app)
 
     flask_app.register_blueprint(v0.section)
