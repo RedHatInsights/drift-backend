@@ -7,13 +7,15 @@ from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 from kerlescan import profile_parser
 
 
-def build_comparisons(systems_with_profiles, baselines, historical_sys_profiles):
+def build_comparisons(
+    systems_with_profiles, baselines, historical_sys_profiles, reference_id
+):
     """
     given a list of system profile dicts and fact namespace, return a dict of
     comparisons, along with a dict of system data
     """
     fact_comparisons = _select_applicable_info(
-        systems_with_profiles, baselines, historical_sys_profiles
+        systems_with_profiles, baselines, historical_sys_profiles, reference_id
     )
 
     # remove system metadata that we put into to the comparison earlier
@@ -109,7 +111,9 @@ def _group_comparisons(comparisons):
     return grouped_comparisons
 
 
-def _select_applicable_info(systems_with_profiles, baselines, historical_sys_profiles):
+def _select_applicable_info(
+    systems_with_profiles, baselines, historical_sys_profiles, reference_id
+):
     """
     Take a list of systems with profiles, and output a "pivoted" list of
     profile facts, where each fact key has a dict of systems and their values. This is
@@ -156,12 +160,13 @@ def _select_applicable_info(systems_with_profiles, baselines, historical_sys_pro
         all_keys = all_keys.union(set(parsed_system_profile.keys()))
 
     info_comparisons = [
-        _create_comparison(parsed_system_profiles, key) for key in all_keys
+        _create_comparison(parsed_system_profiles, key, reference_id)
+        for key in all_keys
     ]
     return info_comparisons
 
 
-def _create_comparison(systems, info_name):
+def _create_comparison(systems, info_name, reference_id):
     """
     Take an individual fact, search for it across all systems, and create a dict
     of each system's ID and fact value. Additionally, add a "state" field that
@@ -217,6 +222,18 @@ def _create_comparison(systems, info_name):
         del system_id_value["name"]
         del system_id_value["is_baseline"]
 
+    if reference_id and info_comparison == COMPARISON_DIFFERENT:
+        # pull the reference_value for this comparison
+        reference_value = None
+        for values in sorted_system_id_values:
+            if values["id"] == reference_id:
+                reference_value = values["value"]
+
+        for values in sorted_system_id_values:
+            values["state"] = COMPARISON_SAME
+            if values["value"] != reference_value:
+                values["state"] = COMPARISON_DIFFERENT
+
     return {
         "name": info_name,
         "state": info_comparison,
@@ -259,12 +276,15 @@ def _system_mapping(system):
     create a header mapping for one system
     """
     system_profile_exists = system["system_profile"]["system_profile_exists"]
-
+    captured_or_updated = system.get("updated", None)
+    if system_profile_exists:
+        if "captured_date" in system["system_profile"]:
+            captured_or_updated = system["system_profile"]["captured_date"]
     return {
         "id": system[SYSTEM_ID_KEY],
         "display_name": profile_parser.get_name(system),
         "system_profile_exists": system_profile_exists,
-        "last_updated": system.get("updated", None),
+        "last_updated": captured_or_updated,
     }
 
 

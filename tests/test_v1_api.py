@@ -83,6 +83,16 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    def test_comparison_report_duplicate_baseline_uuid(self):
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0"
+            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 400)
+
     def test_comparison_report_bad_uuid(self):
         response = self.client.get(
             "api/drift/v1/comparison_report?"
@@ -91,6 +101,46 @@ class ApiTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 400)
+
+    @mock.patch("drift.views.v1.fetch_systems_with_profiles")
+    def test_system_metadata_timestamp(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        system_metadata = json.loads(response.data)["systems"]
+        timestamps = [s["last_updated"] for s in system_metadata]
+        self.assertEqual(
+            timestamps,
+            [
+                "2019-01-31T14:00:00.500000Z",
+                "2018-01-31T14:00:00.500000Z",
+                "2018-01-31T14:00:00.500000Z",
+            ],
+        )
+
+    @mock.patch("drift.views.v1.fetch_systems_with_profiles")
+    def test_system_metadata_timestamp_captured_date(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = (
+            fixtures.FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT
+        )
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        system_metadata = json.loads(response.data)["systems"]
+        timestamps = [s["last_updated"] for s in system_metadata]
+        self.assertEqual(
+            timestamps,
+            [
+                "2020-03-30T18:42:23+00:00",
+                "2020-03-30T18:42:23+00:00",
+                "2018-01-31T14:00:00.500000Z",
+            ],
+        )
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api(self, mock_fetch_systems):

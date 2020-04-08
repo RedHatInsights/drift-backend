@@ -75,7 +75,7 @@ def _csvify(comparisons):
     fieldnames = ["name", "state"]
     record_ids = []
     system_names = {}
-    # add baselines to the CSV dict, then systems
+    # add baselines to the CSV dict, then systems, then historical system profiles
     for baseline in comparisons["baselines"]:
         record_ids.append(baseline["id"])
         system_names[baseline["id"]] = baseline["display_name"]
@@ -83,6 +83,12 @@ def _csvify(comparisons):
     for system in comparisons["systems"]:
         record_ids.append(system["id"])
         system_names[system["id"]] = system["display_name"]
+
+    for historical_sys_profile in comparisons["historical_system_profiles"]:
+        record_ids.append(historical_sys_profile["id"])
+        system_names[historical_sys_profile["id"]] = historical_sys_profile[
+            "display_name"
+        ]
 
     output = io.StringIO()
     csvwriter = csv.DictWriter(output, fieldnames=fieldnames + record_ids)
@@ -106,7 +112,12 @@ def _csvify(comparisons):
 
 
 def comparison_report(
-    system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+    system_ids,
+    baseline_ids,
+    historical_sys_profile_ids,
+    reference_id,
+    auth_key,
+    data_format,
 ):
     """
     return a comparison report
@@ -115,6 +126,12 @@ def comparison_report(
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
             message="duplicate UUID specified in system_ids list",
+        )
+
+    if len(baseline_ids) > len(set(baseline_ids)):
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="duplicate UUID specified in baseline_ids list",
         )
 
     _validate_uuids(system_ids)
@@ -131,6 +148,7 @@ def comparison_report(
             fetch_historical_sys_profiles(
                 historical_sys_profile_ids, auth_key, current_app.logger
             ),
+            reference_id,
         )
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
@@ -154,6 +172,7 @@ def comparison_report_get():
     system_ids = request.args.getlist("system_ids[]")
     baseline_ids = request.args.getlist("baseline_ids[]")
     historical_sys_profile_ids = request.args.getlist("historical_system_profile_ids[]")
+    reference_id = request.args.get("reference_id", None)
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
@@ -161,7 +180,12 @@ def comparison_report_get():
         data_format = "csv"
 
     return comparison_report(
-        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+        system_ids=system_ids,
+        baseline_ids=baseline_ids,
+        historical_sys_profile_ids=historical_sys_profile_ids,
+        reference_id=reference_id,
+        auth_key=auth_key,
+        data_format=data_format,
     )
 
 
@@ -172,12 +196,10 @@ def comparison_report_post():
     small wrapper over comparison_report for POSTs
     """
     system_ids = request.json["system_ids"]
-    baseline_ids = []
-    if "baseline_ids" in request.json:
-        baseline_ids = request.json["baseline_ids"]
-    historical_sys_profile_ids = []
-    if "historical_system_profile_ids" in request.json:
-        historical_sys_profile_ids = request.json["historical_system_profile_ids"]
+    baseline_ids = request.json.get("baseline_ids", [])
+    historical_sys_profile_ids = request.json.get("historical_system_profile_ids", [])
+    reference_id = request.json.get("reference_id", None)
+
     auth_key = get_key_from_headers(request.headers)
 
     data_format = "json"
@@ -185,7 +207,12 @@ def comparison_report_post():
         data_format = "csv"
 
     return comparison_report(
-        system_ids, baseline_ids, historical_sys_profile_ids, auth_key, data_format
+        system_ids=system_ids,
+        baseline_ids=baseline_ids,
+        historical_sys_profile_ids=historical_sys_profile_ids,
+        reference_id=reference_id,
+        auth_key=auth_key,
+        data_format=data_format,
     )
 
 
