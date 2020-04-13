@@ -11,7 +11,7 @@ from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
 from historical_system_profiles import config, app_config
-from historical_system_profiles.views import v0
+from historical_system_profiles.views import v1
 from historical_system_profiles.models import db
 
 
@@ -61,7 +61,7 @@ def create_connexion_app():
 
     db.init_app(flask_app)
 
-    flask_app.register_blueprint(v0.section)
+    flask_app.register_blueprint(v1.section)
     flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app
 

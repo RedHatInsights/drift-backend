@@ -10,7 +10,7 @@ from kerlescan.service_interface import get_key_from_headers
 from historical_system_profiles import metrics, db_interface, config
 
 
-section = Blueprint("v0", __name__)
+section = Blueprint("v1", __name__)
 
 
 def get_version():
