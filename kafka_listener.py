@@ -3,6 +3,7 @@ import json
 from kafka import KafkaConsumer
 
 from historical_system_profiles import config, listener_logging
+from historical_system_profiles import payload_tracker_interface
 from historical_system_profiles.app import create_app
 from historical_system_profiles import db_interface
 
@@ -23,9 +24,12 @@ def main():
 
 def archiver_event_loop(flask_app, logger):
     consumer = init_consumer("platform.inventory.host-egress")
+    ptc = payload_tracker_interface.PayloadTrackerClient(logger)
     with flask_app.app_context():
         while True:
             for data in consumer:
+                payload_id = data.value["platform_metadata"].get("request_id")
+                ptc.emit_received_message("received inventory update event", payload_id)
                 try:
                     host = data.value["host"]
                     profile = host["system_profile"]
@@ -40,15 +44,22 @@ def archiver_event_loop(flask_app, logger):
                         "wrote inventory_id %s's profile to historical database"
                         % host["id"]
                     )
+                    ptc.emit_success_message("stored historical profile", payload_id)
                 except Exception:
+                    ptc.emit_error_message(
+                        "error when storing historical profile", payload_id
+                    )
                     logger.exception("An error occurred during message processing")
 
 
 def deleter_event_loop(flask_app, logger):
     consumer = init_consumer("platform.inventory.events")
+    ptc = payload_tracker_interface.PayloadTrackerClient(logger)
     with flask_app.app_context():
         while True:
             for data in consumer:
+                payload_id = data.value["request_id"]
+                ptc.emit_received_message("received inventory delete event", payload_id)
                 try:
                     if data.value["type"] == "delete":
                         inventory_id = data.value["id"]
@@ -56,8 +67,14 @@ def deleter_event_loop(flask_app, logger):
                         logger.info(
                             "deleted profiles for inventory_id %s" % inventory_id
                         )
+                        ptc.emit_success_message(
+                            "deleted profiles for inventory record", payload_id
+                        )
                 except Exception:
                     logger.exception("An error occurred during message processing")
+                    ptc.emit_error_message(
+                        "error when deleting profiles for inventory record", payload_id
+                    )
 
 
 def init_consumer(queue):

@@ -42,3 +42,4 @@ namespace = get_namespace()
 
 valid_profile_age_days = float(os.getenv("VALID_PROFILE_AGE_DAYS", 7.0))
 expired_cleaner_sleep_minutes = float(os.getenv("EXPIRED_CLEANER_SLEEP_MINUTES", 20.0))
+tracker_topic = os.getenv("TRACKER_TOPIC", "platform.payload-status")
