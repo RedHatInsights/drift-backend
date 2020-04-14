@@ -2,6 +2,7 @@
 
 to run:
 
+ * docker login https://registry.redhat.io (needed so you can pull base images during build process)
  * `bash build-images.sh`
  * `docker-compose -f full-stack.yml up -d`
  * confirm everything is up: `docker-compose -f full-stack.yml ps` and confirm everything is either "running" or "exit 0"
