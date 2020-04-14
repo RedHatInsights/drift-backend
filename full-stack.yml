@@ -1,0 +1,230 @@
+# This docker-compose file will stand up the entire stack including ingress and inventory.
+# The steps for buidling those images are out of scope, but this will reference them if they exist.
+# This docker compose file will stand up the minimal components necessary for
+# Puptoo to work. Nothing is stood up for uploads or to consume the inventory 
+# messages.
+version: "3"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+      - ZOOKEEPER_SERVER_ID=1
+  kafka:
+    image: confluentinc/cp-kafka
+    ports:
+      - 29092:29092
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+  pup:
+    image: puptoo:latest
+    ports:
+      - 8000:8000 #for prometheus endpoint
+    environment:
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      - kafka
+  minio:
+      image: minio/minio
+      command: server /data
+      volumes:
+        - '$MINIO_DATA_DIR:/data:Z'
+        - '$MINIO_CONFIG_DIR:/root/.minio:Z'
+      ports:
+        - 9000:9000
+      environment:
+        - MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY
+        - MINIO_SECRET_KEY=$MINIO_SECRET_KEY
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY;
+      /usr/bin/mc mb myminio/insights-upload-perma;
+      /usr/bin/mc mb myminio/insights-upload-rejected;
+      /usr/bin/mc policy download myminio/insights-upload-perma;
+      /usr/bin/mc policy download myminio/insights-upload-rejected;
+      exit 0;
+      "
+  ingress:
+    image: ingress:latest # we expect this image to exist already
+    ports:
+      - 8080:3000
+    environment:
+      - AWS_ACCESS_KEY_ID=$MINIO_ACCESS_KEY
+      - AWS_SECRET_ACCESS_KEY=$MINIO_SECRET_KEY
+      - AWS_REGION=us-east-1
+      - INGRESS_STAGEBUCKET=insights-upload-perma
+      - INGRESS_REJECTBUCKET=insights-upload-rejected
+      - INGRESS_INVENTORYURL=http://inventory:8080/api/inventory/v1/hosts
+      - INGRESS_VALIDTOPICS=testareno,advisor #if you test a different topic, add it here
+      - OPENSHIFT_BUILD_COMMIT=woopwoop
+      - INGRESS_MINIODEV=true
+      - INGRESS_MINIOACCESSKEY=$MINIO_ACCESS_KEY
+      - INGRESS_MINIOSECRETKEY=$MINIO_SECRET_KEY
+      - INGRESS_MINIOENDPOINT=minio:9000
+    depends_on:
+      - kafka
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: insights
+  baselinedb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: insights
+  hspdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: insights
+  inventory:
+    image: inventory:mq # we expect this image to exist already
+    command: bash -c "make upgrade_db && make run_inv_mq_service"
+    environment:
+      - INVENTORY_DB_HOST=db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    links:
+      - db
+    depends_on:
+      - db
+      - kafka
+    ports:
+      - "8081:8080"
+  inventory-rest:
+    image: inventory:mq # we expect this image to exist already
+    command: bash -c "make upgrade_db && make run_inv_web_service"
+    environment:
+      - INVENTORY_DB_HOST=db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - KAFKA_TOPIC=platform.system-profile
+      - KAFKA_GROUP=inventory
+    links:
+      - db
+    depends_on:
+      - db
+      - kafka
+    ports:
+      - "8082:8080"
+  system-baseline-migration:
+    image: system-baseline:latest
+    command: bash -c "FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade"
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_DB_HOST=baselinedb
+    links:
+      - baselinedb
+    depends_on:
+      - baselinedb
+  system-baseline-rest:
+    image: system-baseline:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_DB_HOST=baselinedb
+      - ENABLE_RBAC=False
+    links:
+      - baselinedb
+      - inventory-rest
+    depends_on:
+      - baselinedb
+      - system-baseline-migration
+      - inventory-rest
+    ports:
+      - "8083:8080"
+  drift-rest:
+    image: drift:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_SVC_URL=http://system-baseline-rest:8080
+      - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v0/profiles
+      - ENABLE_RBAC=False
+    links:
+      - inventory-rest
+      - system-baseline-rest
+      - hsp-rest
+    depends_on:
+      - inventory-rest
+      - system-baseline-rest
+      - hsp-rest
+    ports:
+      - "8084:8080"
+  hsp-migration:
+    image: hsp:latest
+    command: bash -c "FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade"
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - HSP_DB_HOST=hspdb
+    links:
+      - hspdb
+    depends_on:
+      - hspdb
+  hsp-rest:
+    image: hsp:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - HSP_DB_HOST=hspdb
+      - ENABLE_RBAC=False
+    links:
+      - hspdb
+      - inventory-rest
+    depends_on:
+      - hspdb
+      - inventory-rest
+    ports:
+      - "8085:8080"
+  hsp-archiver:
+    image: hsp:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - LISTENER_TYPE=ARCHIVER
+      - APP_FILE=kafka_listener.py
+    links:
+      - hspdb
+      - kafka
+    depends_on:
+      - hspdb
+      - kafka
+  hsp-deleter:
+    image: hsp:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - LISTENER_TYPE=DELETER
+      - APP_FILE=kafka_listener.py
+    links:
+      - hspdb
+      - kafka
+    depends_on:
+      - hspdb
+      - kafka
+  upload-client:
+    build:
+      context: ./client
+    environment:
+      - ACCOUNT_NUMBER=1212729
+      - SLEEP=60
+    links:
+      - ingress
+    depends_on:
+      - hsp-archiver
