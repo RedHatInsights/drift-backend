@@ -3,7 +3,7 @@ from historical_system_profiles import config
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 class PayloadTrackerClient:
@@ -18,16 +18,16 @@ class PayloadTrackerClient:
         )
         return producer
 
-    def emit_received_message(self, message, payload_id):
-        message = self._create_message("received", message, payload_id)
+    def emit_received_message(self, message, **kwargs):
+        message = self._create_message("received", message, **kwargs)
         self._send_tracker_message(message)
 
-    def emit_success_message(self, message, payload_id):
-        message = self._create_message("success", message, payload_id)
+    def emit_success_message(self, message, **kwargs):
+        message = self._create_message("success", message, **kwargs)
         self._send_tracker_message(message)
 
-    def emit_error_message(self, message, payload_id):
-        message = self._create_message("error", message, payload_id)
+    def emit_error_message(self, message, **kwargs):
+        message = self._create_message("error", message, **kwargs)
         self._send_tracker_message(message)
 
     def _send_tracker_message(self, message):
@@ -40,10 +40,15 @@ class PayloadTrackerClient:
                 "unable to send update on %s to tracker topic" % message["payload_id"]
             )
 
-    def _create_message(self, status, message, payload_id):
-        now = datetime.now(timezone.utc).isoformat()
+    def _create_message(
+        self, status, message, payload_id=-1, account=-1, inventory_id=-1
+    ):
+        # date format supplied by payload-tracker team
+        now = str(datetime.now().isoformat())
         message = {
             "payload_id": payload_id,
+            "account": account,
+            "inventory_id": inventory_id,
             "service": "hsp-%s" % config.listener_type.lower(),
             "status": status,
             "status_msg": message,

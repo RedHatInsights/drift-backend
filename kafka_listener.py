@@ -28,10 +28,15 @@ def archiver_event_loop(flask_app, logger):
     with flask_app.app_context():
         while True:
             for data in consumer:
-                payload_id = data.value["platform_metadata"].get("request_id")
-                ptc.emit_received_message("received inventory update event", payload_id)
                 try:
                     host = data.value["host"]
+                    payload_id = data.value["platform_metadata"].get("request_id")
+                    ptc.emit_received_message(
+                        "received inventory update event",
+                        payload_id=payload_id,
+                        account=host["account"],
+                        inventory_id=host["id"],
+                    )
                     profile = host["system_profile"]
                     # fqdn is on the host but we need it in the profile as well
                     profile["fqdn"] = host["fqdn"]
@@ -44,10 +49,20 @@ def archiver_event_loop(flask_app, logger):
                         "wrote inventory_id %s's profile to historical database"
                         % host["id"]
                     )
-                    ptc.emit_success_message("stored historical profile", payload_id)
+                    ptc.emit_success_message(
+                        "stored historical profile",
+                        payload_id=payload_id,
+                        account=host["account"],
+                        inventory_id=host["id"],
+                    )
                 except Exception:
+                    host = data.value["host"]
+                    payload_id = data.value["platform_metadata"].get("request_id")
                     ptc.emit_error_message(
-                        "error when storing historical profile", payload_id
+                        "error when storing historical profile",
+                        payload_id=payload_id,
+                        account=host["account"],
+                        inventory_id=host["id"],
                     )
                     logger.exception("An error occurred during message processing")
 
@@ -58,22 +73,38 @@ def deleter_event_loop(flask_app, logger):
     with flask_app.app_context():
         while True:
             for data in consumer:
-                payload_id = data.value["request_id"]
-                ptc.emit_received_message("received inventory delete event", payload_id)
                 try:
                     if data.value["type"] == "delete":
                         inventory_id = data.value["id"]
+                        payload_id = data.value["request_id"]
+                        account = data.value["account"]
+                        ptc.emit_received_message(
+                            "received inventory delete event",
+                            payload_id=payload_id,
+                            account=account,
+                            inventory_id=inventory_id,
+                        )
+
                         db_interface.delete_hsps_by_inventory_id(inventory_id)
                         logger.info(
                             "deleted profiles for inventory_id %s" % inventory_id
                         )
                         ptc.emit_success_message(
-                            "deleted profiles for inventory record", payload_id
+                            "deleted profiles for inventory record",
+                            payload_id=payload_id,
+                            account=account,
+                            inventory_id=inventory_id,
                         )
                 except Exception:
                     logger.exception("An error occurred during message processing")
+                    inventory_id = data.value["id"]
+                    payload_id = data.value["request_id"]
+                    account = data.value["account"]
                     ptc.emit_error_message(
-                        "error when deleting profiles for inventory record", payload_id
+                        "error when deleting profiles for inventory record",
+                        payload_id=payload_id,
+                        account=account,
+                        inventory_id=inventory_id,
                     )
 
 
