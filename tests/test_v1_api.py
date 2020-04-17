@@ -472,6 +472,38 @@ class ApiPatchTests(ApiTest):
         )
         self.assertEqual(response.status_code, 400)
 
+        # attempt to add a fact with leading whitespace
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_LEADING_WHITESPACE_NAME,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # attempt to add a fact with trailing whitespace
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_TRAILING_WHITESPACE_NAME,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # attempt to add a value with leading whitespace
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_LEADING_WHITESPACE_VALUE,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # attempt to add a value with trailing whitespace
+        response = self.client.patch(
+            "api/system-baseline/v1/baselines/%s" % patched_uuid,
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_PATCH_TRAILING_WHITESPACE_VALUE,
+        )
+        self.assertEqual(response.status_code, 400)
+
 
 class CreateFromInventoryTests(ApiTest):
     def tearDown(self):
@@ -567,3 +599,18 @@ class ApiDuplicateTests(ApiTest):
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("memory declared more than once", response.data.decode("utf-8"))
+
+    def test_create_baseline_with_leading_trailing_whitespace(self):
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_NAME_LEADING_WHITESPACE,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_NAME_TRAILING_WHITESPACE,
+        )
+        self.assertEqual(response.status_code, 400)

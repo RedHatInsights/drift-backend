@@ -46,6 +46,32 @@ def check_for_empty_name_values(facts):
             raise FactValidationError("value for %s cannot be empty" % fact["name"])
 
 
+def check_for_invalid_whitespace_name_values(facts):
+    """
+    check if any name or values have invalid whitespace at beginning and end; raises an exception.
+    """
+    for fact in facts:
+        if "values" in fact:
+            check_for_invalid_whitespace_name_values(fact["values"])
+        if "name" in fact and not check_whitespace(fact["name"]):
+            raise FactValidationError(
+                "fact name cannot have leading or trailing whitespace"
+            )
+        elif "value" in fact and not check_whitespace(fact["value"]):
+            raise FactValidationError(
+                "value for %s cannot have leading or trailing whitespace" % fact["name"]
+            )
+
+
+def check_whitespace(input_string):
+    """
+    returns true if there is no leading or trailing whitespace, otherwise returns false.
+    """
+    if input_string == input_string.lstrip() == input_string.rstrip():
+        return True
+    return False
+
+
 def check_facts_length(facts):
     """
     check if fact length is greater than FACTS_MAXSIZE

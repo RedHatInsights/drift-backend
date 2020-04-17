@@ -295,6 +295,7 @@ def create_baseline(system_baseline_in):
         )
 
     _check_for_existing_display_name(system_baseline_in["display_name"], account_number)
+    _check_for_whitespace_in_display_name(system_baseline_in["display_name"])
 
     baseline_facts = []
     if "baseline_facts" in system_baseline_in:
@@ -362,6 +363,17 @@ def _check_for_existing_display_name(display_name, account_number):
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
             message="display_name '%s' already used for this account" % display_name,
+        )
+
+
+def _check_for_whitespace_in_display_name(display_name):
+    """
+    check to see if the display name has leading or trailing whitespace
+    """
+    if display_name and (not validators.check_whitespace(display_name)):
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="baseline name cannot have leading or trailing whitespace",
         )
 
 
@@ -493,6 +505,7 @@ def _validate_facts(facts):
     validators.check_facts_length(facts)
     validators.check_for_duplicate_names(facts)
     validators.check_for_empty_name_values(facts)
+    validators.check_for_invalid_whitespace_name_values(facts)
     validators.check_for_value_values(facts)
     validators.check_name_value_length(facts)
 

@@ -198,6 +198,10 @@ BASELINE_VALUE_VALUES_LOAD = {
     "display_name": "value values baseline",
 }
 
+BASELINE_NAME_LEADING_WHITESPACE = {"baseline_facts": [], "display_name": " baseline"}
+
+BASELINE_NAME_TRAILING_WHITESPACE = {"baseline_facts": [], "display_name": "baseline "}
+
 # >500 char name
 BASELINE_LONG_NAME_LOAD = {
     "baseline_facts": [
@@ -263,6 +267,31 @@ BASELINE_PATCH_EMPTY_VALUE = {
 BASELINE_PATCH_EMPTY_NAME = {
     "display_name": "ABCDE",
     "facts_patch": [{"op": "replace", "path": "/0/values/0/name", "value": ""}],
+}
+
+BASELINE_PATCH_LEADING_WHITESPACE_NAME = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/name", "value": " fact"}],
+}
+
+BASELINE_PATCH_TRAILING_WHITESPACE_NAME = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/name", "value": " fact"}],
+}
+
+BASELINE_PATCH_LEADING_WHITESPACE_NAME = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/name", "value": "fact "}],
+}
+
+BASELINE_PATCH_LEADING_WHITESPACE_VALUE = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/value", "value": " value"}],
+}
+
+BASELINE_PATCH_TRAILING_WHITESPACE_VALUE = {
+    "display_name": "ABCDE",
+    "facts_patch": [{"op": "replace", "path": "/0/values/0/value", "value": "value "}],
 }
 
 
