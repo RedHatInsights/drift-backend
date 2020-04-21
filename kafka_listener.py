@@ -30,10 +30,10 @@ def archiver_event_loop(flask_app, logger):
             for data in consumer:
                 try:
                     host = data.value["host"]
-                    payload_id = data.value["platform_metadata"].get("request_id")
+                    request_id = data.value["platform_metadata"].get("request_id")
                     ptc.emit_received_message(
                         "received inventory update event",
-                        payload_id=payload_id,
+                        request_id=request_id,
                         account=host["account"],
                         inventory_id=host["id"],
                     )
@@ -51,16 +51,16 @@ def archiver_event_loop(flask_app, logger):
                     )
                     ptc.emit_success_message(
                         "stored historical profile",
-                        payload_id=payload_id,
+                        request_id=request_id,
                         account=host["account"],
                         inventory_id=host["id"],
                     )
                 except Exception:
                     host = data.value["host"]
-                    payload_id = data.value["platform_metadata"].get("request_id")
+                    request_id = data.value["platform_metadata"].get("request_id")
                     ptc.emit_error_message(
                         "error when storing historical profile",
-                        payload_id=payload_id,
+                        request_id=request_id,
                         account=host["account"],
                         inventory_id=host["id"],
                     )
@@ -76,11 +76,11 @@ def deleter_event_loop(flask_app, logger):
                 try:
                     if data.value["type"] == "delete":
                         inventory_id = data.value["id"]
-                        payload_id = data.value["request_id"]
+                        request_id = data.value["request_id"]
                         account = data.value["account"]
                         ptc.emit_received_message(
                             "received inventory delete event",
-                            payload_id=payload_id,
+                            request_id=request_id,
                             account=account,
                             inventory_id=inventory_id,
                         )
@@ -91,18 +91,18 @@ def deleter_event_loop(flask_app, logger):
                         )
                         ptc.emit_success_message(
                             "deleted profiles for inventory record",
-                            payload_id=payload_id,
+                            request_id=request_id,
                             account=account,
                             inventory_id=inventory_id,
                         )
                 except Exception:
                     logger.exception("An error occurred during message processing")
                     inventory_id = data.value["id"]
-                    payload_id = data.value["request_id"]
+                    request_id = data.value["request_id"]
                     account = data.value["account"]
                     ptc.emit_error_message(
                         "error when deleting profiles for inventory record",
-                        payload_id=payload_id,
+                        request_id=request_id,
                         account=account,
                         inventory_id=inventory_id,
                     )
