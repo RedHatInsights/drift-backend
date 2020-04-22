@@ -3,9 +3,10 @@ import json
 from kafka import KafkaConsumer
 
 from historical_system_profiles import config, listener_logging
-from historical_system_profiles import payload_tracker_interface
 from historical_system_profiles.app import create_app
-from historical_system_profiles import db_interface
+from historical_system_profiles import archiver
+from historical_system_profiles import deleter
+from historical_system_profiles import payload_tracker_interface
 
 
 def main():
@@ -13,99 +14,16 @@ def main():
     logger.error("starting %s listener" % config.listener_type)
 
     app = create_app()
+    ptc = payload_tracker_interface.PayloadTrackerClient(logger)
 
     if config.listener_type == "ARCHIVER":
-        archiver_event_loop(app.app, logger)
+        consumer = init_consumer("platform.inventory.host-egress")
+        archiver.event_loop(app.app, consumer, ptc, logger)
     elif config.listener_type == "DELETER":
-        deleter_event_loop(app.app, logger)
+        consumer = init_consumer("platform.inventory.events")
+        deleter.event_loop(app.app, consumer, ptc, logger)
     else:
         logger.error("unable to detect listener type")
-
-
-def archiver_event_loop(flask_app, logger):
-    consumer = init_consumer("platform.inventory.host-egress")
-    ptc = payload_tracker_interface.PayloadTrackerClient(logger)
-    with flask_app.app_context():
-        while True:
-            for data in consumer:
-                try:
-                    host = data.value["host"]
-                    request_id = data.value["platform_metadata"].get("request_id")
-                    ptc.emit_received_message(
-                        "received inventory update event",
-                        request_id=request_id,
-                        account=host["account"],
-                        inventory_id=host["id"],
-                    )
-                    profile = host["system_profile"]
-                    # fqdn is on the host but we need it in the profile as well
-                    profile["fqdn"] = host["fqdn"]
-                    db_interface.create_profile(
-                        inventory_id=host["id"],
-                        profile=profile,
-                        account_number=host["account"],
-                    )
-                    logger.info(
-                        "wrote inventory_id %s's profile to historical database"
-                        % host["id"]
-                    )
-                    ptc.emit_success_message(
-                        "stored historical profile",
-                        request_id=request_id,
-                        account=host["account"],
-                        inventory_id=host["id"],
-                    )
-                except Exception:
-                    host = data.value["host"]
-                    request_id = data.value["platform_metadata"].get("request_id")
-                    ptc.emit_error_message(
-                        "error when storing historical profile",
-                        request_id=request_id,
-                        account=host["account"],
-                        inventory_id=host["id"],
-                    )
-                    logger.exception("An error occurred during message processing")
-
-
-def deleter_event_loop(flask_app, logger):
-    consumer = init_consumer("platform.inventory.events")
-    ptc = payload_tracker_interface.PayloadTrackerClient(logger)
-    with flask_app.app_context():
-        while True:
-            for data in consumer:
-                try:
-                    if data.value["type"] == "delete":
-                        inventory_id = data.value["id"]
-                        request_id = data.value["request_id"]
-                        account = data.value["account"]
-                        ptc.emit_received_message(
-                            "received inventory delete event",
-                            request_id=request_id,
-                            account=account,
-                            inventory_id=inventory_id,
-                        )
-
-                        db_interface.delete_hsps_by_inventory_id(inventory_id)
-                        logger.info(
-                            "deleted profiles for inventory_id %s" % inventory_id
-                        )
-                        ptc.emit_success_message(
-                            "deleted profiles for inventory record",
-                            request_id=request_id,
-                            account=account,
-                            inventory_id=inventory_id,
-                        )
-                except Exception:
-                    logger.exception("An error occurred during message processing")
-                    inventory_id = data.value["id"]
-                    request_id = data.value["request_id"]
-                    account = data.value["account"]
-                    ptc.emit_error_message(
-                        "error when deleting profiles for inventory record",
-                        request_id=request_id,
-                        account=account,
-                        inventory_id=inventory_id,
-                    )
 
 
 def init_consumer(queue):
