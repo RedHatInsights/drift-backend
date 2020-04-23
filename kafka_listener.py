@@ -7,11 +7,14 @@ from historical_system_profiles.app import create_app
 from historical_system_profiles import archiver
 from historical_system_profiles import deleter
 from historical_system_profiles import payload_tracker_interface
+from prometheus_client import start_http_server as start_metrics_server
 
 
 def main():
     logger = listener_logging.initialize_logging()
     logger.error("starting %s listener" % config.listener_type)
+
+    start_metrics_server(config.listener_metrics_port)
 
     app = create_app()
     ptc = payload_tracker_interface.PayloadTrackerClient(logger)
