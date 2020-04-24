@@ -16,7 +16,6 @@ docker build . -t ingress:latest
 cd ..
 
 # ingress build
-./s2i build https://github.com/RedHatInsights/insights-puptoo.git  centos/python-36-centos7 insights-puptoo:latest -e ENABLE_PIPENV=true
 git clone https://github.com/RedHatInsights/insights-puptoo.git
 cd insights-puptoo
 docker build . -t puptoo:latest
