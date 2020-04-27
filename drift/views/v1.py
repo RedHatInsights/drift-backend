@@ -8,10 +8,10 @@ from uuid import UUID
 from drift import info_parser, metrics, app_config
 from drift.version import app_version
 from drift.baseline_service_interface import fetch_baselines
-from drift.historical_sys_profile_service_interface import fetch_historical_sys_profiles
 
 from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.exceptions import HTTPError, ItemNotReturned
 
@@ -47,6 +47,8 @@ def get_event_counters():
         "systems_compared_no_sysprofile": metrics.systems_compared_no_sysprofile,
         "inventory_service_requests": metrics.inventory_service_requests,
         "inventory_service_exceptions": metrics.inventory_service_exceptions,
+        "hsp_service_requests": metrics.hsp_service_requests,
+        "hsp_service_exceptions": metrics.hsp_service_exceptions,
     }
 
 
@@ -146,7 +148,10 @@ def comparison_report(
             systems_with_profiles,
             fetch_baselines(baseline_ids, auth_key, current_app.logger),
             fetch_historical_sys_profiles(
-                historical_sys_profile_ids, auth_key, current_app.logger
+                historical_sys_profile_ids,
+                auth_key,
+                current_app.logger,
+                get_event_counters(),
             ),
             reference_id,
         )
