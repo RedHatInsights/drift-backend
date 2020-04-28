@@ -30,6 +30,8 @@ class HistoricalSystemProfile(db.Model):
         generated_id = str(uuid.uuid4())
         self.id = generated_id
         self.system_profile["id"] = generated_id
+        # set this now and not at commit time. It is needed as the fallback value for captured_on.
+        self.created_on = datetime.utcnow()
         self.captured_on = self._get_captured_date()
 
     def _get_captured_date(self):
