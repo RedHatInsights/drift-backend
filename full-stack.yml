@@ -3,15 +3,20 @@
 # This docker compose file will stand up the minimal components necessary for
 # Puptoo to work. Nothing is stood up for uploads or to consume the inventory 
 # messages.
-version: "3"
+version: "2.4"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=32181
       - ZOOKEEPER_SERVER_ID=1
+    healthcheck:
+      test: ["CMD", "cub", "zk-ready", "zookeeper:32181", "80"]
+      interval: 2s
+      retries: 5
   kafka:
-    image: confluentinc/cp-kafka
+    build:
+      context: ./kafka
     ports:
       - 29092:29092
     depends_on:
@@ -21,6 +26,10 @@ services:
       - KAFKA_BROKER_ID=1
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+    healthcheck:
+      test: ["CMD", "bash", "kafka-check.sh"]
+      interval: 2s
+      retries: 30
   pup:
     image: puptoo:latest
     ports:
@@ -102,8 +111,10 @@ services:
     links:
       - db
     depends_on:
-      - db
-      - kafka
+      kafka:
+        condition: service_healthy
+      db:
+        condition: service_started
     ports:
       - "8081:8080"
   inventory-rest:
@@ -117,8 +128,10 @@ services:
     links:
       - db
     depends_on:
-      - db
-      - kafka
+      kafka:
+        condition: service_healthy
+      db:
+        condition: service_started
     ports:
       - "8082:8080"
   system-baseline-migration:
@@ -203,8 +216,10 @@ services:
       - hspdb
       - kafka
     depends_on:
-      - hspdb
-      - kafka
+      kafka:
+        condition: service_healthy
+      hspdb:
+        condition: service_started
   hsp-deleter:
     image: hsp:latest
     environment:
@@ -216,8 +231,10 @@ services:
       - hspdb
       - kafka
     depends_on:
-      - hspdb
-      - kafka
+      kafka:
+        condition: service_healthy
+      hspdb:
+        condition: service_started
   upload-client:
     build:
       context: ./client
