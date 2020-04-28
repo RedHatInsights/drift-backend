@@ -41,7 +41,7 @@ def _archive_profile(data, ptc, logger):
     logger.info("wrote inventory_id %s's profile to historical database" % host["id"])
 
 
-def _emit_archiver_error(data, ptc):
+def _emit_archiver_error(data, ptc, logger):
     """
     send an error message to payload tracker. This does not raise an
     exception.
@@ -55,6 +55,7 @@ def _emit_archiver_error(data, ptc):
         account=host["account"],
         inventory_id=host["id"],
     )
+    logger.exception("An error occurred during message processing")
 
 
 def event_loop(flask_app, consumer, ptc, logger):
@@ -64,12 +65,4 @@ def event_loop(flask_app, consumer, ptc, logger):
                 try:
                     _archive_profile(data, ptc, logger)
                 except Exception:
-                    host = data.value["host"]
-                    request_id = data.value["platform_metadata"].get("request_id")
-                    ptc.emit_error_message(
-                        "error when storing historical profile",
-                        request_id=request_id,
-                        account=host["account"],
-                        inventory_id=host["id"],
-                    )
-                    logger.exception("An error occurred during message processing")
+                    _emit_archiver_error(data, ptc, logger)
