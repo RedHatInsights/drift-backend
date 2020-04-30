@@ -1,8 +1,4 @@
-# This docker-compose file will stand up the entire stack including ingress and inventory.
-# The steps for buidling those images are out of scope, but this will reference them if they exist.
-# This docker compose file will stand up the minimal components necessary for
-# Puptoo to work. Nothing is stood up for uploads or to consume the inventory 
-# messages.
+# this is heavily adapted from the puptoo full-stack.yml
 version: "2.4"
 services:
   zookeeper:
