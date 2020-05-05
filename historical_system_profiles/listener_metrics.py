@@ -27,3 +27,5 @@ delete_messages_errored = Counter(
     "hsp_delete_messages_errored",
     "count of delete messages we unsuccessfully processed",
 )
+
+records_cleaned = Counter("hsp_records_cleaned", "count of records removed by cleaner")
