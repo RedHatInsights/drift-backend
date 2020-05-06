@@ -31,6 +31,7 @@ def setup_cw_logging(logger):  # pragma: no cover
         boto3_session=session,
         log_group=os.environ.get("CW_LOG_GROUP", "platform-dev"),
         stream_name=namespace,
+        create_log_group=False,
     )
 
     logger.addHandler(handler)
