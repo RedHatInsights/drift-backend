@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "066e66316970eea2c357166787ec60fa4dd097773ce726f86cf0e2a22ffef3c6"
+            "sha256": "c822a7baf569f1ec3bb4296892e63dc24599fda3e40df672ada1b5250c52db09"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -32,18 +32,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:5a8c918c04015147f40e498994cd85c9442f6e00b4cf87ffb04f15d6a24135f4",
-                "sha256:7b82123d25100c834b71868d60e66fca37e0691edd444fb149d004ab00bea3b4"
+                "sha256:989ede38b9f69743e2536ccf371941354e77103b47b37d5ba90f77718368a248",
+                "sha256:dc4d17a9b0bd6fb03b2650a0f7c7b6a458583fe7bebbcd6bbefd299d7169fb5b"
             ],
             "index": "pypi",
-            "version": "==1.12.49"
+            "version": "==1.13.3"
         },
         "botocore": {
             "hashes": [
-                "sha256:a474131ba7a7d700b91696a27e8cdcf1b473084addf92f90b269ebd8f5c3d3e0",
-                "sha256:b805691b4dedcb2a252f52347479ff351429624a873f001b6a1c81aca03dccee"
+                "sha256:d291035e643c353029df8985cbc0bbdcdf9117fff81c715dd688aadd51816f41",
+                "sha256:e2c384f378d96c09079d9fa44be4f6a849c4d5295de68c9c8afc8783f7a5a2a2"
             ],
-            "version": "==1.15.49"
+            "version": "==1.16.3"
         },
         "cachecontrol": {
             "extras": [
@@ -149,10 +149,10 @@
         },
         "insights-core": {
             "hashes": [
-                "sha256:19ff98af46816879e59d4bfc1fd91f22f2df412977c8209ac897dd1317bf051d"
+                "sha256:9a9c1b02027f4b89630d253fddb6dd82851f787193ba002b60649bf55e022713"
             ],
             "index": "pypi",
-            "version": "==3.0.161"
+            "version": "==3.0.162"
         },
         "itsdangerous": {
             "hashes": [
@@ -185,7 +185,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/beav/kerlescan.git",
-            "ref": "9000bfc15827b32481c439d5d6fd1d5a6c7a4a5e"
+            "ref": "ebdf17735971010d4932a0d87807beb92741ab07"
         },
         "lockfile": {
             "hashes": [
@@ -501,11 +501,11 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:ca478e52ae1f88da0102360e57e528b92f3ae4316aabac80a2cd7f7ab2efb48a",
-                "sha256:eb8d075de37f678424527b5ef6ea23f7b80240ca031c2dd6de5879d687a65333"
+                "sha256:5b241b84bbf0eb085d43ae9d46adf38a13b45929ca7774a740990c2c242534bb",
+                "sha256:f0126781d0f959da852fb3089e170ed807388e986a8dd4e6ac44855845b0fb1c"
             ],
             "index": "pypi",
-            "version": "==7.13.0"
+            "version": "==7.14.0"
         },
         "ipython-genutils": {
             "hashes": [
