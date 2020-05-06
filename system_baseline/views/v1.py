@@ -427,6 +427,7 @@ def copy_baseline_by_id(baseline_id, display_name):
 
     account_number = view_helpers.get_account_number(request)
     _check_for_existing_display_name(display_name, account_number)
+    _check_for_whitespace_in_display_name(display_name)
 
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
