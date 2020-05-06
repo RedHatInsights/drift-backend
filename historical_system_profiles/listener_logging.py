@@ -43,6 +43,10 @@ def initialize_logging():
     logger = logging.getLogger(app_config.get_app_name())
 
     if config.aws_access_key_id and config.aws_secret_access_key:
+        logger.warn("configuring cloudwatch logging")
         config_cloudwatch(logger)
+        logger.warn("cloudwatch logging ENABLED")
+    else:
+        logger.warn("cloudwatch logging DISABLED")
 
     return logger
