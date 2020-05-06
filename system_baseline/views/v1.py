@@ -452,6 +452,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     _validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
+    _check_for_whitespace_in_display_name(system_baseline_patch["display_name"])
 
     # this query is a bit different than what's in _check_for_existing_display_name,
     # since it's OK if the display name is used by the baseline we are updating
