@@ -1,6 +1,5 @@
-from flask import Blueprint, request, current_app, Response
+from flask import Blueprint, request, current_app
 from http import HTTPStatus
-import json
 import jsonpatch
 import jsonpointer
 
@@ -11,6 +10,7 @@ from kerlescan import profile_parser
 from kerlescan.exceptions import HTTPError, ItemNotReturned
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
+from kerlescan.paginate import build_paginated_baseline_list_response
 
 from system_baseline import metrics, app_config, validators
 from system_baseline.version import app_version
@@ -19,89 +19,10 @@ from system_baseline.exceptions import FactValidationError
 
 section = Blueprint("v1", __name__)
 
-pagination_link_template = "%s?limit=%s&offset=%s&order_by=%s&order_how=%s"
-
 FACTS_MAXSIZE = 2 ** 19  # 512KB
 
 
-def _create_first_link(path, limit, offset, count, order_by, order_how):
-    first_link = pagination_link_template % (path, limit, 0, order_by, order_how)
-    return first_link
-
-
-def _create_previous_link(path, limit, offset, count, order_by, order_how):
-    # if we are at the beginning, do not create a previous link
-    if offset == 0 or offset - limit < 0:
-        return _create_first_link(path, limit, offset, count, order_by, order_how)
-    previous_link = pagination_link_template % (
-        request.path,
-        limit,
-        offset - limit,
-        order_by,
-        order_how,
-    )
-    return previous_link
-
-
-def _create_next_link(path, limit, offset, count, order_by, order_how):
-    # if we are at the end, do not create a next link
-    if limit + offset >= count:
-        return _create_last_link(path, limit, offset, count, order_by, order_how)
-    next_link = pagination_link_template % (
-        request.path,
-        limit,
-        limit + offset,
-        order_by,
-        order_how,
-    )
-    return next_link
-
-
-def _create_last_link(path, limit, offset, count, order_by, order_how):
-    final_offset = count - limit if (count - limit) >= 0 else 0
-    last_link = pagination_link_template % (
-        path,
-        limit,
-        final_offset,
-        order_by,
-        order_how,
-    )
-    return last_link
-
-
-def _build_paginated_baseline_list_response(
-    count, limit, offset, order_by, order_how, baseline_list, withhold_facts=False
-):
-    json_baseline_list = [
-        baseline.to_json(withhold_facts=withhold_facts) for baseline in baseline_list
-    ]
-    link_params = {
-        "path": request.path,
-        "limit": limit,
-        "offset": offset,
-        "order_by": order_by,
-        "order_how": order_how,
-        "count": count,
-    }
-    json_output = {
-        "meta": {"count": count, "total_available": _get_total_baseline_count()},
-        "links": {
-            "first": _create_first_link(**link_params),
-            "next": _create_next_link(**link_params),
-            "previous": _create_previous_link(**link_params),
-            "last": _create_last_link(**link_params),
-        },
-        "data": json_baseline_list,
-    }
-
-    return _build_json_response(json_output)
-
-
-def _build_json_response(json_data, status=200):
-    return Response(json.dumps(json_data), status=status, mimetype="application/json")
-
-
-def _get_total_baseline_count():
+def _get_total_available_baselines():
     """
     return a count of total number of baselines available for an account
     """
@@ -119,7 +40,7 @@ def get_version():
 
 @metrics.baseline_fetch_requests.time()
 @metrics.api_exceptions.count_exceptions()
-def get_baselines_by_ids(baseline_ids, limit, order_by, order_how, offset):
+def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     """
     return a list of baselines given their ID
     """
@@ -128,19 +49,17 @@ def get_baselines_by_ids(baseline_ids, limit, order_by, order_how, offset):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
+    count = query.count()
+    total_available = _get_total_available_baselines()
 
     query = _create_ordering(order_by, order_how, query)
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
-    return _build_paginated_baseline_list_response(
-        len(query_results),
-        limit,
-        offset,
-        order_by,
-        order_how,
-        query_results,
-        withhold_facts=False,
+    json_list = [baseline.to_json(withhold_facts=False) for baseline in query_results]
+
+    return build_paginated_baseline_list_response(
+        limit, offset, order_by, order_how, json_list, total_available, count
     )
 
 
@@ -216,20 +135,18 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
         query = query.filter(
             SystemBaseline.display_name.contains(display_name, autoescape=True)
         )
+    count = query.count()
+    total_available = _get_total_available_baselines()
 
     query = _create_ordering(order_by, order_how, query)
 
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
-    return _build_paginated_baseline_list_response(
-        len(query_results),
-        limit,
-        offset,
-        order_by,
-        order_how,
-        query_results,
-        withhold_facts=True,
+    json_list = [baseline.to_json(withhold_facts=True) for baseline in query_results]
+
+    return build_paginated_baseline_list_response(
+        limit, offset, order_by, order_how, json_list, total_available, count
     )
 
 
