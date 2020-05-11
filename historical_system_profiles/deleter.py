@@ -1,3 +1,5 @@
+import time
+
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
 
@@ -53,9 +55,10 @@ def _emit_delete_error(data, ptc):
     )
 
 
-def event_loop(flask_app, consumer, ptc, logger):
+def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
     with flask_app.app_context():
         while True:
+            time.sleep(delay_seconds)
             for data in consumer:
                 try:
                     if data.value["type"] == "delete":

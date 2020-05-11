@@ -1,3 +1,5 @@
+import time
+
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
 
@@ -58,9 +60,10 @@ def _emit_archiver_error(data, ptc, logger):
     logger.exception("An error occurred during message processing")
 
 
-def event_loop(flask_app, consumer, ptc, logger):
+def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
     with flask_app.app_context():
         while True:
+            time.sleep(delay_seconds)
             for data in consumer:
                 try:
                     _archive_profile(data, ptc, logger)

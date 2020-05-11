@@ -21,10 +21,10 @@ def main():
 
     if config.listener_type == "ARCHIVER":
         consumer = init_consumer("platform.inventory.host-egress", logger)
-        archiver.event_loop(app.app, consumer, ptc, logger)
+        archiver.event_loop(app.app, consumer, ptc, logger, config.listener_delay)
     elif config.listener_type == "DELETER":
         consumer = init_consumer("platform.inventory.events", logger)
-        deleter.event_loop(app.app, consumer, ptc, logger)
+        deleter.event_loop(app.app, consumer, ptc, logger, config.listener_delay)
     else:
         logger.error("unable to detect listener type")
 
