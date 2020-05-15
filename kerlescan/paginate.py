@@ -58,7 +58,7 @@ def _create_last_link(path, limit, offset, count, order_by, order_how):
 
 
 def build_paginated_baseline_list_response(
-    limit, offset, order_by, order_how, json_list, total_available
+    limit, offset, order_by, order_how, json_list, total_available, count
 ):
     link_params = {
         "path": request.path,
@@ -66,10 +66,10 @@ def build_paginated_baseline_list_response(
         "offset": offset,
         "order_by": order_by,
         "order_how": order_how,
-        "count": len(json_list),
+        "count": count,
     }
     json_output = {
-        "meta": {"count": len(json_list), "total_available": total_available},
+        "meta": {"count": count, "total_available": total_available},
         "links": {
             "first": _create_first_link(**link_params),
             "next": _create_next_link(**link_params),
