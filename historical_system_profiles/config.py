@@ -36,7 +36,7 @@ listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
 aws_secret_access_key = os.getenv("CW_AWS_SECRET_ACCESS_KEY", None)
 aws_region_name = os.getenv("CW_AWS_REGION_NAME", "us-east-1")
-log_group = os.getenv("LOG_GROUP", "platform-dev")
+log_group = os.getenv("CW_LOG_GROUP", "platform-dev")
 log_sql_statements = str_to_bool(os.getenv("LOG_SQL_STATEMENTS", "False"))
 namespace = get_namespace()
 
