@@ -8,7 +8,10 @@ from sqlalchemy.orm.session import make_transient
 from kerlescan import view_helpers
 from kerlescan import profile_parser
 from kerlescan.exceptions import HTTPError, ItemNotReturned
-from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.inventory_service_interface import (
+    fetch_systems_with_profiles,
+    ensure_correct_system_count,
+)
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.paginate import build_paginated_baseline_list_response
 
@@ -49,6 +52,11 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
+    try:
+        ensure_correct_system_count(baseline_ids, query.all())
+    except ItemNotReturned as e:
+        raise HTTPError(HTTPStatus.NOT_FOUND, message=e.message)
+
     count = query.count()
     total_available = _get_total_available_baselines()
 
@@ -126,7 +134,8 @@ def _create_ordering(order_by, order_how, query):
 @metrics.api_exceptions.count_exceptions()
 def get_baselines(limit, offset, order_by, order_how, display_name=None):
     """
-    return a list of baselines given their ID
+    return a list of baselines given their display_name
+    if no display_names given, return a list of all baselines for this account
     """
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
