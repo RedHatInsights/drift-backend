@@ -14,7 +14,7 @@ class DBInterfaceTests(utils.ApiTest):
             headers=fixtures.AUTH_HEADER,
         )
         data = json.loads(response.data)
-        self.assertEquals(0, len(data["data"][0]["profiles"]))
+        self.assertEqual(response.status_code, 404)
 
         # add one record, confirm count
         with self.test_flask_app.app_context():
@@ -40,4 +40,4 @@ class DBInterfaceTests(utils.ApiTest):
             headers=fixtures.AUTH_HEADER,
         )
         data = json.loads(response.data)
-        self.assertEquals(0, len(data["data"][0]["profiles"]))
+        self.assertEqual(response.status_code, 404)

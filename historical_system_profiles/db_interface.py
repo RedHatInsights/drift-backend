@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
-
+from http import HTTPStatus
 from sqlalchemy.exc import SQLAlchemyError
+
+from kerlescan.exceptions import HTTPError, ItemNotReturned
+from kerlescan.inventory_service_interface import ensure_correct_system_count
 
 from historical_system_profiles.models import HistoricalSystemProfile, db
 
@@ -39,7 +42,10 @@ def get_hsps_by_inventory_id(inventory_id, account_number):
     )
 
     query_results = query.all()
-    return query_results
+
+    if query_results:
+        return query_results
+    raise HTTPError(HTTPStatus.NOT_FOUND, message="%s not available" % inventory_id)
 
 
 @rollback_on_exception
@@ -58,6 +64,11 @@ def get_hsps_by_profile_ids(profile_ids, account_number):
     )
 
     query_results = query.all()
+    try:
+        ensure_correct_system_count(profile_ids, query_results)
+    except ItemNotReturned as e:
+        raise HTTPError(HTTPStatus.NOT_FOUND, message=e.message)
+
     return query_results
 
 
