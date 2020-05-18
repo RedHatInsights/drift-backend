@@ -8,7 +8,7 @@ from kerlescan.exceptions import ItemNotReturned
 from kerlescan.service_interface import fetch_data
 
 
-def _ensure_correct_system_count(system_ids_requested, result):
+def ensure_correct_system_count(system_ids_requested, result):
     """
     raise an exception if we didn't get back the number of systems we expected.
 
@@ -52,7 +52,7 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
         counters["inventory_service_exceptions"],
     )
 
-    _ensure_correct_system_count(system_ids, systems_result)
+    ensure_correct_system_count(system_ids, systems_result)
 
     # create a blank profile for each system
     system_profiles = {
