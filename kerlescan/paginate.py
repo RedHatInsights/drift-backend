@@ -69,7 +69,12 @@ def build_paginated_baseline_list_response(
         "count": count,
     }
     json_output = {
-        "meta": {"count": count, "total_available": total_available},
+        "meta": {
+            "count": count,
+            "limit": limit,
+            "offset": offset,
+            "total_available": total_available,
+        },
         "links": {
             "first": _create_first_link(**link_params),
             "next": _create_next_link(**link_params),
