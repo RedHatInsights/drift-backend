@@ -29,8 +29,8 @@ db_pool_size = int(os.getenv("HSP_DB_POOL_SIZE", "5"))
 
 bootstrap_servers = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092").split(",")
 consume_topic = os.getenv("CONSUME_TOPIC", None)
-group_id = os.getenv("GROUP_ID", None)
 listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
+kafka_group_id = os.getenv("KAFKA_GROUP_ID", "hsp-%s" % listener_type.lower())
 
 # logging params used outside of flask
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
@@ -43,4 +43,4 @@ namespace = get_namespace()
 valid_profile_age_days = float(os.getenv("VALID_PROFILE_AGE_DAYS", 7.0))
 expired_cleaner_sleep_minutes = float(os.getenv("EXPIRED_CLEANER_SLEEP_MINUTES", 20.0))
 tracker_topic = os.getenv("TRACKER_TOPIC", "platform.payload-status")
-listener_metrics_port = os.getenv("LISTENER_METRICS_PORT", 5000)
+listener_metrics_port = int(os.getenv("LISTENER_METRICS_PORT", 5000))

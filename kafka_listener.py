@@ -20,20 +20,21 @@ def main():
     ptc = payload_tracker_interface.PayloadTrackerClient(logger)
 
     if config.listener_type == "ARCHIVER":
-        consumer = init_consumer("platform.inventory.host-egress")
+        consumer = init_consumer("platform.inventory.host-egress", logger)
         archiver.event_loop(app.app, consumer, ptc, logger)
     elif config.listener_type == "DELETER":
-        consumer = init_consumer("platform.inventory.events")
+        consumer = init_consumer("platform.inventory.events", logger)
         deleter.event_loop(app.app, consumer, ptc, logger)
     else:
         logger.error("unable to detect listener type")
 
 
-def init_consumer(queue):
+def init_consumer(queue, logger):
+    logger.info("creating consumer with kafka_group_id %s" % config.kafka_group_id)
     consumer = KafkaConsumer(
         queue,
         bootstrap_servers=config.bootstrap_servers,
-        group_id=config.group_id,
+        group_id=config.kafka_group_id,
         value_deserializer=lambda m: json.loads(m.decode("utf-8")),
         retry_backoff_ms=1000,
         consumer_timeout_ms=200,
