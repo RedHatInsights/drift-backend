@@ -105,7 +105,7 @@ class InventoryServiceTests(unittest.TestCase):
 
         self.assertEqual(
             cm.exception.message,
-            "269a3da8-262f-11e9-8ee5-c85b761454fa not available to display",
+            "ids [269a3da8-262f-11e9-8ee5-c85b761454fa] not available to display",
         )
 
     @responses.activate
