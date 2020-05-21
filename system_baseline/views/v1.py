@@ -48,6 +48,8 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     return a list of baselines given their ID
     """
     _validate_uuids(baseline_ids)
+    if len(set(baseline_ids)) < len(baseline_ids):
+        raise HTTPError(HTTPStatus.NOT_FOUND, message="duplicate IDs in request")
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
