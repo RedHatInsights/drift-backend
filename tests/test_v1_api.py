@@ -245,7 +245,7 @@ class ApiTests(unittest.TestCase):
             "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
             headers=fixtures.AUTH_HEADER,
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_500_backend(self, mock_fetch_systems):

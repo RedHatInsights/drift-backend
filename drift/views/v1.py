@@ -10,7 +10,10 @@ from drift.version import app_version
 from drift.baseline_service_interface import fetch_baselines
 
 from kerlescan import view_helpers
-from kerlescan.inventory_service_interface import fetch_systems_with_profiles
+from kerlescan.inventory_service_interface import (
+    ensure_correct_system_count,
+    fetch_systems_with_profiles,
+)
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.exceptions import HTTPError, ItemNotReturned
@@ -144,9 +147,12 @@ def comparison_report(
             system_ids, auth_key, current_app.logger, get_event_counters()
         )
 
+        baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
+        ensure_correct_system_count(baseline_ids, baseline_results)
+
         comparisons = info_parser.build_comparisons(
             systems_with_profiles,
-            fetch_baselines(baseline_ids, auth_key, current_app.logger),
+            baseline_results,
             fetch_historical_sys_profiles(
                 historical_sys_profile_ids,
                 auth_key,
@@ -165,7 +171,7 @@ def comparison_report(
             return jsonify(comparisons)
 
     except ItemNotReturned as error:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message=error.message)
+        raise HTTPError(HTTPStatus.NOT_FOUND, message=error.message)
 
 
 @metrics.comparison_report_requests.time()
