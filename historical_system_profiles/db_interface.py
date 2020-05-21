@@ -45,7 +45,10 @@ def get_hsps_by_inventory_id(inventory_id, account_number):
 
     if query_results:
         return query_results
-    raise HTTPError(HTTPStatus.NOT_FOUND, message="%s not available" % inventory_id)
+    raise HTTPError(
+        HTTPStatus.NOT_FOUND,
+        message="no historical profiles found for inventory_id %s" % inventory_id,
+    )
 
 
 @rollback_on_exception
