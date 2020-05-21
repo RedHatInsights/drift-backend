@@ -17,7 +17,9 @@ def ensure_correct_system_count(system_ids_requested, result):
     if len(result) < len(system_ids_requested):
         system_ids_returned = {system["id"] for system in result}
         missing_ids = set(system_ids_requested) - system_ids_returned
-        raise ItemNotReturned("%s not available to display" % ",".join(missing_ids))
+        raise ItemNotReturned(
+            "ids [%s] not available to display" % ", ".join(missing_ids)
+        )
 
 
 def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
