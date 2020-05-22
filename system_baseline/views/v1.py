@@ -309,12 +309,11 @@ def _validate_uuids(uuids):
     """
     helper method to raise user-friendly exception on UUID format errors
     """
-    try:
-        validators.check_uuids(uuids)
-    except ValueError:
+    malformed_uuids = validators.check_uuids(uuids)
+    if malformed_uuids:
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
-            message="malformed UUID requested (%s)" % ",".join(uuids),
+            message="malformed UUIDs requested (%s)" % ",".join(malformed_uuids),
         )
 
     uuid_set = set(uuids)

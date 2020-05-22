@@ -106,8 +106,10 @@ def check_uuids(baseline_ids):
     helper method to test if a UUID is properly formatted. Will raise an
     exception if format is wrong.
     """
+    malformed_ids = []
     for baseline_id in baseline_ids:
         try:
             UUID(baseline_id)
-        except ValueError as e:
-            raise e
+        except ValueError:
+            malformed_ids.append(baseline_id)
+    return malformed_ids

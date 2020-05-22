@@ -44,7 +44,7 @@ class BadUUIDTests(ApiTest):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             json.loads(response.data)["message"],
-            "malformed UUID requested (MALFORMED-UUID)",
+            "malformed UUIDs requested (MALFORMED-UUID)",
         )
 
 
@@ -557,7 +557,7 @@ class CreateFromInventoryTests(ApiTest):
             json=fixtures.CREATE_FROM_INVENTORY_MALFORMED_UUID,
         )
         self.assertEqual(response.status_code, 400)
-        self.assertIn("malformed UUID requested", response.data.decode("utf-8"))
+        self.assertIn("malformed UUIDs requested", response.data.decode("utf-8"))
 
 
 class ApiDuplicateTests(ApiTest):
