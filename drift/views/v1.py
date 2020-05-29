@@ -150,16 +150,15 @@ def comparison_report(
         baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
         ensure_correct_system_count(baseline_ids, baseline_results)
 
+        hsp_results = fetch_historical_sys_profiles(
+            historical_sys_profile_ids,
+            auth_key,
+            current_app.logger,
+            get_event_counters(),
+        )
+
         comparisons = info_parser.build_comparisons(
-            systems_with_profiles,
-            baseline_results,
-            fetch_historical_sys_profiles(
-                historical_sys_profile_ids,
-                auth_key,
-                current_app.logger,
-                get_event_counters(),
-            ),
-            reference_id,
+            systems_with_profiles, baseline_results, hsp_results, reference_id
         )
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
