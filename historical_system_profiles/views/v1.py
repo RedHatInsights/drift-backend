@@ -115,12 +115,14 @@ def get_hsps_by_ids(profile_ids):
     return {"data": [r.to_json() for r in result_with_updated_names]}
 
 
-def get_hsps_by_inventory_id(inventory_id):
+def get_hsps_by_inventory_id(inventory_id, limit, offset):
     """
     return a list of historical system profiles for a given inventory id
     """
     account_number = view_helpers.get_account_number(request)
-    query_results = db_interface.get_hsps_by_inventory_id(inventory_id, account_number)
+    query_results = db_interface.get_hsps_by_inventory_id(
+        inventory_id, account_number, limit, offset
+    )
     valid_profiles = _filter_old_hsps(query_results)
 
     if not valid_profiles:

@@ -28,6 +28,8 @@ paths:
   /systems/{inventory_id}:
     parameters:
       - $ref: '#/components/parameters/InventoryId'
+      - $ref: '#/components/parameters/LimitParam'
+      - $ref: '#/components/parameters/OffsetParam'
     get:
       summary: fetch the list of profiles available for a given system id
       description: "Fetch the list of profiles available for a given system id"
@@ -199,3 +201,22 @@ components:
           type: string
           minLength: 32
           maxLength: 36
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: number of items to return
+    OffsetParam:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: item number offset

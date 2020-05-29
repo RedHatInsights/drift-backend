@@ -31,12 +31,14 @@ def create_profile(inventory_id, profile, account_number):
     return profile
 
 
-def get_hsps_by_inventory_id(inventory_id, account_number):
+def get_hsps_by_inventory_id(inventory_id, account_number, limit, offset):
     query = HistoricalSystemProfile.query.filter(
         HistoricalSystemProfile.account == account_number,
         HistoricalSystemProfile.inventory_id == inventory_id,
     )
 
+    query = query.order_by(HistoricalSystemProfile.captured_on.desc())
+    query = query.limit(limit).offset(offset)
     query_results = query.all()
 
     return query_results
