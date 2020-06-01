@@ -31,6 +31,10 @@ def main():
 
 def init_consumer(queue, logger):
     logger.info("creating consumer with kafka_group_id %s" % config.kafka_group_id)
+    logger.info(
+        "kafka max poll interval (msec): %s" % config.kafka_max_poll_interval_ms
+    )
+    logger.info("kafka max poll records: %s" % config.kafka_max_poll_records)
     consumer = KafkaConsumer(
         queue,
         bootstrap_servers=config.bootstrap_servers,
@@ -38,6 +42,8 @@ def init_consumer(queue, logger):
         value_deserializer=lambda m: json.loads(m.decode("utf-8")),
         retry_backoff_ms=1000,
         consumer_timeout_ms=200,
+        max_poll_interval_ms=config.kafka_max_poll_interval_ms,
+        max_poll_records=config.kafka_max_poll_records,
     )
     return consumer
 
