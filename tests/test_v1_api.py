@@ -1,5 +1,6 @@
 import json
 import datetime
+import uuid
 
 from system_baseline import app
 from kerlescan.exceptions import ItemNotReturned
@@ -189,6 +190,23 @@ class ApiGeneralTests(ApiTest):
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
         self.assertEqual(result["meta"]["total_available"], 2)
+
+    def test_fetch_baselines_missing_uuid(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        existing_id = result["data"][0]["id"]
+        missing_id = str(uuid.uuid4())
+        response = self.client.get(
+            f"api/system-baseline/v1/baselines/{existing_id},{missing_id}",
+            headers=fixtures.AUTH_HEADER,
+        )
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 404)
+        message = json.loads(response.data)["message"]
+        self.assertEqual(f"ids [{missing_id}] not available to display", message)
 
     def test_fetch_baseline_list_sort_display_name(self):
         response = self.client.get(

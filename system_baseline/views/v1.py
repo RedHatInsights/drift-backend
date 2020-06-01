@@ -8,10 +8,7 @@ from sqlalchemy.orm.session import make_transient
 from kerlescan import view_helpers
 from kerlescan import profile_parser
 from kerlescan.exceptions import HTTPError, ItemNotReturned
-from kerlescan.inventory_service_interface import (
-    fetch_systems_with_profiles,
-    ensure_correct_system_count,
-)
+from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.paginate import build_paginated_baseline_list_response
 
@@ -54,10 +51,14 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
-    try:
-        ensure_correct_system_count(baseline_ids, query.all())
-    except ItemNotReturned as e:
-        raise HTTPError(HTTPStatus.NOT_FOUND, message=e.message)
+    full_results = query.all()
+    if len(full_results) < len(baseline_ids):
+        fetched_ids = {str(result.id) for result in full_results}
+        missing_ids = set(baseline_ids) - fetched_ids
+        raise HTTPError(
+            HTTPStatus.NOT_FOUND,
+            message="ids [%s] not available to display" % ", ".join(missing_ids),
+        )
 
     count = query.count()
     total_available = _get_total_available_baselines()
