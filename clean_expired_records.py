@@ -23,9 +23,10 @@ def expired_record_cleaning_loop(flask_app, logger):
     with flask_app.app_context():
         while True:
             try:
-                deleted_count = db_interface.clean_expired_records(
-                    config.valid_profile_age_days
-                )
+                with metrics.records_cleaning_time.time():
+                    deleted_count = db_interface.clean_expired_records(
+                        config.valid_profile_age_days
+                    )
                 logger.info("deleted %s expired records" % deleted_count)
                 metrics.records_cleaned.inc(deleted_count)
             except Exception:
