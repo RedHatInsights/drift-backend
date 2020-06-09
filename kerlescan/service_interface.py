@@ -1,7 +1,7 @@
 import requests
 
 from kerlescan.constants import AUTH_HEADER_NAME
-from kerlescan.exceptions import ServiceError
+from kerlescan.exceptions import ServiceError, ItemNotReturned
 
 
 def get_key_from_headers(incoming_headers):
@@ -19,7 +19,7 @@ def _validate_service_response(response, logger):
         logger.info(
             "%s error received from service: %s" % (response.status_code, response.text)
         )
-        raise ItemNotFound(response.text)
+        raise ItemNotReturned(response.text)
 
     if response.status_code != requests.codes.ok:
         logger.warn(
