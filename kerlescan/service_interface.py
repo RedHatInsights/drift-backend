@@ -15,7 +15,13 @@ def _validate_service_response(response, logger):
     """
     Raise an exception if the response was not what we expected.
     """
-    if response.status_code is not requests.codes.ok:
+    if response.status_code == requests.codes.not_found:
+        logger.info(
+            "%s error received from service: %s" % (response.status_code, response.text)
+        )
+        raise ItemNotFound(response.text)
+
+    if response.status_code != requests.codes.ok:
         logger.warn(
             "%s error received from service: %s" % (response.status_code, response.text)
         )
