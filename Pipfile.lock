@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "67ca23b542fc52d1d5c23f2f513f29aba02339d6e90652d95d979835df648aee"
+            "sha256": "e3b6bc35bb1ea8bc28aa5189479d6b5eebbdc54ad72b3609c8e17b398520d079"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -45,6 +45,9 @@
             "version": "==1.16.25"
         },
         "cachecontrol": {
+            "extras": [
+                "redis"
+            ],
             "hashes": [
                 "sha256:10d056fa27f8563a271b345207402a6dcce8efab7e5b377e270329c62471b10d",
                 "sha256:be9aa45477a134aee56c8fac518627e1154df063e85f67d4f83ce0ccc23688e8"
@@ -181,7 +184,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/beav/kerlescan.git",
-            "ref": "c65b8e9764d2665cd999e5a1cd31fab7b416bc83"
+            "ref": "6c2f812b536d5b35471d97df75aa1d2ee4bd80c6"
         },
         "lockfile": {
             "hashes": [
