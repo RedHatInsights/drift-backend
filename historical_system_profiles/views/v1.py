@@ -2,10 +2,13 @@ import datetime
 
 from flask import Blueprint, request, current_app
 from dateutil.relativedelta import relativedelta
+from http import HTTPStatus
+from collections import Counter
 
 from kerlescan import view_helpers
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
+from kerlescan.exceptions import HTTPError
 
 from historical_system_profiles import metrics, db_interface, config
 
@@ -57,14 +60,55 @@ def _filter_old_hsps(hsps):
     return valid_hsps
 
 
+def _check_for_missing_ids(requested_ids, result):
+    """
+    checks a list of returned items against a list of requested IDs, and raises
+    an exception if they were not all in the list. requested_ids is a list of
+    items, and each item must be an object with an "id" attribute (NOT a dict
+    with an "id" key).
+
+    This method does not return anything.
+    """
+    if len(result) < len(requested_ids):
+        returned_ids = {str(item.id) for item in result}
+        missing_ids = set(requested_ids) - returned_ids
+        raise HTTPError(
+            HTTPStatus.NOT_FOUND,
+            message="ids [%s] not available to display" % ", ".join(missing_ids),
+        )
+
+
+def _check_for_duplicates(requested_ids):
+    """
+    raise an exception if there are duplicate strings in the list.
+
+    This method does not return anything.
+    """
+    duplicate_ids = []
+    for item, count in Counter(requested_ids).items():
+        if count > 1:
+            duplicate_ids.append(item)
+
+    if duplicate_ids:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="duplicate IDs requested: %s" % duplicate_ids,
+        )
+
+
 def get_hsps_by_ids(profile_ids):
     """
     return a list of historical system profiles for the given profile IDs
     """
-    account_number = view_helpers.get_account_number(request)
+    _check_for_duplicates(profile_ids)
 
+    account_number = view_helpers.get_account_number(request)
     result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
+
+    # TODO: rely on captured_date and filter in SQL above
     filtered_result = _filter_old_hsps(result)
+
+    _check_for_missing_ids(profile_ids, filtered_result)
 
     result_with_updated_names = _get_current_names_for_profiles(filtered_result)
 
@@ -79,6 +123,15 @@ def get_hsps_by_inventory_id(inventory_id):
     query_results = db_interface.get_hsps_by_inventory_id(inventory_id, account_number)
     valid_profiles = _filter_old_hsps(query_results)
 
+    if not valid_profiles:
+        raise HTTPError(
+            HTTPStatus.NOT_FOUND,
+            message="no historical profiles found for inventory_id %s" % inventory_id,
+        )
+
+    # TODO: request just these three fields from the DB, instead of fetching
+    # the full records, then slicing and sorting
+
     profile_metadata = []
     for profile in valid_profiles:
         profile_metadata.append(
@@ -88,10 +141,10 @@ def get_hsps_by_inventory_id(inventory_id):
                 "system_id": profile.inventory_id,
             }
         )
-
     sorted_profile_metadata = sorted(
         profile_metadata, key=lambda p: p["captured_date"], reverse=True
     )
+
     result = {"profiles": sorted_profile_metadata}
     return {"data": [result]}
 
