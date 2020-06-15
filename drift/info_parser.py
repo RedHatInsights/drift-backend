@@ -160,13 +160,15 @@ def _select_applicable_info(
         all_keys = all_keys.union(set(parsed_system_profile.keys()))
 
     info_comparisons = [
-        _create_comparison(parsed_system_profiles, key, reference_id)
+        _create_comparison(
+            parsed_system_profiles, key, reference_id, len(systems_with_profiles)
+        )
         for key in all_keys
     ]
     return info_comparisons
 
 
-def _create_comparison(systems, info_name, reference_id):
+def _create_comparison(systems, info_name, reference_id, system_count):
     """
     Take an individual fact, search for it across all systems, and create a dict
     of each system's ID and fact value. Additionally, add a "state" field that
@@ -174,7 +176,13 @@ def _create_comparison(systems, info_name, reference_id):
 
     Note that when passing in "systems" to this method, the ID needs to be listed
     as a fact key.
+
+    Also the system_count is the count of "actual" systems. If we are comparing
+    multiple systems to each other, we use different rules for items that
+    should be unique across systems like IP address.
+
     """
+    # TODO: this method is messy and could be refactored
     info_comparison = COMPARISON_DIFFERENT
 
     system_id_values = [
@@ -203,7 +211,7 @@ def _create_comparison(systems, info_name, reference_id):
         info_comparison = COMPARISON_SAME
 
     # override comparison logic for certain fact names
-    if _is_unique_rec_name(info_name):
+    if _is_unique_rec_name(info_name) and system_count > 1:
         system_values_with_duplicates = [system["value"] for system in system_id_values]
         if len(system_values) == len(system_values_with_duplicates):
             info_comparison = COMPARISON_SAME
