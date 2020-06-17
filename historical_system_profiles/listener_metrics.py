@@ -9,6 +9,12 @@ profile_messages_processed = Counter(
     "count of profile messages we successfully processed",
 )
 
+profile_messages_processed_duplicates = Counter(
+    "hsp_profile_messages_processed_duplicates",
+    "count of profile messages that were already in the database",
+)
+
+
 profile_messages_errored = Counter(
     "hsp_profile_messages_errored",
     "count of profile messages we unsuccessfully processed",
