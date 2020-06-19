@@ -14,7 +14,7 @@ class HistoricalSystemProfile(db.Model):
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     account = db.Column(db.String(10))
-    inventory_id = db.Column(UUID(as_uuid=True))
+    inventory_id = db.Column(UUID(as_uuid=True), index=True)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
     modified_on = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
