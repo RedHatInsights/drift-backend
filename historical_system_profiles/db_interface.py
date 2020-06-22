@@ -42,25 +42,6 @@ def get_hsps_by_inventory_id(inventory_id, account_number):
     return query_results
 
 
-def is_profile_recorded(captured_date, inventory_id, account_number):
-    """
-    returns True if an existing system profile exists with the same
-    captured date + inventory id + account number.
-
-    This could possibly be enforced in the DB schema. I'm doing it here for now
-    so we have more flexbility if we want to change the rules on this later.
-    """
-    query = HistoricalSystemProfile.query.filter(
-        HistoricalSystemProfile.account == account_number,
-        HistoricalSystemProfile.inventory_id == inventory_id,
-        HistoricalSystemProfile.captured_on == captured_date,
-    )
-
-    if query.first():
-        return True
-    return False
-
-
 @rollback_on_exception
 def delete_hsps_by_inventory_id(inventory_id):
     query = HistoricalSystemProfile.query.filter(
