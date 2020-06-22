@@ -88,13 +88,3 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = (
         "updated": "2018-01-31T14:00:00.500000Z",
     },
 )
-
-EGRESS_MESSAGE_VALUE = {
-    "host": {
-        "account": "5432",
-        "id": "6388350e-b18d-11ea-ad7f-98fa9b07d419",
-        "fqdn": "my-fqdn",
-        "system_profile": {"captured_date": "2020-06-18T17:11:05+00:00"},
-    },
-    "platform_metadata": {"request_id": "123456"},
-}
