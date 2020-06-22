@@ -21,7 +21,7 @@ def config_cloudwatch(logger):
     cw_handler = watchtower.CloudWatchLogHandler(
         boto3_session=CW_SESSION,
         log_group=config.log_group,
-        stream_name=config.namespace,
+        stream_name=config.hostname,
         create_log_group=False,
     )
     cw_handler.setFormatter(LogstashFormatterV1())

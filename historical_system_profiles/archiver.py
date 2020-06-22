@@ -14,10 +14,10 @@ def _record_recv_message(host, request_id, ptc):
     )
 
 
-def _record_success_message(host, request_id, ptc):
+def _record_success_message(hsp_id, host, request_id, ptc):
     metrics.profile_messages_processed.inc()
     ptc.emit_success_message(
-        "stored historical profile",
+        "stored historical profile %s" % hsp_id,
         request_id=request_id,
         account=host["account"],
         inventory_id=host["id"],
@@ -35,12 +35,15 @@ def _archive_profile(data, ptc, logger):
     profile = host["system_profile"]
     # fqdn is on the host but we need it in the profile as well
     profile["fqdn"] = host["fqdn"]
-    db_interface.create_profile(
+    hsp = db_interface.create_profile(
         inventory_id=host["id"], profile=profile, account_number=host["account"],
     )
 
-    _record_success_message(host, request_id, ptc)
-    logger.info("wrote inventory_id %s's profile to historical database" % host["id"])
+    _record_success_message(hsp.id, host, request_id, ptc)
+    logger.info(
+        "wrote %s to historical database (inv id: %s, captured_on: %s)"
+        % (hsp.id, hsp.inventory_id, hsp.captured_on)
+    )
 
 
 def _emit_archiver_error(data, ptc, logger):
