@@ -231,13 +231,47 @@ services:
         condition: service_healthy
       hspdb:
         condition: service_started
+  hsp-expired-cleaner:
+    image: hsp:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - APP_FILE=clean_expired_records.py
+      - EXPIRED_CLEANER_SLEEP_MINUTES=1
+    links:
+      - hspdb
+    depends_on:
+      hspdb:
+        condition: service_started
   upload-client:
     build:
       context: ./client
     environment:
       - ACCOUNT_NUMBER=1212729
-      - SLEEP=60
+      - SLEEP=5 # even if sleep is zero, each upload takes about 10 sec to generate
     links:
       - ingress
     depends_on:
       - hsp-archiver
+  insights-proxy:
+    image: docker.io/redhatinsights/insights-proxy
+    ports:
+      - "1337:1337"
+    volumes:
+      - .:/config
+    environment:
+      - LINUX=True
+      - PLATFORM=linux
+      - CUSTOM_CONF=true
+    links:
+      - "drift-frontend"
+      - "inventory-rest"
+      - "system-baseline-rest"
+      - "drift-rest"
+  drift-frontend:
+    build:
+      context: ./drift-frontend-container-build
+    ports:
+      - "8002:8002"
+    volumes:
+      - .:/config
