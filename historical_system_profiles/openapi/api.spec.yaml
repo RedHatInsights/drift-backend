@@ -131,7 +131,6 @@ components:
         - id
         - inventory_id
         - system_profile
-        - updated
         - captured_date
       properties:
         account:
@@ -146,8 +145,6 @@ components:
           type: string
         system_profile:
           type: object
-        updated:
-          type: string
         captured_date:
           type: string
     Version:

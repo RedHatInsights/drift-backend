@@ -16,9 +16,6 @@ class HistoricalSystemProfile(db.Model):
     account = db.Column(db.String(10))
     inventory_id = db.Column(UUID(as_uuid=True), index=True)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
-    modified_on = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
     system_profile = db.Column(JSONB)
     captured_on = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -72,13 +69,11 @@ class HistoricalSystemProfile(db.Model):
 
     def to_json(self):
         created_dt = self._get_utc_aware_dt(self.created_on)
-        updated_dt = self._get_utc_aware_dt(self.modified_on)
         json_dict = {}
         json_dict["id"] = str(self.id)
         json_dict["account"] = self.account
         json_dict["inventory_id"] = self.inventory_id
         json_dict["created"] = created_dt.isoformat()
-        json_dict["updated"] = updated_dt.isoformat()
         json_dict["system_profile"] = self.system_profile
         json_dict["display_name"] = self.display_name
         json_dict["captured_date"] = self.captured_date
