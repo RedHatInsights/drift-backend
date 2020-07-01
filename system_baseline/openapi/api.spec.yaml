@@ -304,6 +304,8 @@ components:
           $ref: "#/components/schemas/DisplayName"
         inventory_uuid:
           type: string
+        hsp_uuid:
+          type: string
         baseline_facts:
           type: array
           items:

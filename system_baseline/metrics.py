@@ -28,6 +28,14 @@ inventory_service_exceptions = Counter(
     "baseline_inventory_service_exceptions", "count of exceptions raised by inv service"
 )
 
+hsp_service_requests = Histogram(
+    "baseline_hsp_service_requests", "hsp service call stats"
+)
+
+hsp_service_exceptions = Counter(
+    "baseline_hsp_service_exceptions", "count of exceptions raised by hsp service"
+)
+
 # kerlescan expects this to be Histogram
 inventory_service_no_profile = Histogram(
     "baseline_inventory_service_no_profile",
