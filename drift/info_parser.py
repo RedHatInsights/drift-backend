@@ -92,6 +92,9 @@ def _group_comparisons(comparisons):
             group = _find_group(_get_group_name(comparison["name"]))
             comparison["name"] = _get_value_name(comparison["name"])
             group["comparisons"].append(comparison)
+            group["comparisons"] = sorted(
+                group["comparisons"], key=lambda comparison: comparison["name"]
+            )
         else:
             grouped_comparisons.append(comparison)
 
