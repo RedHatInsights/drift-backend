@@ -1,0 +1,82 @@
+{
+    "total": 2,
+    "count": 2,
+    "page": 1,
+    "per_page": 50,
+    "results": [
+        {
+            "insights_id": "04569b0c-ed95-4815-b9db-2deafde035c3",
+            "rhel_machine_id": null,
+            "subscription_manager_id": "a6f8354c-a8eb-4f8b-9918-e01b2abaef77",
+            "satellite_id": null,
+            "bios_uuid": "CF2C3F26-98B6-4B04-A7D3-1AA18717EED2",
+            "ip_addresses": [
+                "fe80::5054:ff:fe3f:95f1",
+                "192.168.121.25",
+                "127.0.0.1"
+            ],
+            "fqdn": "rhel7-insights-client.virbr0.abc-laptop",
+            "mac_addresses": [
+                "52:54:00:3F:95:F1"
+            ],
+            "external_id": null,
+            "id": "fb04c74a-b6cd-4981-81a5-67cd0b791768",
+            "account": "1212729",
+            "display_name": "rhel7-insights-client.virbr0.abc-laptop",
+            "ansible_host": null,
+            "facts": [
+                {
+                    "namespace": "rhsm",
+                    "facts": {
+                        "orgId": "5894300",
+                        "MEMORY": 2,
+                        "RH_PROD": [
+                            "69",
+                            "230"
+                        ],
+                        "CPU_CORES": 2,
+                        "IS_VIRTUAL": true,
+                        "CPU_SOCKETS": 2,
+                        "ARCHITECTURE": "x86_64",
+                        "SYNC_TIMESTAMP": "2020-06-27T01:16:42.241Z"
+                    }
+                }
+            ],
+            "reporter": "rhsm-conduit",
+            "stale_timestamp": "2020-06-29T01:16:42.241000+00:00",
+            "stale_warning_timestamp": "2020-07-06T01:16:42.241000+00:00",
+            "culled_timestamp": "2020-07-13T01:16:42.241000+00:00",
+            "created": "2020-03-12T14:45:03.477095+00:00",
+            "updated": "2020-06-27T01:16:42.264338+00:00"
+        },
+        {
+            "insights_id": "08b80e5b-8e34-4505-8111-e043a9a8ddfd",
+            "rhel_machine_id": null,
+            "subscription_manager_id": "f90b2406-8570-4b61-a7bc-6c43f291bcac",
+            "satellite_id": null,
+            "bios_uuid": "6100fade-d38c-4f30-baa6-67716f4c62aa",
+            "ip_addresses": [
+                "192.168.122.155",
+                "172.17.0.1"
+            ],
+            "fqdn": "xyz.7.pedantic.engelbart",
+            "mac_addresses": [
+                "02:42:fa:8d:c2:f3",
+                "52:54:00:1c:5f:2f",
+                "00:00:00:00:00:00"
+            ],
+            "external_id": null,
+            "id": "4ed7b2e2-0f5e-40f1-bb60-67864858e345",
+            "account": "1212729",
+            "display_name": "xyz.7.pedantic.engelbart",
+            "ansible_host": null,
+            "facts": [],
+            "reporter": "puptoo",
+            "stale_timestamp": "2020-06-25T12:31:16.559670+00:00",
+            "stale_warning_timestamp": "2020-07-02T12:31:16.559670+00:00",
+            "culled_timestamp": "2020-07-09T12:31:16.559670+00:00",
+            "created": "2020-06-24T10:31:16.595145+00:00",
+            "updated": "2020-06-24T10:31:16.595152+00:00"
+        }
+    ]
+}
