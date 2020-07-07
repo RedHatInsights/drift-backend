@@ -108,20 +108,41 @@ class HSPApiTests(utils.ApiTest):
         )
 
     def test_pagination(self):
-        # create three records check what is returned to ensure limit and offset work
+        # create inventory record
+        self.addInventoryRecord(
+            "16c1b34a-bf78-494e-ba3d-fe7dc1b18459",
+            "pagination_test_system_display_name",
+        )
+
+        # create four profiles, iterating "some_fact" to simulate check-ins for this host
+        # 1234 is the account number.
         with self.test_flask_app.app_context():
             for i in range(4):
                 db_interface.create_profile(
-                    "16c1b34a-bf78-494e-ba3d-fe7dc1b18459", {}, f"test{i}"
+                    "16c1b34a-bf78-494e-ba3d-fe7dc1b18459",
+                    {"some_fact": f"some_value_{i}"},
+                    "1234",
                 )
 
+        # fetch the system profiles providing limit and offset
         response = self.client.get(
-            "/api/historical-system-profiles/v1/systems/16c1b34a-bf78-494e-ba3d-fe7dc1b18459",
+            "/api/historical-system-profiles/v1/systems/16c1b34a-bf78-494e-ba3d-fe7dc1b18459"
             "?limit=2&offset=1",
             headers=fixtures.AUTH_HEADER,
         )
-        self.assertEqual(
-            response.json["data"],
-            "[test2, test3]",
-        )
 
+        returned_profiles = response.json["data"][0]["profiles"]
+
+        # assert that the limit works
+        self.assertEqual(len(returned_profiles), 2)
+
+        # get the fact from a particular profile
+        profile_id = returned_profiles[1]["id"]
+        profile_response = self.client.get(
+            f"/api/historical-system-profiles/v1/profiles/{profile_id}",
+            headers=fixtures.AUTH_HEADER,
+        )
+        some_value = profile_response.json["data"][0]["system_profile"]["some_fact"]
+
+        # assert that the offset works by comparing the fact for the profile in that position
+        self.assertEqual(some_value, "some_value_1")
