@@ -110,20 +110,18 @@ class HSPApiTests(utils.ApiTest):
     def test_pagination(self):
         # create three records check what is returned to ensure limit and offset work
         with self.test_flask_app.app_context():
-            db_interface.create_profile(
-                "16c1b34a-bf78-494e-ba3d-fe7dc1b18459", {}, "1234"
-            )
+            for i in range(4):
+                db_interface.create_profile(
+                    "16c1b34a-bf78-494e-ba3d-fe7dc1b18459", {}, f"test{i}"
+                )
 
-        self.addInventoryRecord("16c1b34a-bf78-494e-ba3d-fe7dc1b18459", "test_name")
-        self.addInventoryRecord("16c1b34a-bf78-494e-ba3d-fe7dc1b18459", "5678")
-        self.addInventoryRecord("16c1b34a-bf78-494e-ba3d-fe7dc1b18459", "9012")
         response = self.client.get(
             "/api/historical-system-profiles/v1/systems/16c1b34a-bf78-494e-ba3d-fe7dc1b18459",
             "?limit=2&offset=1",
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(
-            response.json[],
-            "[test_name, 5678]",
+            response.json["data"],
+            "[test2, test3]",
         )
 
