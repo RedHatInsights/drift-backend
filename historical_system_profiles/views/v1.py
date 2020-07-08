@@ -20,7 +20,7 @@ def get_version():
     """
     return the service version
     """
-    return {"version": "0.0.1"}
+    return {"version": "1.0.0"}
 
 
 def _get_current_names_for_profiles(hsps):
