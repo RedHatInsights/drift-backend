@@ -121,6 +121,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - KAFKA_TOPIC=platform.system-profile
       - KAFKA_GROUP=inventory
+      - WEB_CONCURRENCY=1
     links:
       - db
     depends_on:
@@ -148,13 +149,13 @@ services:
       - INVENTORY_SVC_URL=http://inventory-rest:8080
       - BASELINE_DB_HOST=baselinedb
       - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
+      - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v1/profiles
     links:
       - baselinedb
-      - inventory-rest
     depends_on:
       - baselinedb
       - system-baseline-migration
-      - inventory-rest
     ports:
       - "8083:8080"
   drift-rest:
@@ -165,6 +166,7 @@ services:
       - BASELINE_SVC_URL=http://system-baseline-rest:8080
       - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v0/profiles
       - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
     links:
       - inventory-rest
       - system-baseline-rest
@@ -193,6 +195,7 @@ services:
       - INVENTORY_SVC_URL=http://inventory-rest:8080
       - HSP_DB_HOST=hspdb
       - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
     links:
       - hspdb
       - inventory-rest
@@ -208,6 +211,7 @@ services:
       - HSP_DB_HOST=hspdb
       - LISTENER_TYPE=ARCHIVER
       - APP_FILE=kafka_listener.py
+      - LISTENER_DELAY=20
     links:
       - hspdb
       - kafka
