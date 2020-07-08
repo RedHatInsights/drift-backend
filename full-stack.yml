@@ -258,7 +258,8 @@ services:
     depends_on:
       - hsp-archiver
   insights-proxy:
-    image: docker.io/redhatinsights/insights-proxy
+    build:
+      context: ./proxy
     ports:
       - "1337:1337"
     volumes:
