@@ -110,7 +110,9 @@ def parse_profile(system_profile, display_name, logger):
     _parse_running_processes(system_profile.get("running_processes", []))
 
     if "sap_local_instances" in system_profile:
-        parsed_profile["sap_local_instances"] = ", ".join(system_profile["sap_local_instances"])
+        parsed_profile["sap_local_instances"] = ", ".join(
+            system_profile["sap_local_instances"]
+        )
 
     # convert bytes to human readable format
     if "system_memory_bytes" in system_profile:
