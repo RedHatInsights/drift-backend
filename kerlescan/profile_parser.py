@@ -91,7 +91,7 @@ def parse_profile(system_profile, display_name, logger):
             "state", "N/A"
         )
         parsed_profile["network_interfaces." + name + ".type"] = interface.get(
-            "loopback", "N/A"
+            "type", "N/A"
         )
 
     # start with metadata that we have brought down from the system record
