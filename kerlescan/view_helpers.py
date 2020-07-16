@@ -3,6 +3,7 @@ import logging
 import base64
 
 from http import HTTPStatus
+from uuid import UUID
 
 from kerlescan.config import path_prefix, enable_rbac, enable_smart_mgmt_check
 from kerlescan.service_interface import get_key_from_headers
@@ -127,3 +128,21 @@ def log_username(logger, request):
             )
         else:
             logger.debug("identity header not sent for request")
+
+
+def validate_uuids(system_ids)
+    """
+    helper method to test if a UUID is properly formatted. Will raise an
+    exception if the format is wrong.
+    """
+    malformed_ids = []
+    for system_id in system_ids:
+        try:
+            UUID(system_id)
+        except ValueError:
+            malformed_ids.append(system_id)
+    if malformed_ids:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="malformed UUIDs requested (%s)" % ",".join(malformed_uuids),
+        )
