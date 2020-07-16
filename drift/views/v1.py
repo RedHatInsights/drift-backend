@@ -3,13 +3,13 @@ import io
 
 from flask import Blueprint, jsonify, request, current_app, make_response
 from http import HTTPStatus
-from uuid import UUID
 
 from drift import info_parser, metrics, app_config
 from drift.version import app_version
 from drift.baseline_service_interface import fetch_baselines
 
 from kerlescan import view_helpers
+from kerlescan.view_helpers import validate_uuids
 from kerlescan.inventory_service_interface import (
     ensure_correct_system_count,
     fetch_systems_with_profiles,
@@ -19,20 +19,6 @@ from kerlescan.service_interface import get_key_from_headers
 from kerlescan.exceptions import HTTPError, ItemNotReturned
 
 section = Blueprint("v1", __name__)
-
-
-def _validate_uuids(system_ids):
-    """
-    helper method to test if a UUID is properly formatted. Will raise an
-    exception if format is wrong.
-    """
-    for system_id in system_ids:
-        try:
-            UUID(system_id)
-        except ValueError:
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST, message="%s is not a UUID" % system_id
-            )
 
 
 def get_version():
@@ -139,8 +125,8 @@ def comparison_report(
             message="duplicate UUID specified in baseline_ids list",
         )
 
-    _validate_uuids(system_ids)
-    _validate_uuids(baseline_ids)
+    validate_uuids(system_ids)
+    validate_uuids(baseline_ids)
 
     try:
         systems_with_profiles = fetch_systems_with_profiles(
