@@ -6,6 +6,7 @@ import jsonpointer
 from sqlalchemy.orm.session import make_transient
 
 from kerlescan import view_helpers
+from kerlescan.view_helpers import validate_uuids
 from kerlescan import profile_parser
 from kerlescan.exceptions import HTTPError, ItemNotReturned
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
@@ -45,9 +46,9 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     """
     return a list of baselines given their ID
     """
-    _validate_uuids(baseline_ids)
+    validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
-        raise HTTPError(HTTPStatus.NOT_FOUND, message="duplicate IDs in request")
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="duplicate IDs in request")
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
@@ -81,7 +82,9 @@ def delete_baselines_by_ids(baseline_ids):
     """
     delete a list of baselines given their ID
     """
-    _validate_uuids(baseline_ids)
+    validate_uuids(baseline_ids)
+    if len(set(baseline_ids)) < len(baseline_ids):
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="duplicate IDs in request")
     _delete_baselines(baseline_ids)
     return "OK"
 
@@ -93,7 +96,7 @@ def create_deletion_request(body):
     delete a list of baselines given their IDs as a list
     """
     baseline_ids = body["baseline_ids"]
-    _validate_uuids(baseline_ids)
+    validate_uuids(baseline_ids)
     _delete_baselines(baseline_ids)
     return "OK"
 
@@ -233,7 +236,7 @@ def create_baseline(system_baseline_in):
     if "baseline_facts" in system_baseline_in:
         baseline_facts = system_baseline_in["baseline_facts"]
     elif "hsp_uuid" in system_baseline_in:
-        _validate_uuids([system_baseline_in["hsp_uuid"]])
+        validate_uuids([system_baseline_in["hsp_uuid"]])
         auth_key = get_key_from_headers(request.headers)
         try:
             hsp = fetch_historical_sys_profiles(
@@ -253,7 +256,7 @@ def create_baseline(system_baseline_in):
             hsp["system_profile"], system_name, current_app.logger
         )
     elif "inventory_uuid" in system_baseline_in:
-        _validate_uuids([system_baseline_in["inventory_uuid"]])
+        validate_uuids([system_baseline_in["inventory_uuid"]])
         auth_key = get_key_from_headers(request.headers)
         try:
             system_with_profile = fetch_systems_with_profiles(
@@ -319,24 +322,6 @@ def _check_for_whitespace_in_display_name(display_name):
         )
 
 
-def _validate_uuids(uuids):
-    """
-    helper method to raise user-friendly exception on UUID format errors
-    """
-    malformed_uuids = validators.check_uuids(uuids)
-    if malformed_uuids:
-        raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="malformed UUIDs requested (%s)" % ",".join(malformed_uuids),
-        )
-
-    uuid_set = set(uuids)
-    if len(uuid_set) < len(uuids):
-        raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message="duplicate UUIDs specified in request"
-        )
-
-
 def _sort_baseline_facts(baseline_facts):
     """
     helper method to sort baseline facts by name before saving to the DB.
@@ -374,7 +359,7 @@ def copy_baseline_by_id(baseline_id, display_name):
     """
     create a new baseline given an existing ID
     """
-    _validate_uuids([baseline_id])
+    validate_uuids([baseline_id])
 
     # ensure display_name is not null
     if not display_name:
@@ -406,7 +391,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     """
     update a baseline
     """
-    _validate_uuids([baseline_id])
+    validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
     _check_for_whitespace_in_display_name(system_baseline_patch["display_name"])

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from system_baseline.exceptions import FactValidationError
 
 FACTS_MAXSIZE = 2 ** 20  # 1 MB
@@ -99,17 +97,3 @@ def check_name_value_length(facts):
             raise FactValidationError(
                 "value %s is over 1000 characters" % fact["value"]
             )
-
-
-def check_uuids(baseline_ids):
-    """
-    helper method to test if a UUID is properly formatted. Will raise an
-    exception if format is wrong.
-    """
-    malformed_ids = []
-    for baseline_id in baseline_ids:
-        try:
-            UUID(baseline_id)
-        except ValueError:
-            malformed_ids.append(baseline_id)
-    return malformed_ids
