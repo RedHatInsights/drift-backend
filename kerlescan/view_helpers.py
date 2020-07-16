@@ -1,6 +1,7 @@
 import json
 import logging
 import base64
+import re
 
 from http import HTTPStatus
 from uuid import UUID
@@ -130,19 +131,26 @@ def log_username(logger, request):
             logger.debug("identity header not sent for request")
 
 
-def validate_uuids(system_ids)
+def validate_uuids(system_ids):
     """
     helper method to test if a UUID is properly formatted. Will raise an
     exception if the format is wrong.
     """
     malformed_ids = []
     for system_id in system_ids:
-        try:
-            UUID(system_id)
-        except ValueError:
+        # the UUID() check was missing some characters, so adding regex first
+        if not re.match(
+            r"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+            system_id.lower(),
+        ):
             malformed_ids.append(system_id)
+        else:
+            try:
+                UUID(system_id)
+            except ValueError:
+                malformed_ids.append(system_id)
     if malformed_ids:
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
-            message="malformed UUIDs requested (%s)" % ",".join(malformed_uuids),
+            message="malformed UUIDs requested (%s)" % ",".join(malformed_ids),
         )
