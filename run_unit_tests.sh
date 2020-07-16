@@ -5,7 +5,7 @@
 
 TEMPDIR=`mktemp -d`
 
-psql 'postgresql://insights:insights@localhost:5432' -c 'create database testdb;'
+psql 'postgresql://insights:insights@localhost:5432/baselinedb' -c 'create database testdb;'
 
 BASELINE_DB_NAME=testdb FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade
 
@@ -13,6 +13,6 @@ BASELINE_DB_NAME=testdb prometheus_multiproc_dir=$TEMPDIR nosetests -sx --with-c
 
 result=$?
 
-psql 'postgresql://insights:insights@localhost:5432' -c 'drop database testdb;'
+psql 'postgresql://insights:insights@localhost:5432/baselinedb' -c 'drop database testdb;'
 
 exit $result

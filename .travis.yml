@@ -10,7 +10,7 @@ before_install:
   - psql -c "CREATE USER insights WITH PASSWORD 'insights';"
   - psql -c "ALTER USER insights CREATEDB"
 # we use `testdb` for the tests; this is just to create a place for insights user to have
-  - psql -c 'create database insights;' -U postgres
+  - psql -c 'create database baselinedb;' -U postgres
   - wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
 
 script:

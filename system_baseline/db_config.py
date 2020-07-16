@@ -5,7 +5,7 @@ import os
 _db_user = os.getenv("BASELINE_DB_USER", "insights")
 _db_password = os.getenv("BASELINE_DB_PASS", "insights")
 _db_host = os.getenv("BASELINE_DB_HOST", "localhost")
-_db_name = os.getenv("BASELINE_DB_NAME", "insights")
+_db_name = os.getenv("BASELINE_DB_NAME", "baselinedb")
 
 db_uri = f"postgresql://{_db_user}:{_db_password}@{_db_host}/{_db_name}"
 db_pool_timeout = int(os.getenv("BASELINE_DB_POOL_TIMEOUT", "5"))
