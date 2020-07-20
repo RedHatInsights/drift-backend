@@ -177,7 +177,7 @@ class ApiTests(unittest.TestCase):
 
         fqdn_comparison = comparisons["facts"][11]
         self.assertEqual(fqdn_comparison["name"], "last_boot_time")
-        self.assertEqual(fqdn_comparison["state"], "INCOMPLETE_DATA")
+        self.assertEqual(fqdn_comparison["state"], "SAME")
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_csv(self, mock_fetch_systems):
