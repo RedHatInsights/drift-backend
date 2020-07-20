@@ -127,6 +127,15 @@ def comparison_report(
 
     validate_uuids(system_ids)
     validate_uuids(baseline_ids)
+    validate_uuids(historical_sys_profile_ids)
+    if reference_id:
+        validate_uuids([reference_id])
+        if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="reference id %s does not match any ids from query"
+                % reference_id,
+            )
 
     try:
         systems_with_profiles = fetch_systems_with_profiles(
