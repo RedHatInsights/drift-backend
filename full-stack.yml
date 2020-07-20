@@ -90,7 +90,7 @@ services:
     environment:
       POSTGRES_PASSWORD: insights
       POSTGRES_USER: insights
-      POSTGRES_DB: insights
+      POSTGRES_DB: baselinedb
   hspdb:
     image: postgres
     restart: always
