@@ -6,6 +6,7 @@ from http import HTTPStatus
 from collections import Counter
 
 from kerlescan import view_helpers
+from kerlescan.view_helpers import validate_uuids
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.exceptions import HTTPError
@@ -100,6 +101,7 @@ def get_hsps_by_ids(profile_ids):
     """
     return a list of historical system profiles for the given profile IDs
     """
+    validate_uuids(profile_ids)
     _check_for_duplicates(profile_ids)
 
     account_number = view_helpers.get_account_number(request)
@@ -119,6 +121,7 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     """
     return a list of historical system profiles for a given inventory id
     """
+    validate_uuids([inventory_id])
     account_number = view_helpers.get_account_number(request)
     query_results = db_interface.get_hsps_by_inventory_id(
         inventory_id, account_number, limit, offset
