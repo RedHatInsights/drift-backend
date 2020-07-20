@@ -109,6 +109,16 @@ def _delete_baselines(baseline_ids):
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
+
+    full_results = query.all()
+    if len(full_results) < len(baseline_ids):
+        fetched_ids = {str(result.id) for result in full_results}
+        missing_ids = set(baseline_ids) - fetched_ids
+        raise HTTPError(
+            HTTPStatus.NOT_FOUND,
+            message="ids [%s] not available to delete" % ", ".join(missing_ids),
+        )
+
     query.delete(synchronize_session="fetch")
     db.session.commit()
 
