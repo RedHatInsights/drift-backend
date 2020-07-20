@@ -125,6 +125,8 @@ services:
     links:
       - db
     depends_on:
+      inventory:
+        condition: service_started
       kafka:
         condition: service_healthy
       db:
@@ -258,10 +260,14 @@ services:
     depends_on:
       - hsp-archiver
   insights-proxy:
-    build:
-      context: ./proxy
+    image: docker.io/redhatinsights/insights-proxy
     ports:
       - "1337:1337"
+    extra_hosts:
+      - "ci.foo.redhat.com:127.0.0.1"
+      - "qa.foo.redhat.com:127.0.0.1"
+      - "stage.foo.redhat.com:127.0.0.1"
+      - "prod.foo.redhat.com:127.0.0.1"
     volumes:
       - .:/config
     environment:
@@ -276,6 +282,11 @@ services:
   drift-frontend:
     build:
       context: ./drift-frontend-container-build
+    extra_hosts:
+      - "ci.foo.redhat.com:127.0.0.1"
+      - "qa.foo.redhat.com:127.0.0.1"
+      - "stage.foo.redhat.com:127.0.0.1"
+      - "prod.foo.redhat.com:127.0.0.1"
     ports:
       - "8002:8002"
     volumes:
