@@ -224,7 +224,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
             info_comparison = COMPARISON_DIFFERENT
 
     if _is_no_rec_name(info_name):
-        info_comparison = COMPARISON_INCOMPLETE_DATA
+        info_comparison = COMPARISON_SAME
 
     # change baseline "N/A" to empty string for better display, and remove
     # fields we added to assist with sorting
@@ -235,7 +235,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         del system_id_value["name"]
         del system_id_value["is_baseline"]
 
-    if reference_id and info_comparison == COMPARISON_DIFFERENT:
+    if reference_id and info_comparison != COMPARISON_SAME:
         # pull the reference_value for this comparison
         reference_value = None
         for values in sorted_system_id_values:
