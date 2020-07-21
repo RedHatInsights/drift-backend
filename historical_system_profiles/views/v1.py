@@ -131,7 +131,7 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     if not valid_profiles:
         raise HTTPError(
             HTTPStatus.NOT_FOUND,
-            message="ids [%s] not available to display" % inventory_id,
+            message="no historical profiles found for inventory_id %s" % inventory_id,
         )
 
     # TODO: request just these three fields from the DB, instead of fetching
