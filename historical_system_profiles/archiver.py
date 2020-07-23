@@ -38,6 +38,10 @@ def _archive_profile(data, ptc, logger):
     """
     given an event, archive a profile and emit a success message
     """
+    if data.value["type"] not in ("created", "updated"):
+        logger.info("skipping message that is not created or updated type")
+        return
+
     host = data.value["host"]
     request_id = data.value["platform_metadata"].get("request_id")
     _record_recv_message(host, request_id, ptc)
@@ -68,9 +72,6 @@ def _archive_profile(data, ptc, logger):
     else:
         hsp = db_interface.create_profile(
             inventory_id=host["id"], profile=profile, account_number=host["account"],
-        )
-        logger.info(
-            "wrote inventory_id %s's profile to historical database" % host["id"]
         )
         _record_success_message(hsp.id, host, request_id, ptc)
         logger.info(

@@ -19,22 +19,22 @@ def main():
     app = create_app()
     ptc = payload_tracker_interface.PayloadTrackerClient(logger)
 
+    consumer = init_consumer("platform.inventory.events", logger)
+
     if config.listener_type == "ARCHIVER":
-        consumer = init_consumer("platform.inventory.host-egress", logger)
         archiver.event_loop(app.app, consumer, ptc, logger, config.listener_delay)
     elif config.listener_type == "DELETER":
-        consumer = init_consumer("platform.inventory.events", logger)
         deleter.event_loop(app.app, consumer, ptc, logger, config.listener_delay)
     else:
         logger.error("unable to detect listener type")
 
 
 def init_consumer(queue, logger):
-    logger.info("creating consumer with kafka_group_id %s" % config.kafka_group_id)
     logger.info(
-        "kafka max poll interval (msec): %s" % config.kafka_max_poll_interval_ms
+        f"creating consumer of {queue} with kafka_group_id {config.kafka_group_id}"
     )
-    logger.info("kafka max poll records: %s" % config.kafka_max_poll_records)
+    logger.info(f"kafka max poll interval (msec): {config.kafka_max_poll_interval_ms}")
+    logger.info(f"kafka max poll records: {config.kafka_max_poll_records}")
     consumer = KafkaConsumer(
         queue,
         bootstrap_servers=config.bootstrap_servers,

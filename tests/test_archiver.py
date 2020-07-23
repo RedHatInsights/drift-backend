@@ -9,7 +9,7 @@ from mock import MagicMock
 class ArchiverTests(utils.ApiTest):
     def test_archive_profile(self):
         message = MagicMock()
-        message.value = fixtures.EGRESS_MESSAGE_VALUE
+        message.value = fixtures.EVENT_MESSAGE_VALUE
         with self.test_flask_app.app_context():
             # save the same profile twice on purpose
             archiver._archive_profile(message, MagicMock(), MagicMock())
