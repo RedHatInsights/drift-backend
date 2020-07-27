@@ -244,8 +244,23 @@ def create_baseline(system_baseline_in):
 
     baseline_facts = []
     if "baseline_facts" in system_baseline_in:
+        if "inventory_uuid" in system_baseline_in:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="Both baseline facts and inventory id provided, can clone only one.",
+            )
+        if "hsp_uuid" in system_baseline_in:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="Both baseline facts and hsp id provided, can clone only one.",
+            )
         baseline_facts = system_baseline_in["baseline_facts"]
     elif "hsp_uuid" in system_baseline_in:
+        if "inventory_uuid" in system_baseline_in:
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="Both hsp id and system id provided, can clone only one.",
+            )
         validate_uuids([system_baseline_in["hsp_uuid"]])
         auth_key = get_key_from_headers(request.headers)
         try:
