@@ -12,13 +12,13 @@ with open("historical_system_profiles-manifest", "w") as manifest:
         if "version" in value:
             version = value["version"].replace("=", "")
             manifest.write(
-                "services-drift:historical_system_profiles/python:3.6=%s:%s\n"
+                "services-drift:historical_system_profiles/python:3.8=%s:%s\n"
                 % (name, version)
             )
         elif "ref" in value:
             ref = value["ref"]
             manifest.write(
-                "services-drift:historical_system_profiles/python:3.6=%s:%s\n"
+                "services-drift:historical_system_profiles/python:3.8=%s:%s\n"
                 % (name, ref)
             )
         else:
