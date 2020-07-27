@@ -4,7 +4,7 @@ services:
   - postgresql
 
 python:
- - "3.6"
+ - "3.8"
 
 before_install:
   - psql -c "CREATE USER insights WITH PASSWORD 'insights';"
@@ -17,7 +17,7 @@ script:
   - .travis/check-manifest.sh
   - ./run_unit_tests.sh
   - flake8
-  - black . --check -t py36
+  - black . --check -t py38
   - yamllint system_baseline/openapi/mgmt_api.spec.yaml
   - yamllint system_baseline/openapi/api.spec.yaml
   - openapi-spec-validator system_baseline/openapi/mgmt_api.spec.yaml

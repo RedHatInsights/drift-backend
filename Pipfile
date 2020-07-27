@@ -34,7 +34,7 @@ jsonpatch = "*"
 insights-core = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"
 
 [scripts]
 flask = "python standalone_flask_server.py"
