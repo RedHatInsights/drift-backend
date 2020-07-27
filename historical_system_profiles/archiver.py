@@ -43,7 +43,7 @@ def _archive_profile(data, ptc, logger):
         return
 
     host = data.value["host"]
-    request_id = data.value.get("platform_metadata", {}).get("request_id", -1)
+    request_id = _get_request_id(data)
     _record_recv_message(host, request_id, ptc)
 
     profile = host["system_profile"]
@@ -80,6 +80,18 @@ def _archive_profile(data, ptc, logger):
         )
 
 
+def _get_request_id(data):
+    """
+    small helper to fetch request ID off a message
+    """
+    # if platform_metadata is not None, and it has a request_id, use it. Otherwise, -1.
+    platform_metadata = data.value["platform_metadata"]
+    request_id = -1
+    if platform_metadata:
+        request_id = platform_metadata.get("request_id", -1)
+    return request_id
+
+
 def _emit_archiver_error(data, ptc, logger):
     """
     send an error message to payload tracker. This does not raise an
@@ -87,7 +99,7 @@ def _emit_archiver_error(data, ptc, logger):
     """
     metrics.profile_messages_errored.inc()
     host = data.value["host"]
-    request_id = data.value.get("platform_metadata", {}).get("request_id", -1)
+    request_id = _get_request_id(data)
     ptc.emit_error_message(
         "error when storing historical profile",
         request_id=request_id,
