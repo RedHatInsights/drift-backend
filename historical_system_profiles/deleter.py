@@ -9,7 +9,7 @@ def _delete_profiles(data, ptc, logger):
     delete all profiles for the inventory ID in the message
     """
     inventory_id = data.value["id"]
-    request_id = data.value["request_id"]
+    request_id = data.value.get("request_id", -1)
     account = data.value["account"]
 
     _record_recv_message(request_id, inventory_id, account, ptc)
@@ -45,7 +45,7 @@ def _emit_delete_error(data, ptc):
     """
     metrics.delete_messages_errored.inc()
     inventory_id = data.value["id"]
-    request_id = data.value["request_id"]
+    request_id = data.value.get("request_id", -1)
     account = data.value["account"]
     ptc.emit_error_message(
         "error when deleting profiles for inventory record",

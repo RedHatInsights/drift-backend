@@ -43,7 +43,7 @@ def _archive_profile(data, ptc, logger):
         return
 
     host = data.value["host"]
-    request_id = data.value["platform_metadata"].get("request_id")
+    request_id = data.value.get("platform_metadata", {}).get("request_id", -1)
     _record_recv_message(host, request_id, ptc)
 
     profile = host["system_profile"]
@@ -87,7 +87,7 @@ def _emit_archiver_error(data, ptc, logger):
     """
     metrics.profile_messages_errored.inc()
     host = data.value["host"]
-    request_id = data.value["platform_metadata"].get("request_id")
+    request_id = data.value.get("platform_metadata", {}).get("request_id", -1)
     ptc.emit_error_message(
         "error when storing historical profile",
         request_id=request_id,
