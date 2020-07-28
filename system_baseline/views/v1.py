@@ -272,7 +272,7 @@ def create_baseline(system_baseline_in):
             )[0]
         except ItemNotReturned:
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
+                HTTPStatus.NOT_FOUND,
                 message="hsp UUID %s not available" % system_baseline_in["hsp_uuid"],
             )
 
@@ -292,7 +292,7 @@ def create_baseline(system_baseline_in):
             )[0]
         except ItemNotReturned:
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
+                HTTPStatus.NOT_FOUND,
                 message="inventory UUID %s not available"
                 % system_baseline_in["inventory_uuid"],
             )

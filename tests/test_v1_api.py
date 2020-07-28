@@ -562,7 +562,7 @@ class CreateFromInventoryTests(ApiTest):
             headers=fixtures.AUTH_HEADER,
             json=fixtures.CREATE_FROM_INVENTORY,
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
         self.assertIn(
             "inventory UUID df925152-c45d-11e9-a1f0-c85b761454fa not available",
             response.data.decode("utf-8"),
