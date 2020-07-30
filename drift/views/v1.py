@@ -113,6 +113,11 @@ def comparison_report(
     """
     return a comparison report
     """
+    if len(system_ids + baseline_ids + historical_sys_profile_ids) == 0:
+        raise HTTPError(
+            HTTPStatus.BAD_REQUEST,
+            message="must specify at least one of system, baseline, or HSP",
+        )
     if len(system_ids) > len(set(system_ids)):
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
@@ -125,9 +130,12 @@ def comparison_report(
             message="duplicate UUID specified in baseline_ids list",
         )
 
-    validate_uuids(system_ids)
-    validate_uuids(baseline_ids)
-    validate_uuids(historical_sys_profile_ids)
+    if system_ids:
+        validate_uuids(system_ids)
+    if baseline_ids:
+        validate_uuids(baseline_ids)
+    if historical_sys_profile_ids:
+        validate_uuids(historical_sys_profile_ids)
     if reference_id:
         validate_uuids([reference_id])
         if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
@@ -138,19 +146,28 @@ def comparison_report(
             )
 
     try:
-        systems_with_profiles = fetch_systems_with_profiles(
-            system_ids, auth_key, current_app.logger, get_event_counters()
-        )
+        systems_with_profiles = []
+        baseline_results = []
+        hsp_results = []
 
-        baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
-        ensure_correct_system_count(baseline_ids, baseline_results)
+        if system_ids:
+            systems_with_profiles = fetch_systems_with_profiles(
+                system_ids, auth_key, current_app.logger, get_event_counters()
+            )
 
-        hsp_results = fetch_historical_sys_profiles(
-            historical_sys_profile_ids,
-            auth_key,
-            current_app.logger,
-            get_event_counters(),
-        )
+        if baseline_ids:
+            baseline_results = fetch_baselines(
+                baseline_ids, auth_key, current_app.logger
+            )
+            ensure_correct_system_count(baseline_ids, baseline_results)
+
+        if historical_sys_profile_ids:
+            hsp_results = fetch_historical_sys_profiles(
+                historical_sys_profile_ids,
+                auth_key,
+                current_app.logger,
+                get_event_counters(),
+            )
 
         comparisons = info_parser.build_comparisons(
             systems_with_profiles, baseline_results, hsp_results, reference_id
@@ -200,7 +217,7 @@ def comparison_report_post():
     """
     small wrapper over comparison_report for POSTs
     """
-    system_ids = request.json["system_ids"]
+    system_ids = request.json.get("system_ids", [])
     baseline_ids = request.json.get("baseline_ids", [])
     historical_sys_profile_ids = request.json.get("historical_system_profile_ids", [])
     reference_id = request.json.get("reference_id", None)
