@@ -1,12 +1,12 @@
 language: python
 
 python:
- - "3.6"
+ - "3.8"
 
 script:
   - .travis/check-manifest.sh
   - flake8
-  - black . --check -t py36
+  - black . --check -t py38
   - yamllint drift/openapi/mgmt_api.spec.yaml
   - yamllint drift/openapi/api.spec.yaml
   - yamllint openshift/
