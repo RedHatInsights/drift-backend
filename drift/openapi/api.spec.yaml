@@ -86,7 +86,7 @@ paths:
                     inventory service."
       operationId: drift.views.v1.comparison_report_post
       requestBody:
-        required: true
+        required: false
         description: list of system IDs to generate report for
         content:
           application/json:
