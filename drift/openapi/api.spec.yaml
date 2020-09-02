@@ -39,7 +39,7 @@ paths:
             items:
               type: string
               format: uuid
-          required: true
+          required: false
           description: list of system IDs to generate report for
         - name: baseline_ids[]
           in: query
