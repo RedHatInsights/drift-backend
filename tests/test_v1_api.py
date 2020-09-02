@@ -7,7 +7,7 @@ from kerlescan.exceptions import ItemNotReturned
 
 import unittest
 from mock import patch
-
+from urllib.parse import urlsplit, parse_qs
 from . import fixtures
 
 
@@ -632,3 +632,42 @@ class ApiDuplicateTests(ApiTest):
             json=fixtures.BASELINE_NAME_TRAILING_WHITESPACE,
         )
         self.assertEqual(response.status_code, 400)
+
+
+class ApiPaginationTests(ApiTest):
+    def setUp(self):
+        super(ApiPaginationTests, self).setUp()
+        self.display_name = fixtures.BASELINE_TWO_LOAD["display_name"]
+        self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_TWO_LOAD,
+        )
+
+    def tearDown(self):
+        super(ApiPaginationTests, self).tearDown()
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            response = self.client.delete(
+                "api/system-baseline/v1/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_links_with_additional_query_param(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines",
+            query_string={"display_name": self.display_name},
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        links = json.loads(response.data)["links"]
+        for link_name in ("first", "next", "previous", "last"):
+            self.assertIn(link_name, links)
+            split_parts = urlsplit(links[link_name])
+            query_params = parse_qs(split_parts[3])
+            self.assertIn("display_name", query_params)
+            self.assertEqual(query_params["display_name"][0], self.display_name)

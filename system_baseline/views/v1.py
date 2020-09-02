@@ -159,7 +159,9 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
 
+    link_args_dict = {}
     if display_name:
+        link_args_dict["display_name"] = display_name
         query = query.filter(
             SystemBaseline.display_name.contains(display_name, autoescape=True)
         )
@@ -174,7 +176,14 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     json_list = [baseline.to_json(withhold_facts=True) for baseline in query_results]
 
     return build_paginated_baseline_list_response(
-        limit, offset, order_by, order_how, json_list, total_available, count
+        limit,
+        offset,
+        order_by,
+        order_how,
+        json_list,
+        total_available,
+        count,
+        args_dict=link_args_dict,
     )
 
 
