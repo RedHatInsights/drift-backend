@@ -13,7 +13,9 @@ import unittest
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
-        self.rbac_patcher = mock.patch("drift.views.v1.view_helpers.ensure_has_role")
+        self.rbac_patcher = mock.patch(
+            "drift.views.v1.view_helpers.ensure_has_permission"
+        )
         patched_rbac = self.rbac_patcher.start()
         patched_rbac.return_value = None  # validate all RBAC requests
         self.addCleanup(self.stopPatches)

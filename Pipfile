@@ -10,7 +10,7 @@ mock = "*"
 nose = "*"
 responses = "*"
 yamllint = "*"
-black = "==19.3b0"
+black = "==19.10b"
 ipython = "*"
 openapi-spec-validator = "*"
 ipdb = "*"
@@ -25,7 +25,7 @@ bitmath = "*"
 boto3 = "*"
 watchtower = "*"
 insights-core = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.32"}
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.34"}
 python-dateutil = "*"
 
 [requires]
