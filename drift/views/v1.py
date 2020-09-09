@@ -252,8 +252,8 @@ def ensure_entitled():
 
 @section.before_app_request
 def ensure_rbac():
-    return view_helpers.ensure_has_role(
-        role="drift:*:*",
+    return view_helpers.ensure_has_permission(
+        permissions=["drift:*:*", "drift:comparisons:read"],
         application="drift",
         app_name="drift",
         request=request,
