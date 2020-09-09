@@ -8,7 +8,7 @@ from uuid import UUID
 
 from kerlescan.config import path_prefix, enable_rbac, enable_smart_mgmt_check
 from kerlescan.service_interface import get_key_from_headers
-from kerlescan.rbac_service_interface import get_roles
+from kerlescan.rbac_service_interface import get_perms
 from kerlescan.exceptions import HTTPError
 
 
@@ -54,10 +54,10 @@ def ensure_account_number(request, logger):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
-def ensure_has_role(**kwargs):
+def ensure_has_permission(**kwargs):
     """
-    ensure role exists. kwargs needs to contain:
-        role, application, app_name, request, logger, request_metric, exception_metric
+    ensure permission exists. kwargs needs to contain:
+        permissions, application, app_name, request, logger, request_metric, exception_metric
     """
     if not enable_rbac:
         return
@@ -68,20 +68,20 @@ def ensure_has_role(**kwargs):
 
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
-        roles = get_roles(
+        perms = get_perms(
             kwargs["application"],
             auth_key,
             kwargs["logger"],
             kwargs["request_metric"],
             kwargs["exception_metric"],
         )
-        if kwargs["role"] in roles:
-            return  # allow
-        else:
-            raise HTTPError(
-                HTTPStatus.FORBIDDEN,
-                message="user does not have access to %s" % kwargs["role"],
-            )
+        for p in perms:
+            if p in kwargs["permissions"]:
+                return  # allow
+        raise HTTPError(
+            HTTPStatus.FORBIDDEN,
+            message="user does not have access to %s" % kwargs["permissions"],
+        )
     else:
         # if we got here, reject the request
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
