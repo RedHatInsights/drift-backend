@@ -7,7 +7,7 @@ import mock
 class ApiTest(unittest.TestCase):
     def setUp(self):
         self.rbac_patcher = mock.patch(
-            "historical_system_profiles.views.v1.view_helpers.ensure_has_role"
+            "historical_system_profiles.views.v1.view_helpers.ensure_has_permission"
         )
         self.fetch_systems_patcher = mock.patch(
             "historical_system_profiles.views.v1.fetch_systems_with_profiles"
