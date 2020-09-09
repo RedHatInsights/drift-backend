@@ -82,6 +82,7 @@ def delete_baselines_by_ids(baseline_ids):
     """
     delete a list of baselines given their ID
     """
+    ensure_rbac_write()
     validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="duplicate IDs in request")
@@ -95,6 +96,7 @@ def create_deletion_request(body):
     """
     delete a list of baselines given their IDs as a list
     """
+    ensure_rbac_write()
     baseline_ids = body["baseline_ids"]
     validate_uuids(baseline_ids)
     _delete_baselines(baseline_ids)
@@ -231,6 +233,7 @@ def create_baseline(system_baseline_in):
     """
     create a baseline
     """
+    ensure_rbac_write()
     account_number = view_helpers.get_account_number(request)
 
     if "values" in system_baseline_in and "value" in system_baseline_in:
@@ -384,6 +387,7 @@ def copy_baseline_by_id(baseline_id, display_name):
     """
     create a new baseline given an existing ID
     """
+    ensure_rbac_write()
     validate_uuids([baseline_id])
 
     # ensure display_name is not null
@@ -416,6 +420,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     """
     update a baseline
     """
+    ensure_rbac_write()
     validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
@@ -497,9 +502,21 @@ def ensure_account_number():
 
 
 @section.before_app_request
-def ensure_rbac():
-    return view_helpers.ensure_has_role(
-        role="drift:*:*",
+def ensure_rbac_read():
+    return view_helpers.ensure_has_permission(
+        permissions=["drift:*:*", "drift:baselines:read"],
+        application="drift",
+        app_name="system-baseline",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )
+
+
+def ensure_rbac_write():
+    return view_helpers.ensure_has_permission(
+        permissions=["drift:*:*", "drift:baselines:write"],
         application="drift",
         app_name="system-baseline",
         request=request,

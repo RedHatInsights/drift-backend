@@ -14,7 +14,7 @@ from . import fixtures
 class ApiTest(unittest.TestCase):
     def setUp(self):
         self.rbac_patcher = patch(
-            "system_baseline.views.v1.view_helpers.ensure_has_role"
+            "system_baseline.views.v1.view_helpers.ensure_has_permission"
         )
         patched_rbac = self.rbac_patcher.start()
         patched_rbac.return_value = None  # validate all RBAC requests
