@@ -49,7 +49,10 @@ def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metr
     can, but still keep some headroom in the URL length.
     """
     BATCH_SIZE = 40
-    results = []
+    # tags API call returns a dict in "results", so we now
+    # need to handle either dict or list/array in "results"
+    result_list = []
+    result_dict = {}
     object_ids_to_fetch = object_ids
 
     while len(object_ids_to_fetch) > 0:
@@ -63,11 +66,16 @@ def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metr
         )
         # older APIs sent data in "results", newer uses "data"
         if "data" in response_json:
-            results += response_json["data"]
+            result = response_json["data"]
         elif "results" in response_json:
-            results += response_json["results"]
+            result = response_json["results"]
         else:
             raise ServiceError("unparsable result returned from service")
+        if isinstance(result, dict):
+            result_dict.update(result)
+        else:
+            result_list += result
         object_ids_to_fetch = object_ids_to_fetch[BATCH_SIZE:]
 
+    results = result_dict if result_dict else result_list
     return results

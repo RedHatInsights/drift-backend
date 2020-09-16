@@ -94,8 +94,25 @@ def parse_profile(system_profile, display_name, logger):
             "type", "N/A"
         )
 
+    def _parse_tags(tags):
+        """
+        helper method to convert tag lists to facts. We output a
+        fact for each unique tag (combination of namespace and key).
+        The value is a comma-separated ordered list of all values
+        for the tag.
+        """
+        tag_dict = {}
+        for tag in tags:
+            tag_name = "{}.{}".format(tag["namespace"], tag["key"])
+            tag_dict.setdefault(tag_name, []).append(tag["value"])
+        for tag_name in sorted(tag_dict):
+            parsed_profile["system_tags." + tag_name] = ", ".join(
+                sorted(tag_dict[tag_name])
+            )
+
     # start with metadata that we have brought down from the system record
     parsed_profile = {"id": system_profile[SYSTEM_ID_KEY], "name": display_name}
+
     # add all strings as-is
     for key in SYSTEM_PROFILE_STRINGS:
         parsed_profile[key] = system_profile.get(key, None)
@@ -108,6 +125,8 @@ def parse_profile(system_profile, display_name, logger):
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, "installed")
 
     _parse_running_processes(system_profile.get("running_processes", []))
+
+    _parse_tags(system_profile.get("system_tags", []))
 
     if "sap_sids" in system_profile:
         parsed_profile["sap_sids"] = ", ".join(sorted(system_profile["sap_sids"]))

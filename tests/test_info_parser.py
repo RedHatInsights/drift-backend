@@ -56,3 +56,73 @@ class IntegerParserTests(unittest.TestCase):
 
         parsed_profiles = profile_parser.parse_profile(tests, "fake-name", None)
         self.assertEqual(parsed_profiles["cores_per_socket"], "N/A")
+
+
+class SystemTagsParserTests(unittest.TestCase):
+    def test_system_tags_parsing(self):
+        tests = {
+            "id": "548f28c4-752d-11ea-b35c-54e1add9c7a0",
+            "system_tags": [
+                {
+                    "namespace": "insights-client",
+                    "key": "Zone",
+                    "value": "eastern time zone",
+                },
+            ],
+        }
+        parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
+        self.assertEqual(
+            parsed_profile["system_tags.insights-client.Zone"], "eastern time zone"
+        )
+
+    def test_system_tags_parsing_two_namespaces(self):
+        tests = {
+            "id": "548f28c4-752d-11ea-b35c-54e1add9c7a0",
+            "system_tags": [
+                {
+                    "namespace": "insights-client",
+                    "key": "myTag",
+                    "value": "Insights Client Namespace Tag",
+                },
+                {
+                    "namespace": "satellite",
+                    "key": "myTag",
+                    "value": "Satellite Namespace Tag",
+                },
+            ],
+        }
+        parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
+        self.assertEqual(
+            parsed_profile["system_tags.insights-client.myTag"],
+            "Insights Client Namespace Tag",
+            self.assertEqual(
+                parsed_profile["system_tags.satellite.myTag"], "Satellite Namespace Tag"
+            ),
+        )
+
+    def test_system_tags_parsing_multiple_tag_values(self):
+        tests = {
+            "id": "548f28c4-752d-11ea-b35c-54e1add9c7a0",
+            "system_tags": [
+                {
+                    "namespace": "insights-client",
+                    "key": "Location",
+                    "value": "gray rack",
+                },
+                {
+                    "namespace": "insights-client",
+                    "key": "Location",
+                    "value": "basement",
+                },
+                {
+                    "namespace": "insights-client",
+                    "key": "Location",
+                    "value": "somewhere else",
+                },
+            ],
+        }
+        parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
+        self.assertEqual(
+            parsed_profile["system_tags.insights-client.Location"],
+            "basement,gray rack,somewhere else",
+        )

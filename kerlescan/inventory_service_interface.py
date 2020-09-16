@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from kerlescan import config
 from kerlescan.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
 from kerlescan.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
+from kerlescan.constants import INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT
 from kerlescan.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
 from kerlescan.exceptions import ItemNotReturned
 from kerlescan.service_interface import fetch_data
@@ -22,7 +23,9 @@ def ensure_correct_system_count(system_ids_requested, result):
         )
 
 
-def interleave_systems_and_profiles(systems_result, system_profiles_result):
+def interleave_systems_and_profiles(
+    systems_result, system_profiles_result, system_tags_result
+):
     """
     given a system result and system profile result, interleave them and create
     records suitable for a drift comparison.
@@ -67,6 +70,13 @@ def interleave_systems_and_profiles(systems_result, system_profiles_result):
         system_with_profile["system_profile"]["fqdn"] = system["fqdn"]
         system_with_profile["system_profile"]["updated"] = system["updated"]
 
+        # now add tags if any exist for the system.
+        # system_tags_result is a dict keyed on uuid.
+        if system_tags_result.get(system["id"]):
+            system_with_profile["system_profile"]["system_tags"] = system_tags_result[
+                system["id"]
+            ]
+
         systems_with_profiles.append(system_with_profile)
 
     return systems_with_profiles
@@ -87,6 +97,10 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
         config.inventory_svc_hostname, INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
     )
 
+    system_tags_location = urljoin(
+        config.inventory_svc_hostname, INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT
+    )
+
     systems_result = fetch_data(
         system_location,
         auth_header,
@@ -103,7 +117,16 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
         counters["inventory_service_requests"],
         counters["inventory_service_exceptions"],
     )
-
+    system_tags_result = fetch_data(
+        system_tags_location,
+        auth_header,
+        system_ids,
+        logger,
+        counters["inventory_service_requests"],
+        counters["inventory_service_exceptions"],
+    )
     ensure_correct_system_count(system_ids, systems_result)
 
-    return interleave_systems_and_profiles(systems_result, system_profiles_result)
+    return interleave_systems_and_profiles(
+        systems_result, system_profiles_result, system_tags_result
+    )
