@@ -86,7 +86,7 @@ paths:
                     inventory service."
       operationId: drift.views.v1.comparison_report_post
       requestBody:
-        required: false
+        required: true
         description: list of system IDs to generate report for
         content:
           application/json:
@@ -136,8 +136,6 @@ components:
         version:
           type: string
     ComparisonRequest:
-      required:
-        - system_ids
       properties:
         system_ids:
           type: array
