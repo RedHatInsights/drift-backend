@@ -110,7 +110,7 @@ def parse_profile(system_profile, display_name, logger):
     _parse_running_processes(system_profile.get("running_processes", []))
 
     if "sap_sids" in system_profile:
-        parsed_profile["sap_sids"] = ", ".join(system_profile["sap_sids"])
+        parsed_profile["sap_sids"] = ", ".join(sorted(system_profile["sap_sids"]))
 
     # convert bytes to human readable format
     if "system_memory_bytes" in system_profile:
