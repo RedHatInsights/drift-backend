@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "21b66243192dc818a7cc31063bbf85400bee23c5159ce73e805cffe527d79650"
+            "sha256": "e9bca15761075b3e4d56eb3f96ea0e51fa4421f2d2aa1eeb66d0ba238c672cb8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -165,7 +165,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/beav/kerlescan.git",
-            "ref": "0b0550bcd591c8ead455fcf3a053cf0fbd2f20b3"
+            "ref": "ac6c0e12a5d9fa778513eaecb999d72e503e56d9"
         },
         "lockfile": {
             "hashes": [
