@@ -456,6 +456,23 @@ FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT = [
     },
 ]
 
+FETCH_SYSTEM_TAGS = """
+{
+  "total": 1,
+  "count": 1,
+  "page": 1,
+  "per_page": 50,
+  "results": {
+    "ec67f65c-2bc8-4ce8-82e2-6a27cada8d31": [
+      {
+        "namespace": "insights-client",
+        "key": "group",
+        "value": "XmygroupX"
+      }
+    ]
+  }
+}
+"""
 FETCH_SYSTEMS_INV_SVC = """
     {
       "count": 2,
