@@ -28,7 +28,7 @@ flask-sqlalchemy = "*"
 alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
-kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.37"}
+kerlescan = {editable = true,git = "https://github.com/beav/kerlescan.git",ref = "0.40"}
 bitmath = "*"
 jsonpatch = "*"
 insights-core = "*"
