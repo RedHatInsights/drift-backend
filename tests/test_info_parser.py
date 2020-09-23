@@ -124,5 +124,5 @@ class SystemTagsParserTests(unittest.TestCase):
         parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
         self.assertEqual(
             parsed_profile["system_tags.insights-client.Location"],
-            "basement,gray rack,somewhere else",
+            "basement, gray rack, somewhere else",
         )
