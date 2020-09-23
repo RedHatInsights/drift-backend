@@ -67,7 +67,7 @@ class SystemTagsParserTests(unittest.TestCase):
                     "namespace": "insights-client",
                     "key": "Zone",
                     "value": "eastern time zone",
-                },
+                }
             ],
         }
         parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
