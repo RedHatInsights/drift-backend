@@ -32,6 +32,16 @@ class InventoryServiceTests(unittest.TestCase):
             content_type="application/json",
         )
 
+    def _create_response_for_system_tags(self, service_hostname, system_uuids):
+        url_template = "http://%s/api/inventory/v1/hosts/%s/tags"
+        responses.add(
+            responses.GET,
+            url_template % (service_hostname, system_uuids),
+            body=fixtures.FETCH_SYSTEM_TAGS,
+            status=requests.codes.ok,
+            content_type="application/json",
+        )
+
     def _create_response_for_system_profiles(self, service_hostname, system_uuids):
         url_template = "http://%s/api/inventory/v1/hosts/%s/system_profile"
         responses.add(
@@ -76,6 +86,10 @@ class InventoryServiceTests(unittest.TestCase):
             "inventory_svc_url_is_not_set", ",".join(systems_to_fetch)
         )
 
+        self._create_response_for_system_tags(
+            "inventory_svc_url_is_not_set", ",".join(systems_to_fetch)
+        )
+
         systems = inventory_service_interface.fetch_systems_with_profiles(
             systems_to_fetch, "my-auth-key", self.mock_logger, self.mock_counters
         )
@@ -95,6 +109,9 @@ class InventoryServiceTests(unittest.TestCase):
         )
 
         self._create_response_for_system_profiles(
+            "inventory_svc_url_is_not_set", ",".join(systems_to_fetch)
+        )
+        self._create_response_for_system_tags(
             "inventory_svc_url_is_not_set", ",".join(systems_to_fetch)
         )
 

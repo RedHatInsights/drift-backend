@@ -13,7 +13,12 @@ def _read_file(path):
 
 
 def _read_inputs(
-    systems_path, profiles_path, baselines_path, hsps_path, expected_output_path
+    systems_path,
+    profiles_path,
+    baselines_path,
+    tags_path,
+    hsps_path,
+    expected_output_path,
 ):
     """
     read from file paths and return either parsed json or text
@@ -21,10 +26,11 @@ def _read_inputs(
     systems = _read_file(systems_path)["results"]
     profiles = _read_file(profiles_path)["results"]
     baselines = _read_file(baselines_path)["data"]
+    tags = _read_file(tags_path)["results"]
     hsps = _read_file(hsps_path)["data"]
 
     # combine systems + profiles into an object that can be compared
-    systems_with_profiles = interleave_systems_and_profiles(systems, profiles)
+    systems_with_profiles = interleave_systems_and_profiles(systems, profiles, tags)
 
     # read as text, not json
     with open(expected_output_path, "r") as myfile:
