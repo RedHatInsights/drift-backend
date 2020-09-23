@@ -106,9 +106,7 @@ def parse_profile(system_profile, display_name, logger):
             tag_name = "{}.{}".format(tag["namespace"], tag["key"])
             tag_dict.setdefault(tag_name, []).append(tag["value"])
         for tag_name in sorted(tag_dict):
-            parsed_profile["system_tags." + tag_name] = ", ".join(
-                sorted(tag_dict[tag_name])
-            )
+            parsed_profile["tags." + tag_name] = ", ".join(sorted(tag_dict[tag_name]))
 
     # start with metadata that we have brought down from the system record
     parsed_profile = {"id": system_profile[SYSTEM_ID_KEY], "name": display_name}
@@ -126,7 +124,7 @@ def parse_profile(system_profile, display_name, logger):
 
     _parse_running_processes(system_profile.get("running_processes", []))
 
-    _parse_tags(system_profile.get("system_tags", []))
+    _parse_tags(system_profile.get("tags", []))
 
     if "sap_sids" in system_profile:
         parsed_profile["sap_sids"] = ", ".join(sorted(system_profile["sap_sids"]))

@@ -73,7 +73,7 @@ def interleave_systems_and_profiles(
         # now add tags if any exist for the system.
         # system_tags_result is a dict keyed on uuid.
         if system_tags_result.get(system["id"]):
-            system_with_profile["system_profile"]["system_tags"] = system_tags_result[
+            system_with_profile["system_profile"]["tags"] = system_tags_result[
                 system["id"]
             ]
 
