@@ -93,6 +93,7 @@ EVENT_MESSAGE_VALUE = {
         "account": "5432",
         "id": "6388350e-b18d-11ea-ad7f-98fa9b07d419",
         "fqdn": "my-fqdn",
+        "tags": [],
         "system_profile": {"captured_date": "2020-06-18T17:11:05+00:00"},
     },
     "platform_metadata": {"request_id": "123456"},

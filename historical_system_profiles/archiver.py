@@ -50,6 +50,9 @@ def _archive_profile(data, ptc, logger):
     # fqdn is on the host but we need it in the profile as well
     profile["fqdn"] = host["fqdn"]
 
+    # tags is on the host but we need it in the profile as well
+    profile["tags"] = host["tags"]
+
     captured_date = profile.get("captured_date")
     account = host["account"]
 
