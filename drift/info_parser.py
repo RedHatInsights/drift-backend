@@ -228,10 +228,21 @@ def _create_comparison(systems, info_name, reference_id, system_count):
     elif len(system_values) == 1:
         info_comparison = COMPARISON_SAME
 
+    # we specifically want to check for more than one system not baselines below
+    # so build the baseline count here
+    baseline_count = 0
+    for system_id_value in sorted_system_id_values:
+        if system_id_value["is_baseline"]:
+            baseline_count += 1
+
     # override comparison logic for certain fact names
-    if _is_unique_rec_name(info_name) and system_count > 1:
+    # use the baseline count above to check for more than one system specifically
+    if _is_unique_rec_name(info_name) and (system_count - baseline_count) > 1:
         system_values_with_duplicates = [system["value"] for system in system_id_values]
-        if len(system_values) == len(system_values_with_duplicates):
+        # we want to show status as incomplete for "N/A" values now
+        if "N/A" in system_values:
+            info_comparison = COMPARISON_INCOMPLETE_DATA
+        elif len(system_values) == len(system_values_with_duplicates):
             info_comparison = COMPARISON_SAME
         else:
             info_comparison = COMPARISON_DIFFERENT
