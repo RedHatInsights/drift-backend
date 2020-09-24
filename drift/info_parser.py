@@ -107,7 +107,10 @@ def _group_comparisons(comparisons):
             if COMPARISON_DIFFERENT in states:
                 grouped_comparison["state"] = COMPARISON_DIFFERENT
             elif COMPARISON_INCOMPLETE_DATA in states:
-                grouped_comparison["state"] = COMPARISON_DIFFERENT
+                if COMPARISON_SAME in states:
+                    grouped_comparison["state"] = COMPARISON_DIFFERENT
+                else:
+                    grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
             elif COMPARISON_SAME in states and len(states) == 1:
                 grouped_comparison["state"] = COMPARISON_SAME
             else:  # use 'incomplete data' as the fallback state if something goes wrong
