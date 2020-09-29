@@ -104,9 +104,13 @@ def parse_profile(system_profile, display_name, logger):
         tag_dict = {}
         for tag in tags:
             tag_name = "{}.{}".format(tag["namespace"], tag["key"])
-            tag_dict.setdefault(tag_name, []).append(tag["value"])
+            value_list = tag_dict.setdefault(tag_name, [])
+            if tag["value"]:
+                value_list.append(tag["value"])
         for tag_name in sorted(tag_dict):
-            parsed_profile["tags." + tag_name] = ", ".join(sorted(tag_dict[tag_name]))
+            parsed_profile["tags." + tag_name] = (
+                ", ".join(sorted(tag_dict[tag_name])) if tag_dict[tag_name] else None
+            )
 
     # start with metadata that we have brought down from the system record
     parsed_profile = {"id": system_profile[SYSTEM_ID_KEY], "name": display_name}
