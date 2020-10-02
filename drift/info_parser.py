@@ -3,6 +3,7 @@ from dateutil.parser import parse as dateparse
 
 from kerlescan.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
+from kerlescan.constants import SAP_RELATED_FACTS
 
 from kerlescan import profile_parser
 
@@ -167,12 +168,13 @@ def _select_applicable_info(
     for parsed_system_profile in parsed_system_profiles:
         all_keys = all_keys.union(set(parsed_system_profile.keys()))
 
-    info_comparisons = [
-        _create_comparison(
+    info_comparisons = []
+    for key in all_keys:
+        current_comparison = _create_comparison(
             parsed_system_profiles, key, reference_id, len(systems_with_profiles)
         )
-        for key in all_keys
-    ]
+        if current_comparison:
+            info_comparisons.append(current_comparison)
     return info_comparisons
 
 
@@ -191,6 +193,14 @@ def _create_comparison(systems, info_name, reference_id, system_count):
 
     """
     # TODO: this method is messy and could be refactored
+    if info_name in SAP_RELATED_FACTS:
+        sap_present = False
+        for system in systems:
+            if "sap_system" in system and system["sap_system"]:
+                sap_present = True
+        if not sap_present:
+            return
+
     info_comparison = COMPARISON_DIFFERENT
 
     system_id_values = [
