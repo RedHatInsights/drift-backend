@@ -26,6 +26,7 @@ SYSTEM_PROFILE_STRINGS = {
     "last_boot_time",
     "cloud_provider",
     "fqdn",
+    "tuned_profile",
 }
 SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED = {
     "cpu_flags",
