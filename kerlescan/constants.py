@@ -27,6 +27,8 @@ SYSTEM_PROFILE_STRINGS = {
     "cloud_provider",
     "fqdn",
     "tuned_profile",
+    "sap_instance_number",
+    "sap_version",
 }
 SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED = {
     "cpu_flags",
