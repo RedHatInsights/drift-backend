@@ -1,1 +1,1 @@
-pip install kafka
+pip3 install --user kafka
