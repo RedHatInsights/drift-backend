@@ -9,7 +9,7 @@ NOTE: In the firewall-cmd section, I had to add masquerade to the "default" zone
 
 ---
 
-to run:
+## Run All Components
 
  * add this to your `/etc/hosts`:
 ```
@@ -25,3 +25,10 @@ to run:
  * confirm everything is up: `docker-compose -f full-stack.yml ps` and confirm everything is either "running" or "exit 0"
  * confirm that you see the archiver working (give it a minute to see output): `docker-compose -f full-stack.yml logs -f hsp-archiver`
  * go to https://ci.foo.redhat.com:1337/insights/drift in the browser and confirm things look ok!
+
+## Run All Components Using Local kerlescan Code
+
+If you are developing kerlescan code and want to run the components using the code you are developing, use `full-stack-local-kerlescan.ymlm` instead of `full-stack.yml` in the docker-compose command.
+* `docker-compose -f full-stack-local-kerlescan.yml up -d`
+
+This yml file assumes your kerlescan repo is checked out in the same parent directory as this drift-dev-setup repo is checked out. The `full-stack-local-kerlescan.yml` yml file mounts your local kerlescan source directory in place of the kerlescan code in the image running in each container.
