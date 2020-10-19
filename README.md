@@ -1,5 +1,14 @@
 # drift-dev-setup
 
+If running on Fedora 32, docker is no longer supported out of the box. Check this article about getting docker running: https://fedoramagazine.org/docker-and-fedora-32/. Symptoms include...
+ * error during build-images.sh step include something about the version of runc not supporting cgroups
+ * failure starting containers because TCP networking not working correctly
+
+The article above has steps to get docker running on Fedora 32.
+NOTE: In the firewall-cmd section, I had to add masquerade to the "default" zone, not the "FedoraWorkstation" zone, because the "default" zone is what my system was using. Likely this is a remnant of upgrading Fedora over several versions and not a fresh Fedora 32 install.
+
+---
+
 to run:
 
  * add this to your `/etc/hosts`:
@@ -15,4 +24,4 @@ to run:
  * `docker-compose -f full-stack.yml up -d`
  * confirm everything is up: `docker-compose -f full-stack.yml ps` and confirm everything is either "running" or "exit 0"
  * confirm that you see the archiver working (give it a minute to see output): `docker-compose -f full-stack.yml logs -f hsp-archiver`
- * go to http://ci.foo.redhat.com:1337 in the browser and confirm things look ok!
+ * go to https://ci.foo.redhat.com:1337/insights/drift in the browser and confirm things look ok!
