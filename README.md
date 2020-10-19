@@ -28,7 +28,7 @@ NOTE: In the firewall-cmd section, I had to add masquerade to the "default" zone
 
 ## Run All Components Using Local kerlescan Code
 
-If you are developing kerlescan code and want to run the components using the code you are developing, use `full-stack-local-kerlescan.ymlm` instead of `full-stack.yml` in the docker-compose command.
+If you are developing kerlescan code and want to run the components using the code you are developing, use `full-stack-local-kerlescan.yml` instead of `full-stack.yml` in the docker-compose command.
 * `docker-compose -f full-stack-local-kerlescan.yml up -d`
 
-This yml file assumes your kerlescan repo is checked out in the same parent directory as this drift-dev-setup repo is checked out. The `full-stack-local-kerlescan.yml` yml file mounts your local kerlescan source directory in place of the kerlescan code in the image running in each container.
+This yml file assumes your kerlescan repo is checked out in the same parent directory as this drift-dev-setup repo is checked out. The `full-stack-local-kerlescan.yml` file mounts your local kerlescan source directory in place of the kerlescan code in the image running in each container.
