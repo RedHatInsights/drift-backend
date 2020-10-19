@@ -32,8 +32,18 @@ services:
       - 8000:8000 #for prometheus endpoint
     environment:
       - LOG_LEVEL=DEBUG
+# The following are temporary until insights-puptoo PR#77
+# gets merged.  Once merged, remove the INVENTORY_TOPIC
+# and ACG_CONFIG environment variables, as well as the
+# 'volumes' section below.
+      - INVENTORY_TOPIC=platform.inventory.host-ingress
+      - ACG_CONFIG=/cdappconfig.json
     depends_on:
       - kafka
+    volumes:
+      - type: bind
+        source: ../insights-puptoo/cdappconfig.json
+        target: /cdappconfig.json
   minio:
       image: minio/minio
       command: server /data
