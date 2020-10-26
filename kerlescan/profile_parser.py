@@ -109,7 +109,9 @@ def parse_profile(system_profile, display_name, logger):
                 value_list.append(tag["value"])
         for tag_name in sorted(tag_dict):
             parsed_profile["tags." + tag_name] = (
-                ", ".join(sorted(tag_dict[tag_name])) if tag_dict[tag_name] else None
+                ", ".join(sorted(tag_dict[tag_name]))
+                if tag_dict[tag_name]
+                else "(no value)"
             )
 
     # start with metadata that we have brought down from the system record
