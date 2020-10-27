@@ -196,7 +196,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
     if info_name in SAP_RELATED_FACTS:
         sap_present = False
         for system in systems:
-            if "sap_system" in system and system["sap_system"]:
+            if "sap_system" in system and str(system["sap_system"]) == "True":
                 sap_present = True
         if not sap_present:
             return
