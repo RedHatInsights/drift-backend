@@ -16,7 +16,7 @@ from kerlescan.inventory_service_interface import (
 )
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.service_interface import get_key_from_headers
-from kerlescan.exceptions import HTTPError, ItemNotReturned
+from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
 
 section = Blueprint("v1", __name__)
 
@@ -151,9 +151,12 @@ def comparison_report(
         hsp_results = []
 
         if system_ids:
-            systems_with_profiles = fetch_systems_with_profiles(
-                system_ids, auth_key, current_app.logger, get_event_counters()
-            )
+            try:
+                systems_with_profiles = fetch_systems_with_profiles(
+                    system_ids, auth_key, current_app.logger, get_event_counters()
+                )
+            except RBACDenied as error:
+                raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
         if baseline_ids:
             baseline_results = fetch_baselines(
