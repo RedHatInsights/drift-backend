@@ -36,6 +36,16 @@ class ServiceError(Exception):
         self.message = message
 
 
+class RBACDenied(Exception):
+    def __init__(self, message):
+        """
+        Raise this exception if the inventory service reports that you do not
+        have rbac permission to access the service
+        """
+        super(RBACDenied, self).__init__()
+        self.message = message
+
+
 class UnparsableNEVRAError(RuntimeError):
     def __init__(self, message):
         """
