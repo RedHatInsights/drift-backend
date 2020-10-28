@@ -150,27 +150,30 @@ def comparison_report(
         baseline_results = []
         hsp_results = []
 
-        if system_ids:
-            try:
+        try:
+            if system_ids:
+                # can raise RBACDenied exception
                 systems_with_profiles = fetch_systems_with_profiles(
                     system_ids, auth_key, current_app.logger, get_event_counters()
                 )
-            except RBACDenied as error:
-                raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
-        if baseline_ids:
-            baseline_results = fetch_baselines(
-                baseline_ids, auth_key, current_app.logger
-            )
-            ensure_correct_system_count(baseline_ids, baseline_results)
+            if baseline_ids:
+                # can raise RBACDenied exception
+                baseline_results = fetch_baselines(
+                    baseline_ids, auth_key, current_app.logger
+                )
+                ensure_correct_system_count(baseline_ids, baseline_results)
 
-        if historical_sys_profile_ids:
-            hsp_results = fetch_historical_sys_profiles(
-                historical_sys_profile_ids,
-                auth_key,
-                current_app.logger,
-                get_event_counters(),
-            )
+            if historical_sys_profile_ids:
+                # can raise RBACDenied exception
+                hsp_results = fetch_historical_sys_profiles(
+                    historical_sys_profile_ids,
+                    auth_key,
+                    current_app.logger,
+                    get_event_counters(),
+                )
+        except RBACDenied as error:
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
         comparisons = info_parser.build_comparisons(
             systems_with_profiles, baseline_results, hsp_results, reference_id
