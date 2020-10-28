@@ -9,7 +9,7 @@ from uuid import UUID
 from kerlescan.config import path_prefix, enable_rbac, enable_smart_mgmt_check
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.rbac_service_interface import get_perms
-from kerlescan.exceptions import HTTPError
+from kerlescan.exceptions import HTTPError, RBACDenied
 
 
 def get_account_number(request):
@@ -68,20 +68,26 @@ def ensure_has_permission(**kwargs):
 
     auth_key = get_key_from_headers(request.headers)
     if auth_key:
-        perms = get_perms(
-            kwargs["application"],
-            auth_key,
-            kwargs["logger"],
-            kwargs["request_metric"],
-            kwargs["exception_metric"],
-        )
-        for p in perms:
-            if p in kwargs["permissions"]:
-                return  # allow
-        raise HTTPError(
-            HTTPStatus.FORBIDDEN,
-            message="user does not have access to %s" % kwargs["permissions"],
-        )
+        try:
+            perms = get_perms(
+                kwargs["application"],
+                auth_key,
+                kwargs["logger"],
+                kwargs["request_metric"],
+                kwargs["exception_metric"],
+            )
+            for p in perms:
+                if p in kwargs["permissions"]:
+                    return  # allow
+            raise HTTPError(
+                HTTPStatus.FORBIDDEN,
+                message="user does not have access to %s" % kwargs["permissions"],
+            )
+        except RBACDenied:
+            raise HTTPError(
+                HTTPStatus.FORBIDDEN,
+                message="request to retrieve permissions from RBAC was forbidden",
+            )
     else:
         # if we got here, reject the request
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
