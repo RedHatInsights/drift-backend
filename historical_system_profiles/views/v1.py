@@ -9,7 +9,7 @@ from kerlescan import view_helpers
 from kerlescan.view_helpers import validate_uuids
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
-from kerlescan.exceptions import HTTPError
+from kerlescan.exceptions import HTTPError, RBACDenied
 
 from historical_system_profiles import metrics, db_interface, config
 
@@ -30,9 +30,12 @@ def _get_current_names_for_profiles(hsps):
 
     auth_key = get_key_from_headers(request.headers)
 
-    systems = fetch_systems_with_profiles(
-        inventory_ids, auth_key, current_app.logger, _get_event_counters(),
-    )
+    try:
+        systems = fetch_systems_with_profiles(
+            inventory_ids, auth_key, current_app.logger, _get_event_counters(),
+        )
+    except RBACDenied as error:
+        raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
     display_names = {system["id"]: system["display_name"] for system in systems}
     enriched_hsps = []
     for hsp in hsps:

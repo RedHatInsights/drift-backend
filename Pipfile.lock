@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "24011a68ff884c967ca7c9e13d359df890b5aeac9b61d908674c0eaf5f5ae649"
+            "sha256": "18798f0724d7c7dabb92f80aeba4c8fa7a7a463ae0b42727943120901a14058a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -34,17 +34,17 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:163bf25d7c28be24392744485cf180bee4ff5e84c4ee891a32501e89dc352982",
-                "sha256:9f3cf24eff67ae03c088c4dca45d8c845f52a8f5272f385cd6e2a6f40186c96f"
+                "sha256:f0b0a3611f9471137d3714b5dd8a8d0911f2b035f3de2d71ebe3e830e4e6d724",
+                "sha256:fb94f75d394fc97e5328f9b1a5badcfbd79e0ab5596254f8c49cfd40c69bb436"
             ],
-            "version": "==1.16.5"
+            "version": "==1.16.6"
         },
         "botocore": {
             "hashes": [
-                "sha256:2bacdfb1eb66c885be18b7557202160f9eb48d81e16881e1ce5176881cc9d8aa",
-                "sha256:50e6b9b0e082a9af620552b5d1b5966f1da09202d6ccd03fd2c9856ae0578db5"
+                "sha256:66e1d9f3ef22480e679fcfb1bdeeb2ef1cbe671278fd27464ab3b594a928e0bf",
+                "sha256:97d03523324dfff078aac12f88304f73038d449e10e05d378993fb3a22727c42"
             ],
-            "version": "==1.19.5"
+            "version": "==1.19.6"
         },
         "certifi": {
             "hashes": [
@@ -191,7 +191,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "4765fcdd2e93fa1f0e826875ea62d2291c7b1ccb"
+            "ref": "de4b29fb3ef9e3eda83222ed9bb531cb706c3ceb"
         },
         "logstash-formatter": {
             "hashes": [
@@ -438,11 +438,11 @@
         },
         "watchtower": {
             "hashes": [
-                "sha256:9733d1dfc2ab25880386188ee41b19d39893a09c91725bd92b2f782a72890fda",
-                "sha256:d6704b258494bddc3e9ddda286ef5067e4b09ab4287aea4289afdd035cc4742b"
+                "sha256:2c25884f4c2387f57e26c4c44423d80ca24f6c1f0b71792cf99e515f65a46aca",
+                "sha256:f662de408e6f3945ad2bf9b9ac96681430ff19606e6522f9754c527f0a40b003"
             ],
             "index": "pypi",
-            "version": "==0.8.0"
+            "version": "==1.0.0"
         },
         "werkzeug": {
             "hashes": [
@@ -787,6 +787,7 @@
                 "sha256:6daac9731f172c2a22ade6ed0c00197ee7cc1221aa84cfdf9c31defeb059a907",
                 "sha256:715ff2f2df46121071622063fc7543d9b1fd19ebfc4f5c8895af64a77a8c852c",
                 "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3",
+                "sha256:7e4c9d7658aaa1fc80018593abdf8598bf91325af6af5cce4ce7c73bc45ea53d",
                 "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b",
                 "sha256:8ce678dbaf790dbdb3eba24056d5364fb45944f33553dd5869b7580cdbb83614",
                 "sha256:92c325624e304ebf0e025d1224b77dd4e6393f18aab8d829b5b7e04afe9b7a2c",
@@ -798,8 +799,10 @@
                 "sha256:d43943ef777f9a1c42bf4e552ba23ac77a6351de620aa9acf64ad54933ad4d34",
                 "sha256:d5d33e9e7af3b34a40dc05f498939f0ebf187f07c385fd58d591c533ad8562fe",
                 "sha256:d648b8e3bf2fe648745c8ffcee3db3ff903d0817a01a12dd6a6ea7a8f4889072",
+                "sha256:f208eb7aff048f6bea9586e61af041ddf7f9ade7caed625742af423f6bae3298",
                 "sha256:fac11badff8313e23717f3dada86a15389d0708275bddf766cca67a84ead3e91",
                 "sha256:fc0fea399acb12edbf8a628ba8d2312f583bdbdb3335635db062fa98cf71fca4",
+                "sha256:fcf135e17cc74dbfbc05894ebca928ffeb23d9790b3167a674921db19082401f",
                 "sha256:fe460b922ec15dd205595c9b5b99e2f056fd98ae8f9f56b888e7a17dc2b757e7"
             ],
             "version": "==1.4.1"
