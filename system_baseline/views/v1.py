@@ -8,7 +8,7 @@ from sqlalchemy.orm.session import make_transient
 from kerlescan import view_helpers
 from kerlescan.view_helpers import validate_uuids
 from kerlescan import profile_parser
-from kerlescan.exceptions import HTTPError, ItemNotReturned
+from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
@@ -287,6 +287,8 @@ def create_baseline(system_baseline_in):
                 HTTPStatus.NOT_FOUND,
                 message="hsp UUID %s not available" % system_baseline_in["hsp_uuid"],
             )
+        except RBACDenied as error:
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
         system_name = "clone_from_hsp_unused"
         baseline_facts = _parse_from_sysprofile(
@@ -308,6 +310,8 @@ def create_baseline(system_baseline_in):
                 message="inventory UUID %s not available"
                 % system_baseline_in["inventory_uuid"],
             )
+        except RBACDenied as error:
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
         system_name = profile_parser.get_name(system_with_profile)
         baseline_facts = _parse_from_sysprofile(
