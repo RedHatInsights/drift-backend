@@ -77,6 +77,8 @@ paths:
                   externalValue: "https://git.io/fhQ00"
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -105,6 +107,8 @@ paths:
                   externalValue: "https://git.io/fhQ00"
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -116,8 +120,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: "Insufficient permissions to fulfill request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
     BadRequest:
-      description: "The server could could not process the current request."
+      description: "The server could not process the current request."
       content:
         application/json:
           schema:
