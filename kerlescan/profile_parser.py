@@ -75,10 +75,10 @@ def parse_profile(system_profile, display_name, logger):
             _canonicalize_ipv6_addr(addr)
             for addr in interface.get("ipv6_addresses", ["N/A"])
         ]
-        parsed_profile["network_interfaces." + name + ".ipv4_addresses"] = ",".join(
+        parsed_profile["network_interfaces." + name + ".ipv4_addresses"] = ", ".join(
             interface.get("ipv4_addresses", ["N/A"])
         )
-        parsed_profile["network_interfaces." + name + ".ipv6_addresses"] = ",".join(
+        parsed_profile["network_interfaces." + name + ".ipv6_addresses"] = ", ".join(
             ipv6_addresses
         )
         parsed_profile["network_interfaces." + name + ".mac_address"] = interface.get(

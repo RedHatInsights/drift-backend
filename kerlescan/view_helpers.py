@@ -158,5 +158,5 @@ def validate_uuids(system_ids):
     if malformed_ids:
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
-            message="malformed UUIDs requested (%s)" % ",".join(malformed_ids),
+            message="malformed UUIDs requested (%s)" % ", ".join(malformed_ids),
         )
