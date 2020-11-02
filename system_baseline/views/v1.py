@@ -4,6 +4,7 @@ import jsonpatch
 import jsonpointer
 
 from sqlalchemy.orm.session import make_transient
+from sqlalchemy import func
 
 from kerlescan import view_helpers
 from kerlescan.view_helpers import validate_uuids
@@ -163,7 +164,9 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     if display_name:
         link_args_dict["display_name"] = display_name
         query = query.filter(
-            SystemBaseline.display_name.contains(display_name, autoescape=True)
+            func.lower(SystemBaseline.display_name).contains(
+                display_name.lower(), autoescape=True
+            )
         )
     count = query.count()
     total_available = _get_total_available_baselines()
