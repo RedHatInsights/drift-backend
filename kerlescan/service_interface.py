@@ -64,7 +64,7 @@ def fetch_data(url, auth_header, object_ids, logger, time_metric, exception_metr
     while len(object_ids_to_fetch) > 0:
         object_id_batch = object_ids_to_fetch[:BATCH_SIZE]
         response_json = fetch_url(
-            url % (", ".join(object_id_batch)),
+            url % (",".join(object_id_batch)),
             auth_header,
             logger,
             time_metric,
