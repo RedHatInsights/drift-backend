@@ -15,7 +15,7 @@ cd insights-ingress-go
 docker build . -t ingress:latest
 cd ..
 
-# ingress build
+# puptoo build
 git clone https://github.com/RedHatInsights/insights-puptoo.git
 cd insights-puptoo
 docker build . -t puptoo:latest
