@@ -1,9 +1,11 @@
 from flask import current_app
 from dateutil.parser import parse as dateparse
+import re
 
 from kerlescan.constants import SYSTEM_ID_KEY, COMPARISON_SAME
 from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
 from kerlescan.constants import SAP_RELATED_FACTS
+from kerlescan.constants import OBFUSCATED_FACTS_PATTERNS
 
 from kerlescan import profile_parser
 
@@ -168,8 +170,26 @@ def _select_applicable_info(
     for parsed_system_profile in parsed_system_profiles:
         all_keys = all_keys.union(set(parsed_system_profile.keys()))
 
+    # prepare regexes for obfuscated values matching
+    obfuscated_regexes = {}
+    for key in OBFUSCATED_FACTS_PATTERNS.keys():
+        obfuscated_regexes[key] = re.compile(OBFUSCATED_FACTS_PATTERNS[key])
+
     info_comparisons = []
     for key in all_keys:
+
+        # obfuscated information type - key
+        for obfuscated_key in obfuscated_regexes.keys():
+            if obfuscated_key in key:
+                for system in parsed_system_profiles:
+                    system["obfuscation"] = {}
+                    system["obfuscation"][key] = False
+                    obfuscated_regex = obfuscated_regexes[obfuscated_key]
+                    value = system.get(key)
+                    # only if value is present and matches with obfuscated pattern
+                    if value and obfuscated_regex.match(value):
+                        system["obfuscation"][key] = True
+
         current_comparison = _create_comparison(
             parsed_system_profiles, key, reference_id, len(systems_with_profiles)
         )
@@ -208,6 +228,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
             "id": system[SYSTEM_ID_KEY],
             "name": system["name"],
             "value": system.get(info_name, "N/A") or "N/A",
+            "is_obfuscated": system.get("obfuscation", {}).get(info_name, False),
             "is_baseline": system["is_baseline"],
         }
         for system in systems
@@ -221,7 +242,13 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         sorted_system_id_values, key=lambda system: system["is_baseline"], reverse=True
     )
 
-    system_values = {system["value"] for system in system_id_values}
+    sorted_system_id_values_without_obfuscated = [
+        system for system in sorted_system_id_values if not system.get("is_obfuscated")
+    ]
+
+    system_values = {
+        system["value"] for system in sorted_system_id_values_without_obfuscated
+    }
 
     if "N/A" in system_values:
         info_comparison = COMPARISON_INCOMPLETE_DATA
@@ -231,14 +258,16 @@ def _create_comparison(systems, info_name, reference_id, system_count):
     # we specifically want to check for more than one system not baselines below
     # so build the baseline count here
     baseline_count = 0
-    for system_id_value in sorted_system_id_values:
+    for system_id_value in sorted_system_id_values_without_obfuscated:
         if system_id_value["is_baseline"]:
             baseline_count += 1
 
     # override comparison logic for certain fact names
     # use the baseline count above to check for more than one system specifically
     if _is_unique_rec_name(info_name) and (system_count - baseline_count) > 1:
-        system_values_with_duplicates = [system["value"] for system in system_id_values]
+        system_values_with_duplicates = [
+            system["value"] for system in sorted_system_id_values_without_obfuscated
+        ]
         # we want to show status as incomplete for "N/A" values now
         if "N/A" in system_values:
             info_comparison = COMPARISON_INCOMPLETE_DATA
@@ -262,11 +291,11 @@ def _create_comparison(systems, info_name, reference_id, system_count):
     if reference_id and info_comparison != COMPARISON_SAME:
         # pull the reference_value for this comparison
         reference_value = None
-        for values in sorted_system_id_values:
+        for values in sorted_system_id_values_without_obfuscated:
             if values["id"] == reference_id:
                 reference_value = values["value"]
 
-        for values in sorted_system_id_values:
+        for values in sorted_system_id_values_without_obfuscated:
             values["state"] = COMPARISON_SAME
             if values["value"] != reference_value:
                 values["state"] = COMPARISON_DIFFERENT
