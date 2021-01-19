@@ -12,6 +12,13 @@ COMPARISON_SAME = "SAME"
 COMPARISON_DIFFERENT = "DIFFERENT"
 COMPARISON_INCOMPLETE_DATA = "INCOMPLETE_DATA"
 
+OBFUSCATED_FACTS_PATTERNS = {
+    # enhanced matching for multiple IPs value
+    "ipv4_addresses": r"^.*(10\.230\.230\.\d{1,3}){1}.*$",
+    # hostname matching
+    "fqdn": r"^host.*",
+}
+
 SYSTEM_PROFILE_BOOLEANS = {"sap_system", "satellite_managed"}
 SYSTEM_PROFILE_INTEGERS = {"number_of_cpus", "number_of_sockets", "cores_per_socket"}
 SYSTEM_PROFILE_STRINGS = {
