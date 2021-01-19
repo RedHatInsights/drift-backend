@@ -173,7 +173,7 @@ class ApiTests(unittest.TestCase):
 
         fqdn_comparison = comparisons["facts"][7]
         self.assertEqual(fqdn_comparison["name"], "fqdn")
-        self.assertEqual(fqdn_comparison["state"], "DIFFERENT")
+        self.assertEqual(fqdn_comparison["state"], "SAME")
 
         fqdn_comparison = comparisons["facts"][11]
         self.assertEqual(fqdn_comparison["name"], "last_boot_time")
