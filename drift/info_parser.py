@@ -255,69 +255,151 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         system["value"] for system in sorted_system_id_values_without_obfuscated
     }
 
-    if "N/A" in system_values:  # one or more values are missing
-        info_comparison = COMPARISON_INCOMPLETE_DATA
-    elif (
-        len(system_values) <= 1
-    ):  # when there is only one or zero non-obfuscated values left
-        info_comparison = COMPARISON_SAME
+    multivalue = False
 
-    # we specifically want to check for more than one system not baselines below
-    # so build the baseline count here
-    baseline_count = 0
-    for system_id_value in sorted_system_id_values_without_obfuscated:
-        if system_id_value["is_baseline"]:
-            baseline_count += 1
+    for value in system_values:
+        if isinstance(value, list):
+            multivalue = True
 
-    # override comparison logic for certain fact names
-    # use the baseline count above to check for more than one system specifically
-    if _is_unique_rec_name(info_name) and (system_count - baseline_count) > 1:
-        system_values_with_duplicates = [
-            system["value"] for system in sorted_system_id_values_without_obfuscated
-        ]
-        # we want to show status as incomplete for "N/A" values now
-        if "N/A" in system_values:
+    # standard logic for single value facts
+    if not multivalue:
+        if "N/A" in system_values:  # one or more values are missing
             info_comparison = COMPARISON_INCOMPLETE_DATA
-        elif len(system_values) == len(system_values_with_duplicates):
+        elif (
+            len(system_values) <= 1
+        ):  # when there is only one or zero non-obfuscated values left
             info_comparison = COMPARISON_SAME
+
+        # we specifically want to check for more than one system not baselines below
+        # so build the baseline count here
+        baseline_count = 0
+        for system_id_value in sorted_system_id_values_without_obfuscated:
+            if system_id_value["is_baseline"]:
+                baseline_count += 1
+
+        # override comparison logic for certain fact names
+        # use the baseline count above to check for more than one system specifically
+        if _is_unique_rec_name(info_name) and (system_count - baseline_count) > 1:
+            system_values_with_duplicates = [
+                system["value"] for system in sorted_system_id_values_without_obfuscated
+            ]
+            # we want to show status as incomplete for "N/A" values now
+            if "N/A" in system_values:
+                info_comparison = COMPARISON_INCOMPLETE_DATA
+            elif len(system_values) == len(system_values_with_duplicates):
+                info_comparison = COMPARISON_SAME
+            else:
+                info_comparison = COMPARISON_DIFFERENT
+
+        if _is_no_rec_name(info_name):
+            info_comparison = COMPARISON_SAME
+
+        # change baseline "N/A" to empty string for better display, and remove
+        # fields we added to assist with sorting
+        for system_id_value in sorted_system_id_values:
+            if system_id_value["is_baseline"] and system_id_value["value"] == "N/A":
+                system_id_value["value"] = ""
+
+            del system_id_value["name"]
+            del system_id_value["is_baseline"]
+
+        if reference_id and info_comparison != COMPARISON_SAME:
+            # pull the reference_value for this comparison
+            reference_value = None
+            for values in sorted_system_id_values_without_obfuscated:
+                if values["id"] == reference_id:
+                    reference_value = values["value"]
+
+            for values in sorted_system_id_values_without_obfuscated:
+                values["state"] = COMPARISON_SAME
+                if values["value"] != reference_value:
+                    values["state"] = COMPARISON_DIFFERENT
+
+        if (
+            len(sorted_system_id_values)
+            - len(sorted_system_id_values_without_obfuscated)
+            > 0
+        ):  # when there is one or more obfuscated values
+            info_comparison = COMPARISON_INCOMPLETE_DATA_OBFUSCATED
+
+        return {
+            "name": info_name,
+            "state": info_comparison,
+            "systems": sorted_system_id_values,
+        }
+
+    else:
+        # multivalue fact handling
+        all_value_options = set()
+        sorted_system_values = []
+        if reference_id:
+            for system in sorted_system_id_values:
+                sorted_system_values.append(system["value"])
+                if reference_id == system["id"]:
+                    reference_value = system["value"]
         else:
-            info_comparison = COMPARISON_DIFFERENT
+            sorted_system_values = [
+                system["value"] for system in sorted_system_id_values
+            ]
 
-    if _is_no_rec_name(info_name):
+        for value in sorted_system_values:
+            if not isinstance(value, list):
+                if value != "N/A":
+                    all_value_options.add(value)
+            else:
+                for item in value:
+                    all_value_options.add(item)
+
+        row_count = len(all_value_options)
+        sorted_all_value_options = sorted(list(all_value_options))
+        value_count = 0
+        multivalue_comparisons = [COMPARISON_SAME] * row_count
         info_comparison = COMPARISON_SAME
+        for value in sorted_system_values:
+            row = 0
+            column = []
+            if not isinstance(value, list):
+                while row < row_count:
+                    if sorted_all_value_options[row] == value:
+                        column.append(value)
+                    else:
+                        column.append(None)
+                        info_comparison = COMPARISON_DIFFERENT
+                        multivalue_comparisons[row] = COMPARISON_DIFFERENT
+                    row += 1
+            else:
+                while row < row_count:
+                    if sorted_all_value_options[row] in value:
+                        column.append(sorted_all_value_options[row])
+                    else:
+                        column.append(None)
+                        info_comparison = COMPARISON_DIFFERENT
+                        multivalue_comparisons[row] = COMPARISON_DIFFERENT
+                    row += 1
+            sorted_system_id_values[value_count]["value"] = column
+            value_count += 1
 
-    # change baseline "N/A" to empty string for better display, and remove
-    # fields we added to assist with sorting
-    for system_id_value in sorted_system_id_values:
-        if system_id_value["is_baseline"] and system_id_value["value"] == "N/A":
-            system_id_value["value"] = ""
+        # need to account for states compared to a reference if selected
+        # for system in sorted_system_id_values:
+        #    system["state"] = reference_comparison
 
-        del system_id_value["name"]
-        del system_id_value["is_baseline"]
+        row = 0
+        multivalues = []
+        while row < row_count:
+            multivalues.append(
+                {
+                    "state": multivalue_comparisons[row],
+                    "systems": sorted_system_id_values[row],
+                }
+            )
+            row += 1
 
-    if reference_id and info_comparison != COMPARISON_SAME:
-        # pull the reference_value for this comparison
-        reference_value = None
-        for values in sorted_system_id_values_without_obfuscated:
-            if values["id"] == reference_id:
-                reference_value = values["value"]
-
-        for values in sorted_system_id_values_without_obfuscated:
-            values["state"] = COMPARISON_SAME
-            if values["value"] != reference_value:
-                values["state"] = COMPARISON_DIFFERENT
-
-    if (
-        len(sorted_system_id_values) - len(sorted_system_id_values_without_obfuscated)
-        > 0
-    ):  # when there is one or more obfuscated values
-        info_comparison = COMPARISON_INCOMPLETE_DATA_OBFUSCATED
-
-    return {
-        "name": info_name,
-        "state": info_comparison,
-        "systems": sorted_system_id_values,
-    }
+        return {
+            "name": info_name,
+            "state": info_comparison,
+            "multivalues": multivalues,
+            "systems": sorted_system_id_values,
+        }
 
 
 def _is_unique_rec_name(info_name):
