@@ -250,9 +250,11 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         system["value"] for system in sorted_system_id_values_without_obfuscated
     }
 
-    if "N/A" in system_values:
+    if "N/A" in system_values:  # one or more values are missing
         info_comparison = COMPARISON_INCOMPLETE_DATA
-    elif len(system_values) == 1:
+    elif (
+        len(system_values) <= 1
+    ):  # when there is only one or zero non-obfuscated values left
         info_comparison = COMPARISON_SAME
 
     # we specifically want to check for more than one system not baselines below
