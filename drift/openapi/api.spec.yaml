@@ -215,7 +215,7 @@ components:
           type: string
         state:
           type: string
-          enum: [SAME, DIFFERENT, N/A, INCOMPLETE_DATA]
+          enum: [SAME, DIFFERENT, N/A, INCOMPLETE_DATA, INCOMPLETE_DATA_OBFUSCATED]
         systems:
           type: array
           items:
