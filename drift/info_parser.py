@@ -2,10 +2,15 @@ from flask import current_app
 from dateutil.parser import parse as dateparse
 import re
 
-from kerlescan.constants import SYSTEM_ID_KEY, COMPARISON_SAME
-from kerlescan.constants import COMPARISON_DIFFERENT, COMPARISON_INCOMPLETE_DATA
-from kerlescan.constants import SAP_RELATED_FACTS
-from kerlescan.constants import OBFUSCATED_FACTS_PATTERNS
+from kerlescan.constants import (
+    SYSTEM_ID_KEY,
+    COMPARISON_SAME,
+    COMPARISON_DIFFERENT,
+    COMPARISON_INCOMPLETE_DATA,
+    COMPARISON_INCOMPLETE_DATA_OBFUSCATED,
+    OBFUSCATED_FACTS_PATTERNS,
+    SAP_RELATED_FACTS,
+)
 
 from kerlescan import profile_parser
 
@@ -301,6 +306,12 @@ def _create_comparison(systems, info_name, reference_id, system_count):
             values["state"] = COMPARISON_SAME
             if values["value"] != reference_value:
                 values["state"] = COMPARISON_DIFFERENT
+
+    if (
+        len(sorted_system_id_values) - len(sorted_system_id_values_without_obfuscated)
+        > 0
+    ):  # when there is one or more obfuscated values
+        info_comparison = COMPARISON_INCOMPLETE_DATA_OBFUSCATED
 
     return {
         "name": info_name,
