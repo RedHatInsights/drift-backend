@@ -251,9 +251,9 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         system for system in sorted_system_id_values if not system.get("is_obfuscated")
     ]
 
-    system_values = {
+    system_values = [
         system["value"] for system in sorted_system_id_values_without_obfuscated
-    }
+    ]
 
     multivalue = False
 
