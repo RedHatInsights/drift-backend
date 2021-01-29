@@ -247,22 +247,25 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         sorted_system_id_values, key=lambda system: system["is_baseline"], reverse=True
     )
 
-    sorted_system_id_values_without_obfuscated = [
-        system for system in sorted_system_id_values if not system.get("is_obfuscated")
-    ]
-
-    system_values = {
-        system["value"] for system in sorted_system_id_values_without_obfuscated
-    }
-
     multivalue = False
-
-    for value in system_values:
+    for value in sorted_system_id_values:
         if isinstance(value, list):
             multivalue = True
 
     # standard logic for single value facts
+    # NOTE: This will need to be changed when obfuscated values can also be
+    # in multi-value facts
     if not multivalue:
+        sorted_system_id_values_without_obfuscated = [
+            system
+            for system in sorted_system_id_values
+            if not system.get("is_obfuscated")
+        ]
+
+        system_values = {
+            system["value"] for system in sorted_system_id_values_without_obfuscated
+        }
+
         if "N/A" in system_values:  # one or more values are missing
             info_comparison = COMPARISON_INCOMPLETE_DATA
         elif (
