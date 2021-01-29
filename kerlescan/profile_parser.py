@@ -155,14 +155,17 @@ def parse_profile(system_profile, display_name, logger):
     for package in system_profile.get("installed_packages_delta", []):
         try:
             name, vra = _get_name_vra_from_string(package)
-            if "installed_packages." + name in parsed_profile:
-                if not isinstance(parsed_profile["installed_packages." + name], list):
-                    starter_item = parsed_profile["installed_packages." + name]
-                    parsed_profile["installed_packages." + name] = [starter_item]
-                parsed_profile["installed_packages." + name].append(vra)
-                parsed_profile["installed_packages." + name].sort()
-            else:
-                parsed_profile["installed_packages." + name] = vra
+            if name != "gpg-pubkey":
+                if "installed_packages." + name in parsed_profile:
+                    if not isinstance(
+                        parsed_profile["installed_packages." + name], list
+                    ):
+                        starter_item = parsed_profile["installed_packages." + name]
+                        parsed_profile["installed_packages." + name] = [starter_item]
+                    parsed_profile["installed_packages." + name].append(vra)
+                    parsed_profile["installed_packages." + name].sort()
+                else:
+                    parsed_profile["installed_packages." + name] = vra
         except UnparsableNEVRAError as e:
             logger.warn(e.message)
 
