@@ -266,7 +266,7 @@ services:
       - "stage.foo.redhat.com:127.0.0.1"
       - "prod.foo.redhat.com:127.0.0.1"
     volumes:
-      - .:/config
+      - .:/config:z
     environment:
       - LINUX=True
       - PLATFORM=linux
