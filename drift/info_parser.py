@@ -249,7 +249,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
 
     multivalue = False
     for value in sorted_system_id_values:
-        if isinstance(value, list):
+        if isinstance(value.get("value", "N/A"), list):
             multivalue = True
 
     # standard logic for single value facts
@@ -389,11 +389,13 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         row = 0
         multivalues = []
         while row < row_count:
+            expanded_systems = []
+            for system in sorted_system_id_values:
+                expanded_systems.append(
+                    {"id": system["id"], "value": system["value"][row]}
+                )
             multivalues.append(
-                {
-                    "state": multivalue_comparisons[row],
-                    "systems": sorted_system_id_values[row],
-                }
+                {"state": multivalue_comparisons[row], "systems": expanded_systems}
             )
             row += 1
 
