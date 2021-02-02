@@ -5,4 +5,4 @@
 
 TEMPDIR=`mktemp -d`
 
-prometheus_multiproc_dir=$TEMPDIR nosetests -sx --with-coverage --cover-package drift  --cover-min-percentage 78 --cover-erase && prometheus_multiproc_dir=$TEMPDIR python generate_report.py test_reports.toml && rm -rf $TEMPDIR
+prometheus_multiproc_dir=$TEMPDIR nosetests -sx --with-coverage --cover-package drift  --cover-min-percentage 77 --cover-erase && prometheus_multiproc_dir=$TEMPDIR python generate_report.py test_reports.toml && rm -rf $TEMPDIR
