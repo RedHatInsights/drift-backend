@@ -366,7 +366,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
                     if sorted_all_value_options[row] == value:
                         column.append(value)
                     else:
-                        column.append(None)
+                        column.append("")
                         info_comparison = COMPARISON_DIFFERENT
                         multivalue_comparisons[row] = COMPARISON_DIFFERENT
                     row += 1
@@ -375,7 +375,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
                     if sorted_all_value_options[row] in value:
                         column.append(sorted_all_value_options[row])
                     else:
-                        column.append(None)
+                        column.append("")
                         info_comparison = COMPARISON_DIFFERENT
                         multivalue_comparisons[row] = COMPARISON_DIFFERENT
                     row += 1
