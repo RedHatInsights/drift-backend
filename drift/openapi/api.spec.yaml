@@ -70,8 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                  #$ref: "#/components/schemas/ComparisonReport"
+                $ref: "#/components/schemas/ComparisonReport"
               examples:
                 jsonObject:
                   summary: A sample comparison report
@@ -101,8 +100,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                  #$ref: "#/components/schemas/ComparisonReport"
+                $ref: "#/components/schemas/ComparisonReport"
               examples:
                 jsonObject:
                   summary: A sample comparison report
@@ -241,6 +239,8 @@ components:
         id:
           type: string
           format: uuid
+        is_obfuscated:
+          type: boolean
         value:
           type: string
     SystemIdValueList:
