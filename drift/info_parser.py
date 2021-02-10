@@ -267,7 +267,7 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         }
 
         if "N/A" in system_values:  # one or more values are missing
-            info_comparison = COMPARISON_INCOMPLETE_DATA
+            info_comparison = COMPARISON_DIFFERENT
         elif (
             len(system_values) <= 1
         ):  # when there is only one or zero non-obfuscated values left
@@ -297,10 +297,10 @@ def _create_comparison(systems, info_name, reference_id, system_count):
         if _is_no_rec_name(info_name):
             info_comparison = COMPARISON_SAME
 
-        # change baseline "N/A" to empty string for better display, and remove
+        # change "N/A" to empty string for better display, and remove
         # fields we added to assist with sorting
         for system_id_value in sorted_system_id_values:
-            if system_id_value["is_baseline"] and system_id_value["value"] == "N/A":
+            if system_id_value["value"] == "N/A":
                 system_id_value["value"] = ""
 
             del system_id_value["name"]
@@ -398,6 +398,18 @@ def _create_comparison(systems, info_name, reference_id, system_count):
                 {"state": multivalue_comparisons[row], "systems": expanded_systems}
             )
             row += 1
+
+        # change "N/A" to empty string for better display, and remove
+        # fields we added to assist with sorting
+        for system_id_value in sorted_system_id_values:
+            if system_id_value["value"] == "N/A":
+                system_id_value["value"] = ""
+
+            del system_id_value["name"]
+            del system_id_value["is_baseline"]
+            # remove is_obfuscaed if it's None or False
+            # currently always the case for multivalue
+            del system_id_value["is_obfuscated"]
 
         return {
             "name": info_name,
