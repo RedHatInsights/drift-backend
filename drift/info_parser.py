@@ -318,6 +318,9 @@ def _create_comparison(systems, info_name, reference_id, system_count):
                 if values["value"] != reference_value:
                     values["state"] = COMPARISON_DIFFERENT
 
+        if len(system_values) == 1:
+            info_comparison = COMPARISON_SAME
+
         if (
             len(sorted_system_id_values)
             - len(sorted_system_id_values_without_obfuscated)
