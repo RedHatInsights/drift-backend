@@ -305,6 +305,8 @@ def _create_comparison(systems, info_name, reference_id, system_count):
 
             del system_id_value["name"]
             del system_id_value["is_baseline"]
+            if not system_id_value["is_obfuscated"]:
+                del system_id_value["is_obfuscated"]
 
         if reference_id and info_comparison != COMPARISON_SAME:
             # pull the reference_value for this comparison
