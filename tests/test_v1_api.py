@@ -162,7 +162,7 @@ class ApiTests(unittest.TestCase):
             for comparison in network_comparisons
             if comparison["name"] == "eth99.ipv4_addresses"
         ][0]
-        self.assertEqual(ipv4_comparison["state"], "DIFFERENT")
+        self.assertEqual(ipv4_comparison["state"], "SAME")
 
         ipv6_comparison = [
             comparison
