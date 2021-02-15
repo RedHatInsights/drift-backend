@@ -75,8 +75,15 @@ def parse_profile(system_profile, display_name, logger):
             _canonicalize_ipv6_addr(addr)
             for addr in interface.get("ipv6_addresses", ["N/A"])
         ]
+        # Added check for the case of receiving empty lists from satellite managed hosts
+        if not ipv6_addresses:
+            ipv6_addresses = ["N/A"]
+        ipv4_addresses = interface.get("ipv4_addresses", ["N/A"])
+        # Added check for the case of receiving empty lists from satellite managed hosts
+        if not ipv4_addresses:
+            ipv4_addresses = ["N/A"]
         parsed_profile["network_interfaces." + name + ".ipv4_addresses"] = ", ".join(
-            interface.get("ipv4_addresses", ["N/A"])
+            ipv4_addresses
         )
         parsed_profile["network_interfaces." + name + ".ipv6_addresses"] = ", ".join(
             ipv6_addresses
