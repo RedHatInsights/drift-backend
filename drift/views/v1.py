@@ -98,6 +98,7 @@ def _csvify(comparisons):
                 csvwriter.writerow(row)
 
     result = output.getvalue()
+    # TODO: (audit-log) save to / download csv
     output.close()
     return result
 
@@ -114,17 +115,20 @@ def comparison_report(
     return a comparison report
     """
     if len(system_ids + baseline_ids + historical_sys_profile_ids) == 0:
+        # TODO: (audit-log) failure
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
             message="must specify at least one of system, baseline, or HSP",
         )
     if len(system_ids) > len(set(system_ids)):
+        # TODO: (audit-log) failure
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
             message="duplicate UUID specified in system_ids list",
         )
 
     if len(baseline_ids) > len(set(baseline_ids)):
+        # TODO: (audit-log) failure
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
             message="duplicate UUID specified in baseline_ids list",
@@ -139,6 +143,7 @@ def comparison_report(
     if reference_id:
         validate_uuids([reference_id])
         if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
+            # TODO: (audit-log) failure
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST,
                 message="reference id %s does not match any ids from query"
@@ -153,12 +158,14 @@ def comparison_report(
         try:
             if system_ids:
                 # can raise RBACDenied exception
+                # TODO: (audit-log) read kerlescan/inventory_service_interface.py#fetch_systems_with_profiles
                 systems_with_profiles = fetch_systems_with_profiles(
                     system_ids, auth_key, current_app.logger, get_event_counters()
                 )
 
             if baseline_ids:
                 # can raise RBACDenied exception
+                # TODO: (audit-log) read drift/baseline_service_interface.py#fetch_baselines
                 baseline_results = fetch_baselines(
                     baseline_ids, auth_key, current_app.logger
                 )
@@ -166,6 +173,7 @@ def comparison_report(
 
             if historical_sys_profile_ids:
                 # can raise RBACDenied exception
+                # TODO: (audit-log) read kerlescan/hsp_service_interface.py#fetch_historical_sys_profiles
                 hsp_results = fetch_historical_sys_profiles(
                     historical_sys_profile_ids,
                     auth_key,
@@ -173,6 +181,7 @@ def comparison_report(
                     get_event_counters(),
                 )
         except RBACDenied as error:
+            # TODO: (audit-log) failure
             raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
 
         comparisons = info_parser.build_comparisons(
@@ -188,6 +197,7 @@ def comparison_report(
             return jsonify(comparisons)
 
     except ItemNotReturned as error:
+        # TODO: (audit-log) failure
         raise HTTPError(HTTPStatus.NOT_FOUND, message=error.message)
 
 
@@ -207,6 +217,7 @@ def comparison_report_get():
     if "text/csv" in request.headers.get("accept", []):
         data_format = "csv"
 
+    # TODO: (audit-log) read drift/views/v1.py#comparison_report
     return comparison_report(
         system_ids=system_ids,
         baseline_ids=baseline_ids,
@@ -234,6 +245,7 @@ def comparison_report_post():
     if "text/csv" in request.headers["accept"]:
         data_format = "csv"
 
+    # TODO: (audit-log) read drift/views/v1.py#comparison_report
     return comparison_report(
         system_ids=system_ids,
         baseline_ids=baseline_ids,
@@ -246,6 +258,7 @@ def comparison_report_post():
 
 @section.before_app_request
 def log_username():
+    # TODO: (audit-log) logon kerlescan/view_helpers.py#log_username
     view_helpers.log_username(current_app.logger, request)
 
 

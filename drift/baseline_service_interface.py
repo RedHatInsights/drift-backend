@@ -15,6 +15,7 @@ def fetch_baselines(baseline_ids, service_auth_key, logger):
 
     baseline_location = urljoin(config.baseline_svc_hostname, BASELINE_SVC_ENDPOINT)
 
+    # TODO: (audit-log) read kerlescan/service_interface.py#fetch_data
     baseline_result = fetch_data(
         baseline_location,
         auth_header,
