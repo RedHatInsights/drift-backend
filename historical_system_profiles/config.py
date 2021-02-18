@@ -22,6 +22,8 @@ bootstrap_servers = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092").split(",")
 consume_topic = os.getenv("CONSUME_TOPIC", None)
 listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
 kafka_group_id = os.getenv("KAFKA_GROUP_ID", "hsp-%s" % listener_type.lower())
+enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
+kafka_ssl_cert = os.getenv("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
 
 # logging params used outside of flask
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)

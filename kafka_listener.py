@@ -35,16 +35,31 @@ def init_consumer(queue, logger):
     )
     logger.info(f"kafka max poll interval (msec): {config.kafka_max_poll_interval_ms}")
     logger.info(f"kafka max poll records: {config.kafka_max_poll_records}")
-    consumer = KafkaConsumer(
-        queue,
-        bootstrap_servers=config.bootstrap_servers,
-        group_id=config.kafka_group_id,
-        value_deserializer=lambda m: json.loads(m.decode("utf-8")),
-        retry_backoff_ms=1000,
-        consumer_timeout_ms=200,
-        max_poll_interval_ms=config.kafka_max_poll_interval_ms,
-        max_poll_records=config.kafka_max_poll_records,
-    )
+    if config.enable_kafka_ssl:
+        consumer = KafkaConsumer(
+            queue,
+            bootstrap_servers=config.bootstrap_servers,
+            group_id=config.kafka_group_id,
+            value_deserializer=lambda m: json.loads(m.decode("utf-8")),
+            retry_backoff_ms=1000,
+            consumer_timeout_ms=200,
+            max_poll_interval_ms=config.kafka_max_poll_interval_ms,
+            max_poll_records=config.kafka_max_poll_records,
+            security_protocol="SSL",
+            ssl_cafile=config.kafka_ssl_cert,
+            ssl_check_hostname=False,
+        )
+    else:
+        consumer = KafkaConsumer(
+            queue,
+            bootstrap_servers=config.bootstrap_servers,
+            group_id=config.kafka_group_id,
+            value_deserializer=lambda m: json.loads(m.decode("utf-8")),
+            retry_backoff_ms=1000,
+            consumer_timeout_ms=200,
+            max_poll_interval_ms=config.kafka_max_poll_interval_ms,
+            max_poll_records=config.kafka_max_poll_records,
+        )
     return consumer
 
 

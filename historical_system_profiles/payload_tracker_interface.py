@@ -12,10 +12,19 @@ class PayloadTrackerClient:
         self.producer = self._init_producer()
 
     def _init_producer(self):
-        producer = KafkaProducer(
-            bootstrap_servers=config.bootstrap_servers,
-            value_serializer=lambda x: json.dumps(x).encode("utf-8"),
-        )
+        if config.enable_kafka_ssl:
+            producer = KafkaProducer(
+                bootstrap_servers=config.bootstrap_servers,
+                value_serializer=lambda x: json.dumps(x).encode("utf-8"),
+                security_protocol="SSL",
+                ssl_cafile=config.kafka_ssl_cert,
+                ssl_check_hostname=False,
+            )
+        else:
+            producer = KafkaProducer(
+                bootstrap_servers=config.bootstrap_servers,
+                value_serializer=lambda x: json.dumps(x).encode("utf-8"),
+            )
         return producer
 
     def emit_received_message(self, message, **kwargs):
