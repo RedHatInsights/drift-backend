@@ -32,6 +32,18 @@ def create_app():
     create_prometheus_registry_dir()
 
     # set up logging
+
+    # audit log level
+    AUDIT_LEVEL_NAME = "AUDIT"
+    AUDIT_LEVEL_NUM = int((logging.INFO + logging.WARNING) / 2)
+    logging.addLevelName(AUDIT_LEVEL_NUM, AUDIT_LEVEL_NAME)
+
+    def audit(self, message, *args, **kws):
+        if self.isEnabledFor(AUDIT_LEVEL_NUM):
+            self._log(AUDIT_LEVEL_NUM, message, args, **kws)
+
+    logging.Logger.audit = audit
+
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
