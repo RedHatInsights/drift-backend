@@ -55,10 +55,13 @@ def check_for_invalid_whitespace_name_values(facts):
             raise FactValidationError(
                 "fact name cannot have leading or trailing whitespace"
             )
-        elif "value" in fact and not check_whitespace(fact["value"]):
-            raise FactValidationError(
-                "value for %s cannot have leading or trailing whitespace" % fact["name"]
-            )
+        elif "value" in fact:
+            if not isinstance(fact["value"], list):
+                if not check_whitespace(fact["value"]):
+                    raise FactValidationError(
+                        "value for %s cannot have leading or trailing whitespace"
+                        % fact["name"]
+                    )
 
 
 def check_whitespace(input_string):
