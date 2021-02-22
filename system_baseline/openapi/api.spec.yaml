@@ -359,7 +359,11 @@ components:
         name:
           type: string
         value:
-          type: string
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
         values:
           type: array
           items:
@@ -371,7 +375,11 @@ components:
               name:
                 type: string
               value:
-                type: string
+                oneOf:
+                  - type: string
+                  - type: array
+                    items:
+                      type: string
     Version:
       required:
         - version
