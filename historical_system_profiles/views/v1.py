@@ -182,7 +182,7 @@ def ensure_account_number():
 @section.before_app_request
 def ensure_rbac():
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:baselines:read"],
+        permissions=["drift:*:*", "drift:historical-system-profiles:read"],
         application="drift",
         app_name="historical-system-profiles",
         request=request,
