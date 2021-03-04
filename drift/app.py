@@ -9,6 +9,7 @@ from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
+from kerlescan.audit_logging import setup_audit_logging
 from kerlescan.cloudwatch import setup_cw_logging
 
 
@@ -32,6 +33,8 @@ def create_app():
     create_prometheus_registry_dir()
 
     # set up logging
+    setup_audit_logging(logging.Logger)
+
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
