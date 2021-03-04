@@ -98,6 +98,8 @@ def _csvify(comparisons):
                 csvwriter.writerow(row)
 
     result = output.getvalue()
+    message = "CSV written out"
+    current_app.logger.audit(message, request=request, success=True)
     output.close()
     return result
 
@@ -114,20 +116,29 @@ def comparison_report(
     return a comparison report
     """
     if len(system_ids + baseline_ids + historical_sys_profile_ids) == 0:
+        message = "must specify at least one of system, baseline, or HSP"
+        current_app.logger.audit(
+            str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
+        )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="must specify at least one of system, baseline, or HSP",
+            HTTPStatus.BAD_REQUEST, message=message,
         )
     if len(system_ids) > len(set(system_ids)):
+        message = "duplicate UUID specified in system_ids list"
+        current_app.logger.audit(
+            str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
+        )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="duplicate UUID specified in system_ids list",
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
     if len(baseline_ids) > len(set(baseline_ids)):
+        message = "duplicate UUID specified in baseline_ids list"
+        current_app.logger.audit(
+            str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
+        )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="duplicate UUID specified in baseline_ids list",
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
     if system_ids:
@@ -139,10 +150,14 @@ def comparison_report(
     if reference_id:
         validate_uuids([reference_id])
         if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
+            message = "reference id %s does not match any ids from query" % reference_id
+            current_app.logger.audit(
+                str(HTTPStatus.BAD_REQUEST) + " " + message,
+                request=request,
+                success=False,
+            )
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="reference id %s does not match any ids from query"
-                % reference_id,
+                HTTPStatus.BAD_REQUEST, message=message,
             )
 
     try:
@@ -153,12 +168,16 @@ def comparison_report(
         try:
             if system_ids:
                 # can raise RBACDenied exception
+                message = "reading systems with profiles"
+                current_app.logger.audit(message, request=request)
                 systems_with_profiles = fetch_systems_with_profiles(
                     system_ids, auth_key, current_app.logger, get_event_counters()
                 )
 
             if baseline_ids:
                 # can raise RBACDenied exception
+                message = "reading baselines"
+                current_app.logger.audit(message, request=request)
                 baseline_results = fetch_baselines(
                     baseline_ids, auth_key, current_app.logger
                 )
@@ -166,6 +185,8 @@ def comparison_report(
 
             if historical_sys_profile_ids:
                 # can raise RBACDenied exception
+                message = "reading historical system profiles"
+                current_app.logger.audit(message, request=request)
                 hsp_results = fetch_historical_sys_profiles(
                     historical_sys_profile_ids,
                     auth_key,
@@ -173,7 +194,11 @@ def comparison_report(
                     get_event_counters(),
                 )
         except RBACDenied as error:
-            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
+            message = error.message
+            current_app.logger.audit(
+                str(HTTPStatus.FORBIDDEN) + " " + message, request=request
+            )
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         comparisons = info_parser.build_comparisons(
             systems_with_profiles, baseline_results, hsp_results, reference_id
@@ -188,7 +213,11 @@ def comparison_report(
             return jsonify(comparisons)
 
     except ItemNotReturned as error:
-        raise HTTPError(HTTPStatus.NOT_FOUND, message=error.message)
+        message = error.message
+        current_app.logger.audit(
+            str(HTTPStatus.NOT_FOUND) + " " + message, request=request, success=False
+        )
+        raise HTTPError(HTTPStatus.NOT_FOUND, message=message)
 
 
 @metrics.comparison_report_requests.time()
@@ -207,6 +236,8 @@ def comparison_report_get():
     if "text/csv" in request.headers.get("accept", []):
         data_format = "csv"
 
+    message = "reading comparison report"
+    current_app.logger.audit(message, request=request)
     return comparison_report(
         system_ids=system_ids,
         baseline_ids=baseline_ids,
@@ -234,6 +265,8 @@ def comparison_report_post():
     if "text/csv" in request.headers["accept"]:
         data_format = "csv"
 
+    message = "reading comparison report"
+    current_app.logger.audit(message, request=request)
     return comparison_report(
         system_ids=system_ids,
         baseline_ids=baseline_ids,
@@ -246,6 +279,8 @@ def comparison_report_post():
 
 @section.before_app_request
 def log_username():
+    message = "logging username"
+    current_app.logger.audit(message, request=request)
     view_helpers.log_username(current_app.logger, request)
 
 
