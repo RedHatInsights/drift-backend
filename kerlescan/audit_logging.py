@@ -24,13 +24,15 @@ def audit(self, message, *args, **kws):
     if self.isEnabledFor(AUDIT_LEVEL_NUM):
         request = kws.pop("request", None)
         success = kws.pop("success", None)
+        audit_message = ""
 
         if request:
             auth_key = get_key_from_headers(request.headers)
-            identity = json.loads(base64.b64decode(auth_key)).get("identity", {})
-            username = identity.get("user", {}).get("username", None)
-            if username:
-                audit_message = "user: " + username + " - "
+            if auth_key:
+                identity = json.loads(base64.b64decode(auth_key)).get("identity", {})
+                username = identity.get("user", {}).get("username", None)
+                if username:
+                    audit_message = "user: " + username + " - "
 
         if success is not None:
             if success:
