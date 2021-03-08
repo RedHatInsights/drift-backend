@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 
 
 from kerlescan import config
+from kerlescan.audit_logging import setup_audit_logging
 from kerlescan.cloudwatch import setup_cw_logging
 from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
@@ -39,6 +40,7 @@ def create_connexion_app():
     flask_app = connexion_app.app
 
     # set up logging ASAP
+    setup_audit_logging(logging.Logger)
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)

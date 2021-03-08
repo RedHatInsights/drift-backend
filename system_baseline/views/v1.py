@@ -31,7 +31,13 @@ def _get_total_available_baselines():
     """
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
-    return query.count()
+
+    result = query.count()
+
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request, success=True)
+
+    return result
 
 
 def get_version():
@@ -49,26 +55,44 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     """
     validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message="duplicate IDs in request")
+        message = "duplicate IDs in request"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
+
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id.in_(baseline_ids)
     )
+
     full_results = query.all()
+
+    message = "read baselines"
+    current_app.logger.audit(message, request=request)
+
     if len(full_results) < len(baseline_ids):
         fetched_ids = {str(result.id) for result in full_results}
         missing_ids = set(baseline_ids) - fetched_ids
+
+        message = "ids [%s] not available to display" % ", ".join(missing_ids)
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND,
-            message="ids [%s] not available to display" % ", ".join(missing_ids),
+            HTTPStatus.NOT_FOUND, message=message,
         )
 
     count = query.count()
+
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request)
+
     total_available = _get_total_available_baselines()
 
     query = _create_ordering(order_by, order_how, query)
     query = query.limit(limit).offset(offset)
+
     query_results = query.all()
+
+    message = "read baselines"
+    current_app.logger.audit(message, request=request)
 
     json_list = [baseline.to_json(withhold_facts=False) for baseline in query_results]
 
@@ -86,8 +110,14 @@ def delete_baselines_by_ids(baseline_ids):
     ensure_rbac_write()
     validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message="duplicate IDs in request")
+        message = "duplicate IDs in request"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
+
     _delete_baselines(baseline_ids)
+
+    message = "deleted baselines"
+    current_app.logger.audit(message, request=request, success=True)
     return "OK"
 
 
@@ -100,7 +130,11 @@ def create_deletion_request(body):
     ensure_rbac_write()
     baseline_ids = body["baseline_ids"]
     validate_uuids(baseline_ids)
+
     _delete_baselines(baseline_ids)
+
+    message = "deleted baselines"
+    current_app.logger.audit(message, request=request, success=True)
     return "OK"
 
 
@@ -114,16 +148,26 @@ def _delete_baselines(baseline_ids):
     )
 
     full_results = query.all()
+
+    message = "read baselines"
+    current_app.logger.audit(message, request=request)
+
     if len(full_results) < len(baseline_ids):
         fetched_ids = {str(result.id) for result in full_results}
         missing_ids = set(baseline_ids) - fetched_ids
+
+        message = "ids [%s] not available to delete" % ", ".join(missing_ids)
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND,
-            message="ids [%s] not available to delete" % ", ".join(missing_ids),
+            HTTPStatus.NOT_FOUND, message=message,
         )
 
     query.delete(synchronize_session="fetch")
+
     db.session.commit()
+
+    message = "deleted baselines"
+    current_app.logger.audit(message, request=request)
 
 
 def _create_ordering(order_by, order_how, query):
@@ -168,13 +212,25 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
                 display_name.lower(), autoescape=True
             )
         )
+
     count = query.count()
+
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request)
+
     total_available = _get_total_available_baselines()
+
+    message = "counted total available baselines"
+    current_app.logger.audit(message, request=request)
 
     query = _create_ordering(order_by, order_how, query)
 
     query = query.limit(limit).offset(offset)
+
     query_results = query.all()
+
+    message = "read baselines"
+    current_app.logger.audit(message, request=request)
 
     json_list = [baseline.to_json(withhold_facts=True) for baseline in query_results]
 
@@ -249,32 +305,41 @@ def create_baseline(system_baseline_in):
     account_number = view_helpers.get_account_number(request)
 
     if "values" in system_baseline_in and "value" in system_baseline_in:
+        message = "'values' and 'value' cannot both be defined for system baseline"
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="'values' and 'value' cannot both be defined for system baseline",
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
     _check_for_existing_display_name(system_baseline_in["display_name"], account_number)
     _check_for_whitespace_in_display_name(system_baseline_in["display_name"])
 
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request)
+
     baseline_facts = []
     if "baseline_facts" in system_baseline_in:
         if "inventory_uuid" in system_baseline_in:
+            message = (
+                "Both baseline facts and inventory id provided, can clone only one."
+            )
+            current_app.logger.audit(message, request=request, success=False)
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="Both baseline facts and inventory id provided, can clone only one.",
+                HTTPStatus.BAD_REQUEST, message=message,
             )
         if "hsp_uuid" in system_baseline_in:
+            message = "Both baseline facts and hsp id provided, can clone only one."
+            current_app.logger.audit(message, request=request, success=False)
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="Both baseline facts and hsp id provided, can clone only one.",
+                HTTPStatus.BAD_REQUEST, message=message,
             )
         baseline_facts = system_baseline_in["baseline_facts"]
     elif "hsp_uuid" in system_baseline_in:
         if "inventory_uuid" in system_baseline_in:
+            message = "Both hsp id and system id provided, can clone only one."
+            current_app.logger.audit(message, request=request, success=False)
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="Both hsp id and system id provided, can clone only one.",
+                HTTPStatus.BAD_REQUEST, message=message,
             )
         validate_uuids([system_baseline_in["hsp_uuid"]])
         auth_key = get_key_from_headers(request.headers)
@@ -285,13 +350,18 @@ def create_baseline(system_baseline_in):
                 current_app.logger,
                 get_event_counters(),
             )[0]
+            message = "read historical system profiles"
+            current_app.logger.audit(message, request=request)
         except ItemNotReturned:
+            message = "hsp UUID %s not available" % system_baseline_in["hsp_uuid"]
+            current_app.logger.audit(message, request=request, success=False)
             raise HTTPError(
-                HTTPStatus.NOT_FOUND,
-                message="hsp UUID %s not available" % system_baseline_in["hsp_uuid"],
+                HTTPStatus.NOT_FOUND, message=message,
             )
         except RBACDenied as error:
-            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
+            message = error.message
+            current_app.logger.audit(message, request=request, success=False)
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         system_name = "clone_from_hsp_unused"
         baseline_facts = _parse_from_sysprofile(
@@ -307,14 +377,20 @@ def create_baseline(system_baseline_in):
                 current_app.logger,
                 get_event_counters(),
             )[0]
+            message = "read system with profiles"
+            current_app.logger.audit(message, request=request)
         except ItemNotReturned:
+            message = (
+                "inventory UUID %s not available" % system_baseline_in["inventory_uuid"]
+            )
+            current_app.logger.audit(message, request=request, success=False)
             raise HTTPError(
-                HTTPStatus.NOT_FOUND,
-                message="inventory UUID %s not available"
-                % system_baseline_in["inventory_uuid"],
+                HTTPStatus.NOT_FOUND, message=message,
             )
         except RBACDenied as error:
-            raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
+            message = error.message
+            current_app.logger.audit(message, request=request, success=False)
+            raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         system_name = profile_parser.get_name(system_with_profile)
         baseline_facts = _parse_from_sysprofile(
@@ -323,8 +399,10 @@ def create_baseline(system_baseline_in):
 
     try:
         _validate_facts(baseline_facts)
-    except FactValidationError as e:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
+    except FactValidationError as error:
+        message = error.message
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
 
     baseline = SystemBaseline(
         account=account_number,
@@ -333,7 +411,11 @@ def create_baseline(system_baseline_in):
     )
     baseline.baseline_facts = _sort_baseline_facts(baseline.baseline_facts)
     db.session.add(baseline)
+
     db.session.commit()  # commit now so we get a created/updated time before json conversion
+
+    message = "creat baselines"
+    current_app.logger.audit(message, request=request)
 
     return baseline.to_json()
 
@@ -348,10 +430,15 @@ def _check_for_existing_display_name(display_name, account_number):
         SystemBaseline.display_name == display_name,
     )
 
-    if query.count() > 0:
+    count = query.count()
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request)
+
+    if count > 0:
+        message = "display_name '%s' already used for this account" % display_name
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="display_name '%s' already used for this account" % display_name,
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
 
@@ -360,9 +447,10 @@ def _check_for_whitespace_in_display_name(display_name):
     check to see if the display name has leading or trailing whitespace
     """
     if display_name and (not validators.check_whitespace(display_name)):
+        message = "baseline name cannot have leading or trailing whitespace"
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="baseline name cannot have leading or trailing whitespace",
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
 
@@ -408,13 +496,17 @@ def copy_baseline_by_id(baseline_id, display_name):
 
     # ensure display_name is not null
     if not display_name:
-        raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message="no value given for display_name"
-        )
+        message = "no value given for display_name"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
 
     account_number = view_helpers.get_account_number(request)
+
     _check_for_existing_display_name(display_name, account_number)
     _check_for_whitespace_in_display_name(display_name)
+
+    message = "counted baselines"
+    current_app.logger.audit(message, request=request)
 
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
@@ -428,7 +520,12 @@ def copy_baseline_by_id(baseline_id, display_name):
     copy_baseline.modified_on = None
     copy_baseline.display_name = display_name
     db.session.add(copy_baseline)
+
     db.session.commit()
+
+    message = "created baselines"
+    current_app.logger.audit(message, request=request)
+
     return copy_baseline.to_json()
 
 
@@ -451,16 +548,22 @@ def update_baseline(baseline_id, system_baseline_patch):
     )
 
     if existing_display_name_query.count() > 0:
+        message = (
+            "display_name '%s' already used for this account"
+            % system_baseline_patch["display_name"]
+        )
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="display_name '%s' already used for this account"
-            % system_baseline_patch["display_name"],
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
     query = SystemBaseline.query.filter(
         SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
     )
+
     baseline = query.first_or_404()
+    message = "read baselines"
+    current_app.logger.audit(message, request=request)
 
     try:
         updated_facts = jsonpatch.apply_patch(
@@ -468,18 +571,24 @@ def update_baseline(baseline_id, system_baseline_patch):
         )
         _validate_facts(updated_facts)
         baseline.baseline_facts = updated_facts
-    except FactValidationError as e:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message=e.message)
+    except FactValidationError as error:
+        message = error.message
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
     except (jsonpatch.JsonPatchException, jsonpointer.JsonPointerException):
-        raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message="unable to apply patch to baseline"
-        )
+        message = "unable to apply patch to baseline"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
 
     baseline.display_name = system_baseline_patch["display_name"]
 
     baseline.baseline_facts = _sort_baseline_facts(baseline.baseline_facts)
     db.session.add(baseline)
+
     db.session.commit()
+
+    message = "updated baselines"
+    current_app.logger.audit(message, request=request)
 
     # pull baseline again so we have the correct updated timestamp and fact count
     query = SystemBaseline.query.filter(
@@ -503,6 +612,8 @@ def _validate_facts(facts):
 @section.before_app_request
 def log_username():
     view_helpers.log_username(current_app.logger, request)
+    message = "logged username"
+    current_app.logger.audit(message, request=request)
 
 
 @section.before_app_request
