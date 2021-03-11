@@ -34,8 +34,13 @@ def _get_current_names_for_profiles(hsps):
         systems = fetch_systems_with_profiles(
             inventory_ids, auth_key, current_app.logger, _get_event_counters(),
         )
+        message = "read systems"
+        current_app.logger.audit(message, request=request, success=True)
     except RBACDenied as error:
-        raise HTTPError(HTTPStatus.FORBIDDEN, message=error.message)
+        message = error.message
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
+
     display_names = {system["id"]: system["display_name"] for system in systems}
     enriched_hsps = []
     for hsp in hsps:
@@ -76,9 +81,11 @@ def _check_for_missing_ids(requested_ids, result):
     if len(result) < len(requested_ids):
         returned_ids = {str(item.id) for item in result}
         missing_ids = set(requested_ids) - returned_ids
+
+        message = "ids [%s] not available to display" % ", ".join(missing_ids)
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND,
-            message="ids [%s] not available to display" % ", ".join(missing_ids),
+            HTTPStatus.NOT_FOUND, message=message,
         )
 
 
@@ -94,9 +101,10 @@ def _check_for_duplicates(requested_ids):
             duplicate_ids.append(item)
 
     if duplicate_ids:
+        message = "duplicate IDs requested: %s" % duplicate_ids
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST,
-            message="duplicate IDs requested: %s" % duplicate_ids,
+            HTTPStatus.BAD_REQUEST, message=message,
         )
 
 
@@ -108,6 +116,10 @@ def get_hsps_by_ids(profile_ids):
     _check_for_duplicates(profile_ids)
 
     account_number = view_helpers.get_account_number(request)
+
+    message = "read historical system profiles"
+    current_app.logger.audit(message, request=request)
+
     result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
 
     # TODO: rely on captured_date and filter in SQL above
@@ -126,15 +138,20 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     """
     validate_uuids([inventory_id])
     account_number = view_helpers.get_account_number(request)
+
+    message = "read historical system profiles"
+    current_app.logger.audit(message, request=request)
+
     query_results = db_interface.get_hsps_by_inventory_id(
         inventory_id, account_number, limit, offset
     )
     valid_profiles = _filter_old_hsps(query_results)
 
     if not valid_profiles:
+        message = "no historical profiles found for inventory_id %s" % inventory_id
+        current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND,
-            message="no historical profiles found for inventory_id %s" % inventory_id,
+            HTTPStatus.NOT_FOUND, message=message,
         )
 
     # TODO: request just these three fields from the DB, instead of fetching

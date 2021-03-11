@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
+from flask import request, current_app
 
 from historical_system_profiles.models import HistoricalSystemProfile, db
 
@@ -14,8 +15,10 @@ def rollback_on_exception(func):
         try:
             retval = func(*args, **kwargs)
             return retval
-        except SQLAlchemyError:
+        except SQLAlchemyError as error:
             db.session.rollback()
+            message = error.message
+            current_app.logger.audit(message, request=request, success=False)
             raise
 
     return wrapper_rollback
@@ -28,6 +31,10 @@ def create_profile(inventory_id, profile, account_number):
     )
     db.session.add(profile)
     db.session.commit()
+
+    message = "created historical system profiles"
+    current_app.logger.audit(message, request=request, success=True)
+
     return profile
 
 
@@ -40,6 +47,9 @@ def get_hsps_by_inventory_id(inventory_id, account_number, limit, offset):
     query = query.order_by(HistoricalSystemProfile.captured_on.desc())
     query = query.limit(limit).offset(offset)
     query_results = query.all()
+
+    message = "read historical system profiles"
+    current_app.logger.audit(message, request=request, success=True)
 
     return query_results
 
@@ -58,6 +68,8 @@ def is_profile_recorded(captured_date, inventory_id, account_number):
         HistoricalSystemProfile.captured_on == captured_date,
     )
 
+    message = "read historical system profiles"
+    current_app.logger.audit(message, request=request)
     if query.first():
         return True
     return False
@@ -71,6 +83,9 @@ def delete_hsps_by_inventory_id(inventory_id):
     query.delete(synchronize_session="fetch")
     db.session.commit()
 
+    message = "deleted historical system profiles"
+    current_app.logger.audit(message, request=request, success=True)
+
 
 def get_hsps_by_profile_ids(profile_ids, account_number):
     query = HistoricalSystemProfile.query.filter(
@@ -79,6 +94,9 @@ def get_hsps_by_profile_ids(profile_ids, account_number):
     )
 
     query_results = query.all()
+
+    message = "read historical system profiles"
+    current_app.logger.audit(message, request=request, success=True)
 
     return query_results
 
@@ -92,5 +110,10 @@ def clean_expired_records(days_til_expired):
         HistoricalSystemProfile.created_on < expired_time
     )
     count = query.delete(synchronize_session="fetch")
+
     db.session.commit()
+
+    message = "cleaned expired historical system profiles"
+    current_app.logger.audit(message, request=request, success=True)
+
     return count
