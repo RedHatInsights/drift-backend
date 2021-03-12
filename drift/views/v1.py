@@ -111,9 +111,14 @@ def comparison_report(
     reference_id,
     auth_key,
     data_format,
+    short_circuit,
 ):
     """
     return a comparison report
+
+    Or return False if short_circuit is true and there is any difference found
+    between the one system and associated baseline as short circuit is used to
+    set up needed notifications only and does not need a full comparison report
     """
     if len(system_ids + baseline_ids + historical_sys_profile_ids) == 0:
         message = "must specify at least one of system, baseline, or HSP"
@@ -201,8 +206,14 @@ def comparison_report(
             raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         comparisons = info_parser.build_comparisons(
-            systems_with_profiles, baseline_results, hsp_results, reference_id
+            systems_with_profiles,
+            baseline_results,
+            hsp_results,
+            reference_id,
+            short_circuit,
         )
+        if short_circuit and not comparisons:
+            return False
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
             output = make_response(_csvify(comparisons))
@@ -231,6 +242,7 @@ def comparison_report_get():
     historical_sys_profile_ids = request.args.getlist("historical_system_profile_ids[]")
     reference_id = request.args.get("reference_id", None)
     auth_key = get_key_from_headers(request.headers)
+    short_circuit = request.args.get("short_circuit", False)
 
     data_format = "json"
     if "text/csv" in request.headers.get("accept", []):
@@ -245,6 +257,7 @@ def comparison_report_get():
         reference_id=reference_id,
         auth_key=auth_key,
         data_format=data_format,
+        short_circuit=short_circuit,
     )
 
 
@@ -258,6 +271,7 @@ def comparison_report_post():
     baseline_ids = request.json.get("baseline_ids", [])
     historical_sys_profile_ids = request.json.get("historical_system_profile_ids", [])
     reference_id = request.json.get("reference_id", None)
+    short_circuit = request.args.get("short_circuit", False)
 
     auth_key = get_key_from_headers(request.headers)
 
@@ -274,6 +288,7 @@ def comparison_report_post():
         reference_id=reference_id,
         auth_key=auth_key,
         data_format=data_format,
+        short_circuit=short_circuit,
     )
 
 

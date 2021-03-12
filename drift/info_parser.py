@@ -16,15 +16,36 @@ from kerlescan import profile_parser
 
 
 def build_comparisons(
-    systems_with_profiles, baselines, historical_sys_profiles, reference_id
+    systems_with_profiles,
+    baselines,
+    historical_sys_profiles,
+    reference_id,
+    short_circuit,
 ):
     """
     given a list of system profile dicts and fact namespace, return a dict of
     comparisons, along with a dict of system data
+
+    Unless short_circuit is True, then we don't need a full comparison report, only whether any
+    changes are present at all as this is for notifications if a newly checked in hsp system
+    has drifted from an associated baseline.
+    return True: Everything matches, we don't need to notify
+    return False: Something changed, we do need to notify
     """
     fact_comparisons = _select_applicable_info(
-        systems_with_profiles, baselines, historical_sys_profiles, reference_id
+        systems_with_profiles,
+        baselines,
+        historical_sys_profiles,
+        reference_id,
+        short_circuit,
     )
+    if short_circuit:
+        if fact_comparisons:
+            return (
+                True  # do we want to pass another value for case "nothing different"?
+            )
+        else:
+            return False
 
     # remove system metadata that we put into to the comparison earlier
     stripped_comparisons = []
@@ -128,12 +149,21 @@ def _group_comparisons(comparisons):
 
 
 def _select_applicable_info(
-    systems_with_profiles, baselines, historical_sys_profiles, reference_id
+    systems_with_profiles,
+    baselines,
+    historical_sys_profiles,
+    reference_id,
+    short_circuit,
 ):
     """
     Take a list of systems with profiles, and output a "pivoted" list of
     profile facts, where each fact key has a dict of systems and their values. This is
     useful when comparing facts across systems.
+
+    Unless short_circuit is True, then we don't need a full comparison report, only whether any
+    changes are present at all as this is for notifications if a newly checked in hsp system
+    has drifted from an associated baseline.
+    return False: Something changed, we do need to notify
     """
     # create dicts of id + info
     parsed_system_profiles = []
@@ -171,9 +201,16 @@ def _select_applicable_info(
         parsed_system_profiles.append({**baseline_facts, "is_baseline": True})
 
     # find the set of all keys to iterate over
+    # if short_circuit is True, we only want the facts present in this baseline
+    # since we are comparing one baseline to one system for notifications only
     all_keys = set()
-    for parsed_system_profile in parsed_system_profiles:
-        all_keys = all_keys.union(set(parsed_system_profile.keys()))
+    if short_circuit:
+        for parsed_system_profile in parsed_system_profiles:
+            if parsed_system_profile["is_baseline"]:
+                all_keys = set(parsed_system_profile.keys())
+    else:
+        for parsed_system_profile in parsed_system_profiles:
+            all_keys = all_keys.union(set(parsed_system_profile.keys()))
 
     # prepare regexes for obfuscated values matching
     obfuscated_regexes = {}
@@ -199,7 +236,12 @@ def _select_applicable_info(
             parsed_system_profiles, key, reference_id, len(systems_with_profiles)
         )
         if current_comparison:
-            info_comparisons.append(current_comparison)
+            # if short_circuit is True, and there was a change, return False
+            # to trigger a notification
+            if short_circuit and current_comparison["state"] == COMPARISON_DIFFERENT:
+                return False
+            else:
+                info_comparisons.append(current_comparison)
     return info_comparisons
 
 
