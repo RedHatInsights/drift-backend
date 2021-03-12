@@ -65,7 +65,7 @@ for report in conf:
         **conf[report]
     )
     comparisons = info_parser.build_comparisons(
-        systems_with_profiles, baselines, hsps, None
+        systems_with_profiles, baselines, hsps, None, False,
     )
     if args.write:
         outpath = conf[report]["expected_output_path"]
