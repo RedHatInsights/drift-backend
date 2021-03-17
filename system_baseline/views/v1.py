@@ -597,6 +597,97 @@ def update_baseline(baseline_id, system_baseline_patch):
     return [query.first().to_json()]
 
 
+def list_systems_with_baseline(baseline_id):
+    ensure_rbac_read()
+    validate_uuids([baseline_id])
+    account_number = view_helpers.get_account_number(request)
+
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
+    )
+    baseline = query.first_or_404()
+
+    message = "read baseline"
+    current_app.logger.audit(message, request=request, success=True)
+
+    system_ids = baseline.mapped_system_ids()
+    return system_ids
+
+
+def create_systems_with_baseline(baseline_id, system_ids):
+    ensure_rbac_write()
+    validate_uuids([baseline_id])
+    validate_uuids(system_ids)
+    account_number = view_helpers.get_account_number(request)
+
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
+    )
+    baseline = query.first_or_404()
+
+    message = "read baseline"
+    current_app.logger.audit(message, request=request, success=True)
+
+    try:
+        for system_id in system_ids:
+            baseline.add_mapped_system(system_id)
+
+        db.session.commit()
+    except Exception:
+        message = "Unknown error when creating systems with baseline"
+        current_app.logger.audit(message, request=request, success=False)
+        raise
+
+    message = "created systems with baseline"
+    current_app.logger.audit(message, request=request, success=True)
+
+    system_ids = baseline.mapped_system_ids()
+    return system_ids
+
+
+def delete_systems_with_baseline(baseline_id, system_ids):
+    ensure_rbac_write()
+    validate_uuids([baseline_id])
+    validate_uuids(system_ids)
+    account_number = view_helpers.get_account_number(request)
+
+    query = SystemBaseline.query.filter(
+        SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
+    )
+    baseline = query.first_or_404()
+
+    message = "read baseline"
+    current_app.logger.audit(message, request=request, success=True)
+
+    try:
+        for system_id in system_ids:
+            baseline.remove_mapped_system(system_id)
+        db.session.commit()
+    except ValueError as error:
+        message = str(error)
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
+    except Exception:
+        message = "Unknown error when deleting systems with baseline"
+        current_app.logger.audit(message, request=request, success=False)
+        raise
+
+    message = "deleted systems with baseline"
+    current_app.logger.audit(message, request=request, success=True)
+
+    system_ids = baseline.mapped_system_ids()
+    return system_ids
+
+
+def create_deletion_request_for_systems(baseline_id, system_ids):
+    ensure_rbac_write()
+    validate_uuids([baseline_id])
+    validate_uuids(system_ids)
+
+    return_value = delete_systems_with_baseline(baseline_id, system_ids)
+    return return_value
+
+
 def _validate_facts(facts):
     """
     helper to run common validations

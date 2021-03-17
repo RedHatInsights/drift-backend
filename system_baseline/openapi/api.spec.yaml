@@ -201,6 +201,99 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+    get:
+      summary: list systems with baseline
+      description: "list systems with baseline"
+      operationId: system_baseline.views.v1.list_systems_with_baseline
+      responses:
+        '200':
+          description: a created list of system associations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemIdsList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: add systems with baseline
+      description: "add systems with baseline"
+      operationId: system_baseline.views.v1.create_systems_with_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_ids
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a created list of system associations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemIdsList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems/{system_ids}:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+      - $ref: "#/components/parameters/SystemIds"
+    delete:
+      summary: delete one or more systems with baseline
+      description: "delete one or more systems with baselines"
+      operationId: system_baseline.views.v1.delete_systems_with_baseline
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems/deletion_request:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+    post:
+      summary: delete systems with baseline
+      description: "delete systems with baseline"
+      operationId: system_baseline.views.v1.create_deletion_request_for_systems
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_ids
+              type: object
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a created list of system associations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemIdsList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   responses:
     InternalServerError:
@@ -342,6 +435,11 @@ components:
             type: string
             minLength: 32
             maxLength: 36
+    SystemIdsList:
+      type: array
+      items:
+        type: string
+        format: uuid
     JsonPatch:
       description: a JSON patch
       type: object
@@ -450,3 +548,11 @@ components:
       required: true
       schema:
         type: string
+    SystemIds:
+      in: path
+      name: system_ids
+      required: true
+      schema:
+        type: array
+        items:
+          type: string

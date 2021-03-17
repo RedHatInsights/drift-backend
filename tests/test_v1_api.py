@@ -671,3 +671,162 @@ class ApiPaginationTests(ApiTest):
             query_params = parse_qs(split_parts[3])
             self.assertIn("display_name", query_params)
             self.assertEqual(query_params["display_name"][0], self.display_name)
+
+
+class ApiSystemsAssociationTests(ApiTest):
+    def setUp(self):
+        super(ApiSystemsAssociationTests, self).setUp()
+        self.client.post(
+            "api/system-baseline/v1/baselines",
+            headers=fixtures.AUTH_HEADER,
+            json=fixtures.BASELINE_ONE_LOAD,
+        )
+
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.baseline_id = [b["id"] for b in result["data"]][0]
+
+        self.system_ids = [
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+        ]
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+            json=self.system_ids,
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def tearDown(self):
+        super(ApiSystemsAssociationTests, self).tearDown()
+
+        # get all baselines
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        baselines = json.loads(response.data)["data"]
+
+        for baseline in baselines:
+            # get systems for baseline
+            response = self.client.get(
+                "api/system-baseline/v1/baselines/" + baseline["id"] + "/systems",
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+            system_ids = json.loads(response.data)
+
+            # delete systems
+            response = self.client.post(
+                "api/system-baseline/v1/baselines/"
+                + baseline["id"]
+                + "/systems/deletion_request",
+                headers=fixtures.AUTH_HEADER,
+                json=system_ids,
+            )
+            self.assertEqual(response.status_code, 200)
+
+            # delete baseline
+            response = self.client.delete(
+                "api/system-baseline/v1/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_list_systems_with_baseline(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)
+        self.assertEqual(len(response_system_ids), 3)
+
+        for system_id in self.system_ids:
+            self.assertIn(system_id, response_system_ids)
+
+    def test_delete_systems_with_baseline(self):
+        # to delete
+        system_ids = [
+            self.system_ids[0],
+            self.system_ids[1],
+        ]
+
+        # delete systems
+        response = self.client.post(
+            "api/system-baseline/v1/baselines/"
+            + self.baseline_id
+            + "/systems/deletion_request",
+            headers=fixtures.AUTH_HEADER,
+            json=system_ids,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # read what systems persisted
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)
+        self.assertEqual(len(response_system_ids), 1)
+
+    def test_delete_nonexistent_system(self):
+        # to delete
+        system_ids = [
+            str(uuid.uuid4()),
+        ]
+
+        # delete systems
+        response = self.client.post(
+            "api/system-baseline/v1/baselines/"
+            + self.baseline_id
+            + "/systems/deletion_request",
+            headers=fixtures.AUTH_HEADER,
+            json=system_ids,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # read what systems persisted
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)
+        self.assertEqual(len(response_system_ids), 3)
+
+    def test_adding_few_systems(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        baseline_id = [b["id"] for b in result["data"]][0]
+
+        # to create
+        system_ids = [
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+        ]
+
+        response = self.client.post(
+            "api/system-baseline/v1/baselines/" + baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+            json=system_ids,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)
+        self.assertEqual(len(response_system_ids), 5)
+
+        for system_id in system_ids:
+            self.assertIn(system_id, response_system_ids)
