@@ -3,8 +3,8 @@ from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.orm import validates
+from sqlalchemy.schema import UniqueConstraint, ForeignKey
+from sqlalchemy.orm import validates, relationship
 
 from system_baseline import validators
 
@@ -28,6 +28,9 @@ class SystemBaseline(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
     baseline_facts = db.Column(JSONB)
+    mapped_systems = relationship(
+        "SystemBaselineMappedSystem", cascade="all, delete, delete-orphan",
+    )
 
     @property
     def fact_count(self):
@@ -39,12 +42,13 @@ class SystemBaseline(db.Model):
         validators.check_for_duplicate_names(value)
         return value
 
-    def __init__(self, baseline_facts, display_name=display_name, account=account):
-        self.baseline_facts = baseline_facts
-        self.display_name = display_name
-        self.account = account
+    def mapped_system_ids(self):
+        mapped_system_ids = []
+        for mapped_system in self.mapped_systems:
+            mapped_system_ids.append(str(mapped_system.system_id))
+        return mapped_system_ids
 
-    def to_json(self, withhold_facts=False):
+    def to_json(self, withhold_facts=False, withhold_system_ids=True):
         json_dict = {}
         json_dict["id"] = str(self.id)
         json_dict["account"] = self.account
@@ -54,4 +58,43 @@ class SystemBaseline(db.Model):
         json_dict["updated"] = self.modified_on.isoformat() + "Z"
         if not withhold_facts:
             json_dict["baseline_facts"] = self.baseline_facts
+        if not withhold_system_ids:
+            json_dict["system_ids"] = self.mapped_system_ids()
         return json_dict
+
+    def add_mapped_system(self, system_id):
+        new_mapped_system = SystemBaselineMappedSystem(
+            system_id=system_id, account=self.account
+        )
+        self.mapped_systems.append(new_mapped_system)
+        db.session.add(new_mapped_system)
+
+    def remove_mapped_system(self, system_id):
+        system_id_removed = False
+        for mapped_system in self.mapped_systems:
+            if str(mapped_system.system_id) == str(system_id):
+                self.mapped_systems.remove(mapped_system)
+                system_id_removed = True
+                break
+        if not system_id_removed:
+            # do we want to raise exception here?
+            raise ValueError(
+                "Failed to remove system id %s from mapped systems - not in list"
+                % system_id
+            )
+
+
+class SystemBaselineMappedSystem(db.Model):
+    __tablename__ = "system_baseline_mapped_systems"
+    __table_args__ = (
+        UniqueConstraint(
+            "system_baseline_id", "system_id", name="_system_baseline_mapped_system_uc"
+        ),
+    )
+
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    account = db.Column(db.String(10), nullable=False)
+    system_baseline_id = db.Column(
+        UUID(as_uuid=True), ForeignKey("system_baselines.id"), nullable=False
+    )
+    system_id = db.Column(UUID(as_uuid=True), nullable=False, index=True)
