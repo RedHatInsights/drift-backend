@@ -39,6 +39,7 @@ SYSTEM_PROFILE_STRINGS = {
     "sap_version",
     "selinux_current_mode",
     "selinux_config_file",
+    "cpu_model",
 }
 SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED = {
     "cpu_flags",
