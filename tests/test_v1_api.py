@@ -156,7 +156,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         comparisons = json.loads(response.data)
         # we hard-code the index lookup since we know the fixture layout
-        network_comparisons = comparisons["facts"][12]["comparisons"]
+        network_comparisons = comparisons["facts"][13]["comparisons"]
         ipv4_comparison = [
             comparison
             for comparison in network_comparisons
@@ -171,11 +171,11 @@ class ApiTests(unittest.TestCase):
         ][0]
         self.assertEqual(ipv6_comparison["state"], "DIFFERENT")
 
-        fqdn_comparison = comparisons["facts"][7]
+        fqdn_comparison = comparisons["facts"][8]
         self.assertEqual(fqdn_comparison["name"], "fqdn")
         self.assertEqual(fqdn_comparison["state"], "INCOMPLETE_DATA_OBFUSCATED")
 
-        fqdn_comparison = comparisons["facts"][11]
+        fqdn_comparison = comparisons["facts"][12]
         self.assertEqual(fqdn_comparison["name"], "last_boot_time")
         self.assertEqual(fqdn_comparison["state"], "SAME")
 
