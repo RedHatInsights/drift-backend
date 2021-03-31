@@ -610,7 +610,17 @@ def list_systems_with_baseline(baseline_id):
     message = "read baseline"
     current_app.logger.audit(message, request=request, success=True)
 
-    system_ids = baseline.mapped_system_ids()
+    try:
+        system_ids = baseline.mapped_system_ids()
+    except ValueError as error:
+        message = str(error)
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
+    except Exception:
+        message = "Unknown error when reading mapped system ids"
+        current_app.logger.audit(message, request=request, success=False)
+        raise
+
     return system_ids
 
 
@@ -618,6 +628,10 @@ def create_systems_with_baseline(baseline_id, system_ids):
     ensure_rbac_write()
     validate_uuids([baseline_id])
     validate_uuids(system_ids)
+    if len(set(system_ids)) < len(system_ids):
+        message = "duplicate IDs in request"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
     account_number = view_helpers.get_account_number(request)
 
     query = SystemBaseline.query.filter(
@@ -633,6 +647,10 @@ def create_systems_with_baseline(baseline_id, system_ids):
             baseline.add_mapped_system(system_id)
 
         db.session.commit()
+    except ValueError as error:
+        message = str(error)
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
     except Exception:
         message = "Unknown error when creating systems with baseline"
         current_app.logger.audit(message, request=request, success=False)
@@ -649,6 +667,10 @@ def delete_systems_with_baseline(baseline_id, system_ids):
     ensure_rbac_write()
     validate_uuids([baseline_id])
     validate_uuids(system_ids)
+    if len(set(system_ids)) < len(system_ids):
+        message = "duplicate IDs in request"
+        current_app.logger.audit(message, request=request, success=False)
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
     account_number = view_helpers.get_account_number(request)
 
     query = SystemBaseline.query.filter(
