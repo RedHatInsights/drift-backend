@@ -20,8 +20,10 @@ script:
   - black . --check -t py38
   - yamllint system_baseline/openapi/mgmt_api.spec.yaml
   - yamllint system_baseline/openapi/api.spec.yaml
+  - yamllint system_baseline/openapi/internal_api.spec.yaml
   - openapi-spec-validator system_baseline/openapi/mgmt_api.spec.yaml
   - openapi-spec-validator system_baseline/openapi/api.spec.yaml
+  - openapi-spec-validator system_baseline/openapi/internal_api.spec.yaml
   - java -jar openapi-generator-cli-4.1.1.jar validate -i system_baseline/openapi/api.spec.yaml
 
 install:
