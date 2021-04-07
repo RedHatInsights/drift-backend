@@ -280,11 +280,11 @@ paths:
               $ref: "#/components/schemas/SystemIdsList"
       responses:
         '200':
-          description: a created list of system associations
+          description: a success message
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SystemIdsList"
+                type: string
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':

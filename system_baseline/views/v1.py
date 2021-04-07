@@ -699,7 +699,7 @@ def delete_systems_with_baseline(baseline_id, system_ids):
     current_app.logger.audit(message, request=request, success=True)
 
     system_ids = baseline.mapped_system_ids()
-    return system_ids
+    return "OK"
 
 
 def create_deletion_request_for_systems(baseline_id, body):
@@ -708,8 +708,8 @@ def create_deletion_request_for_systems(baseline_id, body):
     system_ids = body["system_ids"]
     validate_uuids(system_ids)
 
-    system_ids = delete_systems_with_baseline(baseline_id, system_ids)
-    return {"system_ids": system_ids}
+    delete_systems_with_baseline(baseline_id, system_ids)
+    return "OK"
 
 
 def _validate_facts(facts):

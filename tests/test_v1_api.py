@@ -758,6 +758,34 @@ class ApiSystemsAssociationTests(ApiTest):
             self.system_ids[1],
         ]
 
+        system_ids_param = ",".join(system_ids)
+
+        # delete systems
+        response = self.client.delete(
+            "api/system-baseline/v1/baselines/"
+            + self.baseline_id
+            + "/systems/%s" % system_ids_param,
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # read what systems persisted
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)
+        self.assertEqual(len(response_system_ids), 1)
+
+    def test_delete_systems_with_baseline_deletion_request(self):
+        # to delete
+        system_ids = [
+            self.system_ids[0],
+            self.system_ids[1],
+        ]
+
         # delete systems
         response = self.client.post(
             "api/system-baseline/v1/baselines/"
