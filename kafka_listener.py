@@ -31,11 +31,13 @@ def main():
 
 def init_consumer(queue, logger):
     logger.info(
-        f"creating consumer of {queue} with kafka_group_id {config.kafka_group_id}"
+        f"creating {'secure' if config.enable_kafka_ssl else 'normal'} consumer "
+        f"of {queue} with kafka_group_id {config.kafka_group_id}"
     )
     logger.info(f"kafka max poll interval (msec): {config.kafka_max_poll_interval_ms}")
     logger.info(f"kafka max poll records: {config.kafka_max_poll_records}")
     if config.enable_kafka_ssl:
+        logger.info("")
         consumer = KafkaConsumer(
             queue,
             bootstrap_servers=config.bootstrap_servers,
