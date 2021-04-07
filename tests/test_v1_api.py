@@ -698,7 +698,7 @@ class ApiSystemsAssociationTests(ApiTest):
         response = self.client.post(
             "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
             headers=fixtures.AUTH_HEADER,
-            json=self.system_ids,
+            json={"system_ids": self.system_ids},
         )
         self.assertEqual(response.status_code, 200)
 
@@ -745,7 +745,7 @@ class ApiSystemsAssociationTests(ApiTest):
         )
         self.assertEqual(response.status_code, 200)
 
-        response_system_ids = json.loads(response.data)
+        response_system_ids = json.loads(response.data)["system_ids"]
         self.assertEqual(len(response_system_ids), 3)
 
         for system_id in self.system_ids:
@@ -764,7 +764,7 @@ class ApiSystemsAssociationTests(ApiTest):
             + self.baseline_id
             + "/systems/deletion_request",
             headers=fixtures.AUTH_HEADER,
-            json=system_ids,
+            json={"system_ids": system_ids},
         )
         self.assertEqual(response.status_code, 200)
 
@@ -801,7 +801,7 @@ class ApiSystemsAssociationTests(ApiTest):
         )
         self.assertEqual(response.status_code, 200)
 
-        response_system_ids = json.loads(response.data)
+        response_system_ids = json.loads(response.data)["system_ids"]
         self.assertEqual(len(response_system_ids), 3)
 
     def test_adding_few_systems(self):
@@ -821,11 +821,11 @@ class ApiSystemsAssociationTests(ApiTest):
         response = self.client.post(
             "api/system-baseline/v1/baselines/" + baseline_id + "/systems",
             headers=fixtures.AUTH_HEADER,
-            json=system_ids,
+            json={"system_ids": system_ids},
         )
         self.assertEqual(response.status_code, 200)
 
-        response_system_ids = json.loads(response.data)
+        response_system_ids = json.loads(response.data)["system_ids"]
         self.assertEqual(len(response_system_ids), 5)
 
         for system_id in system_ids:

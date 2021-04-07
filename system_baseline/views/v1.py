@@ -621,12 +621,13 @@ def list_systems_with_baseline(baseline_id):
         current_app.logger.audit(message, request=request, success=False)
         raise
 
-    return system_ids
+    return {"system_ids": system_ids}
 
 
-def create_systems_with_baseline(baseline_id, system_ids):
+def create_systems_with_baseline(baseline_id, body):
     ensure_rbac_write()
     validate_uuids([baseline_id])
+    system_ids = body["system_ids"]
     validate_uuids(system_ids)
     if len(set(system_ids)) < len(system_ids):
         message = "duplicate IDs in request"
@@ -660,7 +661,7 @@ def create_systems_with_baseline(baseline_id, system_ids):
     current_app.logger.audit(message, request=request, success=True)
 
     system_ids = baseline.mapped_system_ids()
-    return system_ids
+    return {"system_ids": system_ids}
 
 
 def delete_systems_with_baseline(baseline_id, system_ids):
@@ -701,13 +702,14 @@ def delete_systems_with_baseline(baseline_id, system_ids):
     return system_ids
 
 
-def create_deletion_request_for_systems(baseline_id, system_ids):
+def create_deletion_request_for_systems(baseline_id, body):
     ensure_rbac_write()
     validate_uuids([baseline_id])
+    system_ids = body["system_ids"]
     validate_uuids(system_ids)
 
-    return_value = delete_systems_with_baseline(baseline_id, system_ids)
-    return return_value
+    system_ids = delete_systems_with_baseline(baseline_id, system_ids)
+    return {"system_ids": system_ids}
 
 
 def _validate_facts(facts):

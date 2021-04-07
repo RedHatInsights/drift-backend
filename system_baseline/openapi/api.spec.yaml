@@ -230,7 +230,6 @@ paths:
         content:
           application/json:
             schema:
-              x-body-name: system_ids
               $ref: "#/components/schemas/SystemIdsList"
       responses:
         '200':
@@ -278,8 +277,6 @@ paths:
         content:
           application/json:
             schema:
-              x-body-name: system_ids
-              type: object
               $ref: "#/components/schemas/SystemIdsList"
       responses:
         '200':
@@ -436,10 +433,16 @@ components:
             minLength: 32
             maxLength: 36
     SystemIdsList:
-      type: array
-      items:
-        type: string
-        format: uuid
+      type: object
+      additionalProperties: false
+      required:
+        - system_ids
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
     JsonPatch:
       description: a JSON patch
       type: object
