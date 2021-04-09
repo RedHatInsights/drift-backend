@@ -13,7 +13,7 @@ class HistoricalSystemProfile(db.Model):
     __tablename__ = "historical_system_profiles"
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account = db.Column(db.String(10))
+    account = db.Column(db.String(10), nullable=False)
     inventory_id = db.Column(UUID(as_uuid=True), index=True)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
     system_profile = db.Column(JSONB)
