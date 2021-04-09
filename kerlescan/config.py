@@ -3,12 +3,14 @@ import os
 
 # small helper to convert strings to boolean
 def str_to_bool(s):
-    if s == "True":
-        return True
-    elif s == "False":
-        return False
-    else:
-        raise ValueError
+    try:
+        if s.lower() == "true":
+            return True
+        if s.lower() == "false":
+            return False
+    except AttributeError:
+        raise ValueError("Valid string argument expected")
+    raise ValueError("Unable to determine boolean value from given string argument")
 
 
 log_level = os.getenv("LOG_LEVEL", "INFO")
