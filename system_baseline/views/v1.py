@@ -162,7 +162,8 @@ def _delete_baselines(baseline_ids):
             HTTPStatus.NOT_FOUND, message=message,
         )
 
-    query.delete(synchronize_session="fetch")
+    for system_baseline in full_results:
+        db.session.delete(system_baseline)
 
     db.session.commit()
 
