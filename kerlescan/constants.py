@@ -7,7 +7,9 @@ BASELINE_SVC_ENDPOINT = "/api/system-baseline/v1/baselines/%s"
 RBAC_SVC_ENDPOINT = "/api/rbac/v1/access/?application=%s"
 HSP_SVC_ENDPOINT = "/api/historical-system-profiles/v1/profiles/%s"
 DRIFT_SVC_ENDPOINT = "/api/drift/v1/comparison_report"
-INTERNAL_BASELINE_SVC_ENDPOINT = "/api/system-baseline/internal/v1/baselines/%s"
+INTERNAL_BASELINE_SVC_ENDPOINT = (
+    "/api/system-baseline/internal/v1/baselines%s"
+)  # note missing trailing slash
 SYSTEM_ID_KEY = "id"
 
 COMPARISON_SAME = "SAME"

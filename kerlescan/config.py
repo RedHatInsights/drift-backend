@@ -22,6 +22,7 @@ baseline_svc_hostname = os.getenv(
 )
 rbac_svc_hostname = os.getenv("RBAC_SVC_URL", "http://rbac_svc_url_is_not_set")
 hsp_svc_hostname = os.getenv("HSP_SVC_URL", "http://hsp_svc_url_is_not_set")
+drift_svc_hostname = os.getenv("DRIFT_SVC_URL", "http://drift_svc_url_is_not_set")
 
 drift_shared_secret = os.getenv("DRIFT_SHARED_SECRET", None)
 
