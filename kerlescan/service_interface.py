@@ -1,5 +1,6 @@
 import requests
 
+from kerlescan.config import drift_shared_secret
 from kerlescan.constants import AUTH_HEADER_NAME
 from kerlescan.exceptions import ServiceError, ItemNotReturned, RBACDenied
 
@@ -9,6 +10,13 @@ def get_key_from_headers(incoming_headers):
     return auth key from header
     """
     return incoming_headers.get(AUTH_HEADER_NAME)
+
+
+def internal_auth_header():
+    """
+    returns drift internal header with shared secret
+    """
+    return {"x-rh-drift-internal-api": drift_shared_secret}
 
 
 def _validate_service_response(response, logger):

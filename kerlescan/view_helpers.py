@@ -6,7 +6,12 @@ import re
 from http import HTTPStatus
 from uuid import UUID
 
-from kerlescan.config import path_prefix, enable_rbac, enable_smart_mgmt_check
+from kerlescan.config import (
+    path_prefix,
+    enable_rbac,
+    enable_smart_mgmt_check,
+    drift_shared_secret,
+)
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.rbac_service_interface import get_perms
 from kerlescan.exceptions import HTTPError, RBACDenied
@@ -59,14 +64,22 @@ def ensure_has_permission(**kwargs):
     ensure permission exists. kwargs needs to contain:
         permissions, application, app_name, request, logger, request_metric, exception_metric
     """
+    request = kwargs["request"]
+    auth_key = get_key_from_headers(request.headers)
+
+    # check if the request comes from our own drift service
+    auth = json.loads(base64.b64decode(auth_key))
+    if auth.get("identity", {}).get("type", None) == "System":
+        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+        if request_shared_secret and request_shared_secret == drift_shared_secret:
+            return  # shared secret set and is correct
+
     if not enable_rbac:
         return
 
-    request = kwargs["request"]
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, kwargs["app_name"]):
         return  # allow request
 
-    auth_key = get_key_from_headers(request.headers)
     if auth_key:
         try:
             perms = get_perms(
@@ -99,6 +112,15 @@ def ensure_entitled(request, app_name, logger):
     if the URL is whitelisted. Returning 'None' allows the request to go through.
     """
 
+    auth_key = get_key_from_headers(request.headers)
+
+    # check if the request comes from our own drift service
+    auth = json.loads(base64.b64decode(auth_key))
+    if auth.get("identity", {}).get("type", None) == "System":
+        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+        if request_shared_secret and request_shared_secret == drift_shared_secret:
+            return  # shared secret set and is correct
+
     entitlement_key = "insights"
     if enable_smart_mgmt_check:
         entitlement_key = "smart_management"
@@ -108,7 +130,6 @@ def ensure_entitled(request, app_name, logger):
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
         return  # allow request
 
-    auth_key = get_key_from_headers(request.headers)
     if auth_key:
         entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
         if entitlement_key in entitlements:
