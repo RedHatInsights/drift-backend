@@ -4,7 +4,7 @@ from flask import request, current_app
 
 from drift import metrics
 from kerlescan import config
-from kerlescan.service_interface import fetch_data
+from kerlescan.service_interface import fetch_data, internal_auth_header
 from kerlescan.constants import AUTH_HEADER_NAME, BASELINE_SVC_ENDPOINT
 
 
@@ -13,7 +13,7 @@ def fetch_baselines(baseline_ids, service_auth_key, logger):
     fetch baselines
     """
 
-    auth_header = {AUTH_HEADER_NAME: service_auth_key}
+    auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
 
     baseline_location = urljoin(config.baseline_svc_hostname, BASELINE_SVC_ENDPOINT)
 
