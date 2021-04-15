@@ -1,4 +1,4 @@
-IDENTITY_TEMPLATE='{"identity": {"account_number": "ACCT_PLACEHOLDER", "internal": {"org_id": "000001"}}}'
+IDENTITY_TEMPLATE='{"identity": {"account_number": "ACCT_PLACEHOLDER", "type": "System", "auth_type": "classic-proxy", "system": {"cn": "22cd8e39-13bb-4d02-8316-84b850dc5136", "cert_type": "system"}, "internal": {"org_id": "000001"}}}'
 IDENTITY_HEADER="${IDENTITY_TEMPLATE/ACCT_PLACEHOLDER/$ACCOUNT_NUMBER}"    
 IDENT_B64=`base64 -w0 <<< $IDENTITY_HEADER`
 
