@@ -150,6 +150,7 @@ services:
       - ENABLE_RBAC=False
       - WEB_CONCURRENCY=1
       - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v1/profiles
+      - DRIFT_SHARED_SECRET=foo
     links:
       - baselinedb
     depends_on:
@@ -166,6 +167,7 @@ services:
       - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v0/profiles
       - ENABLE_RBAC=False
       - WEB_CONCURRENCY=1
+      - DRIFT_SHARED_SECRET=foo
     links:
       - inventory-rest
       - system-baseline-rest
@@ -195,6 +197,7 @@ services:
       - HSP_DB_HOST=hspdb
       - ENABLE_RBAC=False
       - WEB_CONCURRENCY=1
+      - DRIFT_SHARED_SECRET=foo
     links:
       - hspdb
       - inventory-rest
@@ -211,6 +214,7 @@ services:
       - LISTENER_TYPE=ARCHIVER
       - APP_FILE=kafka_listener.py
       - LISTENER_DELAY=20
+      - DRIFT_SHARED_SECRET=foo
     links:
       - hspdb
       - kafka

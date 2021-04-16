@@ -119,7 +119,6 @@ services:
       - KAFKA_TOPIC=platform.system-profile
       - KAFKA_GROUP=inventory
       - WEB_CONCURRENCY=1
-      - DRIFT_SHARED_SECRET=foo
     links:
       - db
     depends_on:
@@ -225,6 +224,7 @@ services:
       - LISTENER_TYPE=ARCHIVER
       - APP_FILE=kafka_listener.py
       - LISTENER_DELAY=20
+      - DRIFT_SHARED_SECRET=foo
     links:
       - hspdb
       - kafka
