@@ -104,16 +104,16 @@ def _check_and_send_notifications(inventory_id, service_auth_key, logger):
     # to see if the system has drifted from that baseline.
     # If anything has changed, send a kafka message to trigger a notification.
 
-    baselines = fetch_system_baseline_associations(
+    baseline_ids = fetch_system_baseline_associations(
         inventory_id, service_auth_key, logger
     )
     # If yes, then for each baseline associated, call for a short-circuited comparison
     # to see if the system has drifted from that baseline.
-    if baselines:
-        for baseline in baselines:
-            if check_for_drift(inventory_id, baseline["id"], service_auth_key, logger):
+    if baseline_ids:
+        for baseline_id in baseline_ids:
+            if check_for_drift(inventory_id, baseline_id, service_auth_key, logger):
                 # If anything has changed, send a kafka message to trigger a notification.
-                _emit_notifications_signal(inventory_id, baseline["id"])
+                _emit_notifications_signal(inventory_id, baseline_id, None, None, logger)
 
 
 def _emit_notifications_signal(inventory_id, baseline_id, data, ptc, logger):
