@@ -4,6 +4,3 @@ extends: default
 rules:
   line-length:
     max: 100
-
-ignore: |
-  openshift/vars/secrets.yml
