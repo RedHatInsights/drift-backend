@@ -1,4 +1,0 @@
----
-openshift_host: api.insights-dev.openshift.com
-inventory_svc_url: http://insights-inventory.platform-qa.svc.cluster.local:8080
-cloudwatch_log_group: platform-dev
