@@ -16,11 +16,7 @@ def check_for_drift(system_id, baseline_id, service_auth_key, logger):
     drift_location = urljoin(config.drift_svc_hostname, DRIFT_SVC_ENDPOINT)
 
     drift_url = str(
-        drift_location
-        + "?system_ids[]="
-        + system_id
-        + "&baseline_ids[]="
-        + baseline_id
+        drift_location + "?system_ids[]=" + system_id + "&baseline_ids[]=" + baseline_id
     )
 
     return fetch_url(

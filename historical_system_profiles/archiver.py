@@ -113,7 +113,9 @@ def _check_and_send_notifications(inventory_id, service_auth_key, logger):
         for baseline_id in baseline_ids:
             if check_for_drift(inventory_id, baseline_id, service_auth_key, logger):
                 # If anything has changed, send a kafka message to trigger a notification.
-                _emit_notifications_signal(inventory_id, baseline_id, None, None, logger)
+                _emit_notifications_signal(
+                    inventory_id, baseline_id, None, None, logger
+                )
 
 
 def _emit_notifications_signal(inventory_id, baseline_id, data, ptc, logger):

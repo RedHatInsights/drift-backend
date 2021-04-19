@@ -20,7 +20,7 @@ def fetch_system_baseline_associations(system_id, service_auth_key, logger):
 
     query = "?system_id=%s" % system_id
     url = internal_baselines_location % query
-    result =  fetch_url(
+    result = fetch_url(
         url,
         auth_header,
         logger,
