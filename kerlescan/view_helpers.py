@@ -68,11 +68,12 @@ def ensure_has_permission(**kwargs):
     auth_key = get_key_from_headers(request.headers)
 
     # check if the request comes from our own drift service
-    auth = json.loads(base64.b64decode(auth_key))
-    if auth.get("identity", {}).get("type", None) == "System":
-        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
-        if request_shared_secret and request_shared_secret == drift_shared_secret:
-            return  # shared secret set and is correct
+    if auth_key:
+        auth = json.loads(base64.b64decode(auth_key))
+        if auth.get("identity", {}).get("type", None) == "System":
+            request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+            if request_shared_secret and request_shared_secret == drift_shared_secret:
+                return  # shared secret set and is correct
 
     if not enable_rbac:
         return
@@ -115,11 +116,12 @@ def ensure_entitled(request, app_name, logger):
     auth_key = get_key_from_headers(request.headers)
 
     # check if the request comes from our own drift service
-    auth = json.loads(base64.b64decode(auth_key))
-    if auth.get("identity", {}).get("type", None) == "System":
-        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
-        if request_shared_secret and request_shared_secret == drift_shared_secret:
-            return  # shared secret set and is correct
+    if auth_key:
+        auth = json.loads(base64.b64decode(auth_key))
+        if auth.get("identity", {}).get("type", None) == "System":
+            request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+            if request_shared_secret and request_shared_secret == drift_shared_secret:
+                return  # shared secret set and is correct
 
     entitlement_key = "insights"
     if enable_smart_mgmt_check:
