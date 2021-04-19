@@ -23,3 +23,11 @@ baseline_service_requests = Histogram(
 baseline_service_exceptions = Counter(
     "baseline_service_exceptions", "count of exceptions raised by baseline service"
 )
+
+drift_service_requests = Histogram(
+    "drift_service_requests", "drift service call stats"
+)
+
+drift_service_exceptions = Counter(
+    "drift_service_exceptions", "count of exceptions raised by drift service"
+)
