@@ -9,7 +9,6 @@ script:
   - black . --check -t py38
   - yamllint drift/openapi/mgmt_api.spec.yaml
   - yamllint drift/openapi/api.spec.yaml
-  - yamllint openshift/
   - ./run_unit_tests.sh
 
 install:
