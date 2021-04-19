@@ -2,6 +2,9 @@ import time
 
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
+from historical_system_profiles.notification_service_interface import (
+    NotificationServiceInterface,
+)
 
 
 def _record_recv_message(host, request_id, ptc):
@@ -34,7 +37,7 @@ def _record_duplicate_message(host, request_id, ptc):
     )
 
 
-def _archive_profile(data, ptc, logger):
+def _archive_profile(data, ptc, logger, notification_service):
     """
     given an event, archive a profile and emit a success message
     """
@@ -114,10 +117,11 @@ def _emit_archiver_error(data, ptc, logger):
 
 def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
     with flask_app.app_context():
+        notification_service = NotificationServiceInterface(logger)
         while True:
             time.sleep(delay_seconds)
             for data in consumer:
                 try:
-                    _archive_profile(data, ptc, logger)
+                    _archive_profile(data, ptc, logger, notification_service)
                 except Exception:
                     _emit_archiver_error(data, ptc, logger)

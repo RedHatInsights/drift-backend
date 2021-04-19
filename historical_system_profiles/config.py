@@ -22,6 +22,12 @@ bootstrap_servers = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092").split(",")
 consume_topic = os.getenv("CONSUME_TOPIC", None)
 listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
 kafka_group_id = os.getenv("KAFKA_GROUP_ID", "hsp-%s" % listener_type.lower())
+notification_service_topic = os.getenv(
+    "NOTIFICATION_SERVICE_TOPIC", "platform.notifications.ingress"
+)
+notification_bundle = os.getenv("NOTIFICATION_BUNDLE", "rhel")
+notification_app = os.getenv("NOTIFICATION_APP", "drift")
+
 enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
 kafka_ssl_cert = os.getenv("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
 

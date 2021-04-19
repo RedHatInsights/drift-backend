@@ -12,8 +12,8 @@ class ArchiverTests(utils.ApiTest):
         message.value = fixtures.EVENT_MESSAGE_VALUE
         with self.test_flask_app.app_context():
             # save the same profile twice on purpose
-            archiver._archive_profile(message, MagicMock(), MagicMock())
-            archiver._archive_profile(message, MagicMock(), MagicMock())
+            archiver._archive_profile(message, MagicMock(), MagicMock(), MagicMock())
+            archiver._archive_profile(message, MagicMock(), MagicMock(), MagicMock())
 
         hsps = []
         with self.test_flask_app.app_context():
