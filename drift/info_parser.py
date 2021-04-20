@@ -39,13 +39,8 @@ def build_comparisons(
         reference_id,
         short_circuit,
     )
-    if short_circuit:
-        if fact_comparisons:
-            return (
-                True  # do we want to pass another value for case "nothing different"?
-            )
-        else:
-            return False
+
+    drift_event_notify = False
 
     # remove system metadata that we put into to the comparison earlier
     stripped_comparisons = []
@@ -53,6 +48,10 @@ def build_comparisons(
     for comparison in fact_comparisons:
         if comparison["name"] not in metadata_fields:
             stripped_comparisons.append(comparison)
+        # if the system has drifted from the baseline, notify
+        if short_circuit:
+            if comparison["drifted_from_baseline"]:
+                drift_event_notify = True
 
     grouped_comparisons = _group_comparisons(stripped_comparisons)
     sorted_comparisons = sorted(
@@ -84,6 +83,7 @@ def build_comparisons(
         "systems": sorted_system_mappings,
         "baselines": baseline_mappings,
         "historical_system_profiles": sorted_historical_sys_profile_mappings,
+        "drift_event_notify": drift_event_notify,
     }
 
 
@@ -239,9 +239,10 @@ def _select_applicable_info(
             # if short_circuit is True, and there was a change, return False
             # to trigger a notification
             if short_circuit and current_comparison["state"] == COMPARISON_DIFFERENT:
-                return False
+                current_comparison["drifted_from_baseline"] = True
             else:
-                info_comparisons.append(current_comparison)
+                current_comparison["drifted_from_baseline"] = False
+            info_comparisons.append(current_comparison)
     return info_comparisons
 
 
