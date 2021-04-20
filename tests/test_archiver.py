@@ -3,11 +3,14 @@ from . import utils
 
 from historical_system_profiles import archiver, db_interface
 
+import mock
 from mock import MagicMock
 
 
 class ArchiverTests(utils.ApiTest):
-    def test_archive_profile(self):
+    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    def test_archive_profile(self, mock_check_and_send):
+        mock_check_and_send.return_value = None
         message = MagicMock()
         message.value = fixtures.EVENT_MESSAGE_VALUE
         with self.test_flask_app.app_context():

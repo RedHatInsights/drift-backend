@@ -14,12 +14,11 @@ def fetch_system_baseline_associations(system_id, service_auth_key, logger):
 
     auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
 
-    internal_baselines_location = urljoin(
-        config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_ENDPOINT
+    url = (
+        urljoin(config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_ENDPOINT)
+        % system_id
     )
 
-    query = "?system_id=%s" % system_id
-    url = internal_baselines_location % query
     result = fetch_url(
         url,
         auth_header,

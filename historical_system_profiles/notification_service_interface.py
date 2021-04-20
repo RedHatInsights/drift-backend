@@ -65,13 +65,11 @@ class _NotificationEventBase:
             "timestamp": datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
             "account_id": account_id,
             "events": [],
-            "context": json.dumps(context).encode("utf-8"),
+            "context": json.dumps(context),
         }
 
     def _add_event(self, payload):
-        self.message["events"].append(
-            {"metadata": {}, "payload": json.dumps(payload).encode("utf-8")}
-        )
+        self.message["events"].append({"metadata": {}, "payload": json.dumps(payload)})
 
 
 class EventDriftBaselineDetected(_NotificationEventBase):

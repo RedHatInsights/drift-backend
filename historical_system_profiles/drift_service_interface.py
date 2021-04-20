@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from historical_system_profiles import metrics
 from kerlescan import config
 from kerlescan.service_interface import fetch_url, internal_auth_header
-from kerlescan.constants import AUTH_HEADER_NAME, DRIFT_SVC_ENDPOINT
+from kerlescan.constants import AUTH_HEADER_NAME, DRIFT_SVC_BASELINE_COMPARE_ENDPOINT
 
 
 def check_for_drift(system_id, baseline_id, service_auth_key, logger):
@@ -13,11 +13,9 @@ def check_for_drift(system_id, baseline_id, service_auth_key, logger):
 
     auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
 
-    drift_location = urljoin(config.drift_svc_hostname, DRIFT_SVC_ENDPOINT)
-
-    drift_url = str(
-        drift_location + "?system_ids[]=" + system_id + "&baseline_ids[]=" + baseline_id
-    )
+    drift_url = urljoin(
+        config.drift_svc_hostname, DRIFT_SVC_BASELINE_COMPARE_ENDPOINT
+    ) % (system_id, baseline_id)
 
     return fetch_url(
         drift_url,

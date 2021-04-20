@@ -91,8 +91,11 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = (
 EVENT_MESSAGE_VALUE = {
     "host": {
         "account": "5432",
+        "display_name": "9c033db1729c",
         "id": "6388350e-b18d-11ea-ad7f-98fa9b07d419",
+        "insights_id": "cd9b8cda-607c-4359-9425-b6a0299a26a2",
         "fqdn": "my-fqdn",
+        "updated": "2021-04-21T15:03:44.887439+00:00",
         "tags": [],
         "system_profile": {"captured_date": "2020-06-18T17:11:05+00:00"},
     },
