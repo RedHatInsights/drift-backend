@@ -64,6 +64,14 @@ paths:
             type: string
           required: false
           description: reference ID (could be system, baseline, or HSP)
+        - name: short_circuit
+          in: query
+          schema:
+            type: boolean
+          required: false
+          description: "defaults to False, only True when used internally to trigger
+                        Notifications if drift has occurred between a current system
+                        checking in and any baselines with which it is associated."
       responses:
         '200':
           description: a comparison report for the given system IDs
@@ -161,6 +169,8 @@ components:
             type: string
         reference_id:
           type: string
+        short_circuit:
+          type: boolean
     Error:
       required:
         - detail
@@ -197,6 +207,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HistoricalSystemProfile"
+        drift_event_notify:
+          type: boolean
     FactComparison:
       description: "A list of fact names, states, and systems. This is useful
                     for displaying rows of facts to compare. Note that if the
