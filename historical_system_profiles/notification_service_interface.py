@@ -56,6 +56,8 @@ class _NotificationEventBase:
     """Base event on which all notification events are built"""
 
     def __init__(self, event_type, account_id, context={}):
+        self.notification_bundle = config.notification_bundle
+        self.notification_app = config.notification_app
         self.message = {
             "bundle": self.notification_bundle,
             "application": self.notification_app,
