@@ -8,7 +8,7 @@ RBAC_SVC_ENDPOINT = "/api/rbac/v1/access/?application=%s"
 HSP_SVC_ENDPOINT = "/api/historical-system-profiles/v1/profiles/%s"
 DRIFT_SVC_ENDPOINT = "/api/drift/v1/comparison_report"
 DRIFT_SVC_BASELINE_COMPARE_ENDPOINT = (
-    DRIFT_SVC_ENDPOINT + "/?system_ids[]=%s&baseline_ids[]=%s&short_circuit=True"
+    DRIFT_SVC_ENDPOINT + "?system_ids[]=%s&baseline_ids[]=%s&short_circuit=True"
 )
 INTERNAL_BASELINE_SVC_ENDPOINT = (
     "/api/system-baseline/internal/v1/baselines%s"
