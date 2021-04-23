@@ -48,10 +48,10 @@ def build_comparisons(
     for comparison in fact_comparisons:
         if comparison["name"] not in metadata_fields:
             stripped_comparisons.append(comparison)
-        # if the system has drifted from the baseline, notify
-        if short_circuit:
-            if comparison["drifted_from_baseline"]:
-                drift_event_notify = True
+            # if the system has drifted from the baseline, notify
+            if short_circuit:
+                if comparison["drifted_from_baseline"]:
+                    drift_event_notify = True
 
     grouped_comparisons = _group_comparisons(stripped_comparisons)
     sorted_comparisons = sorted(
