@@ -116,9 +116,11 @@ def comparison_report(
     """
     return a comparison report
 
-    Or return False if short_circuit is true and there is any difference found
-    between the one system and associated baseline as short circuit is used to
-    set up needed notifications only and does not need a full comparison report
+    If short_circuit is true, this is a call to see if a single system has
+    drifted from a single baseline in order to trigger a Notification if
+    necessary, so the only facts that will be compared will be those present
+    on the baseline.  If the system has drifted from the baseline, the report
+    will contain the key 'drift_event_notify' set to True, otherwise False.
     """
     if len(system_ids + baseline_ids + historical_sys_profile_ids) == 0:
         message = "must specify at least one of system, baseline, or HSP"
@@ -212,8 +214,6 @@ def comparison_report(
             reference_id,
             short_circuit,
         )
-        if short_circuit and not comparisons:
-            return False
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
             output = make_response(_csvify(comparisons))
