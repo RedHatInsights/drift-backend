@@ -225,6 +225,8 @@ services:
       - APP_FILE=kafka_listener.py
       - LISTENER_DELAY=20
       - DRIFT_SHARED_SECRET=foo
+      - BASELINE_SVC_URL=http://system-baseline-rest:8080
+      - DRIFT_SVC_URL=http://drift-rest:8080
     links:
       - hspdb
       - kafka
