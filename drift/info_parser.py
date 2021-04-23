@@ -233,7 +233,11 @@ def _select_applicable_info(
                         system["obfuscation"][key] = True
 
         current_comparison = _create_comparison(
-            parsed_system_profiles, key, reference_id, len(systems_with_profiles)
+            parsed_system_profiles,
+            key,
+            reference_id,
+            len(systems_with_profiles),
+            short_circuit,
         )
         if current_comparison:
             # if short_circuit is True, and there was a change, i.e. this system
@@ -248,7 +252,7 @@ def _select_applicable_info(
     return info_comparisons
 
 
-def _create_comparison(systems, info_name, reference_id, system_count):
+def _create_comparison(systems, info_name, reference_id, system_count, short_circuit):
     """
     Take an individual fact, search for it across all systems, and create a dict
     of each system's ID and fact value. Additionally, add a "state" field that
@@ -260,6 +264,13 @@ def _create_comparison(systems, info_name, reference_id, system_count):
     Also the system_count is the count of "actual" systems. If we are comparing
     multiple systems to each other, we use different rules for items that
     should be unique across systems like IP address.
+
+    If short_circuit is True, we are only interested in whether the children of a
+    multivalue fact's state when those child-facts are present on the baseline
+    and not the state of the overall parent.  This is because short_circuit is
+    used when we wish to trigger a notification for drift of a newly checked in
+    system from an associated baseline and we are then only interested in the facts
+    present on that associated baseline.
 
     """
     # TODO: this method is messy and could be refactored
@@ -431,6 +442,19 @@ def _create_comparison(systems, info_name, reference_id, system_count):
                     row += 1
             sorted_system_id_values[value_count]["value"] = column
             value_count += 1
+
+        # If short_circuit is true, this is a comparison of one system that just
+        # checked in to an associated baseline, and we only want to notify of
+        # drift if the facts present on that baseline are different on the system.
+        # The baseliine is sorted first, so check each fact in the first column
+        # to see if that fact is in the second column (the system) and adjust
+        # the info_comparison value accordingly.
+        if short_circuit:
+            info_comparison = COMPARISON_SAME
+            for value in sorted_system_id_values[0]["value"]:
+                if value != "":
+                    if value not in sorted_system_id_values[1]["value"]:
+                        info_comparison = COMPARISON_DIFFERENT
 
         # need to account for states compared to a reference if selected
         # for system in sorted_system_id_values:
