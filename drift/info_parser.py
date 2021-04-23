@@ -26,11 +26,11 @@ def build_comparisons(
     given a list of system profile dicts and fact namespace, return a dict of
     comparisons, along with a dict of system data
 
-    Unless short_circuit is True, then we don't need a full comparison report, only whether any
-    changes are present at all as this is for notifications if a newly checked in hsp system
-    has drifted from an associated baseline.
-    return True: Everything matches, we don't need to notify
-    return False: Something changed, we do need to notify
+    Unless short_circuit is True, then we don't need a full comparison report, only a
+    report covering the facts present on the baseline as this is for notifications if
+    a newly checked in hsp system has drifted from an associated baseline.
+    The key 'drift_event_notify' will be true on the report if the system has drifted
+    from the associated baseline, otherwise it will be false.
     """
     fact_comparisons = _select_applicable_info(
         systems_with_profiles,
@@ -160,10 +160,10 @@ def _select_applicable_info(
     profile facts, where each fact key has a dict of systems and their values. This is
     useful when comparing facts across systems.
 
-    Unless short_circuit is True, then we don't need a full comparison report, only whether any
-    changes are present at all as this is for notifications if a newly checked in hsp system
-    has drifted from an associated baseline.
-    return False: Something changed, we do need to notify
+    Unless short_circuit is True, then we don't need a full comparison report, only one for
+    facts present on a single baseline that is being compared with a single system for
+    notifications if a newly checked in hsp system has drifted from an associated baseline.
+    If the key 'drifted_from_baseline' is True, the system has drifted, else False.
     """
     # create dicts of id + info
     parsed_system_profiles = []
@@ -236,8 +236,10 @@ def _select_applicable_info(
             parsed_system_profiles, key, reference_id, len(systems_with_profiles)
         )
         if current_comparison:
-            # if short_circuit is True, and there was a change, return False
-            # to trigger a notification
+            # if short_circuit is True, and there was a change, i.e. this system
+            # has drifted from this associated baseline, then set the key on the
+            # comparison 'drifted_from_baseline' to True to trigger a notification
+            # else set it to False.
             if short_circuit and current_comparison["state"] == COMPARISON_DIFFERENT:
                 current_comparison["drifted_from_baseline"] = True
             else:
