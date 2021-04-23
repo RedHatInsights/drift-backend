@@ -133,7 +133,7 @@ def _check_and_send_notifications(
     if baseline_ids:
         drift_found = False
         event = EventDriftBaselineDetected(
-            account_id, insights_id, system_check_in, display_name, tags
+            account_id, insights_id, inventory_id, system_check_in, display_name, tags
         )
         for baseline_id in baseline_ids:
             comparison = check_for_drift(
