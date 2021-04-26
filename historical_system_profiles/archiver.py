@@ -47,7 +47,13 @@ def _archive_profile(data, ptc, logger, notification_service):
     given an event, archive a profile and emit a success message
     """
 
-    service_auth_key = data.value.get("platform_metadata", {}).get("b64_identity", None)
+    if data.value:
+        service_auth_key = data.value.get("platform_metadata", {}).get(
+            "b64_identity", None
+        )
+    else:
+        logger.info("skipping message where data.value is None")
+        return
 
     if data.value["type"] not in ("created", "updated"):
         logger.info("skipping message that is not created or updated type")
