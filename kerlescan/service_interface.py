@@ -29,7 +29,7 @@ def _validate_service_response(response, logger):
         )
         raise ItemNotReturned(response.text)
 
-    if response.status_code == requests.codes.forbidden:
+    if response.status_code in [requests.codes.forbidden, requests.codes.unauthorized]:
         logger.info(
             "%s error received from service: %s" % (response.status_code, response.text)
         )
