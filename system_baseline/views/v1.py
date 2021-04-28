@@ -745,8 +745,6 @@ def ensure_account_number():
 
 @section.before_app_request
 def ensure_rbac_read():
-    # THIS IS TEMP LOG MESSAGE. REMOVE.
-    current_app.logger.audit("called ensure_rbac_read() for request %s" % request)
     return view_helpers.ensure_has_permission(
         permissions=["drift:*:*", "drift:baselines:read"],
         application="drift",
