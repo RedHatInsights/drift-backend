@@ -19,7 +19,7 @@ def internal_auth_header():
     return {"x-rh-drift-internal-api": drift_shared_secret}
 
 
-def _validate_service_response(response, logger):
+def _validate_service_response(response, logger, auth_header):
     """
     Raise an exception if the response was not what we expected.
     """
@@ -33,6 +33,12 @@ def _validate_service_response(response, logger):
         logger.info(
             "%s error received from service: %s" % (response.status_code, response.text)
         )
+        # Log identity header if 401 (unauthorized)
+        if response.status_code == requests.codes.unauthorized:
+            if isinstance(auth_header, dict) and AUTH_HEADER_NAME in auth_header:
+                logger.info("identity '%s'" % get_key_from_headers(auth_header))
+            else:
+                logger.info("no identity or no key")
         raise RBACDenied(response.text)
 
     if response.status_code != requests.codes.ok:
@@ -51,7 +57,7 @@ def fetch_url(url, auth_header, logger, time_metric, exception_metric):
         with exception_metric.count_exceptions():
             response = requests.get(url, headers=auth_header)
     logger.debug("fetched %s" % url)
-    _validate_service_response(response, logger)
+    _validate_service_response(response, logger, auth_header)
     return response.json()
 
 

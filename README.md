@@ -1,6 +1,11 @@
 # kerlescan
 shared service lib
 
+## To run tests
+1. `pipenv install --dev`
+2. `pipenv shell`
+3. `nosetests`
+
 ## To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.
 2. Duplicate the `sonar-scanner.properties.sample` config file.
