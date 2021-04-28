@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "77f2182c1cc1891fd1c8d38c061e4bd75db587009bf097a0aafe363288c3c51c"
+            "sha256": "89559451bad73ebe6a2f69d4a13782ba4dda92fd7243797a24d8c0e74a22b126"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -41,19 +41,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:4caf01511a07e229855b964d43ddbc6b3db1fd88a3747a4a7ca6d398ce04f3d3",
-                "sha256:fcd1a0318919bddf4efd0a8858214ed07d08a870d79d20f9b2d6df5d3092b8d8"
+                "sha256:ae6f4753cc8bc970a8e50c4a7115a26bb49dfb84a0355351fc495bf6aec07c6f",
+                "sha256:edd2f14f64e0afd2373cd9b2c839004c751afedc593ea3baca3ab36f7206644d"
             ],
             "index": "pypi",
-            "version": "==1.17.58"
+            "version": "==1.17.60"
         },
         "botocore": {
             "hashes": [
-                "sha256:0de54af6af58d59237377f1bbe43edc4395d88848cddbe00f546703d4026c638",
-                "sha256:2830596e0d92d82abaf78a7926e49a3b7a80c93cdc75e95717a1dd4ea9027283"
+                "sha256:bb63a112ef415638328e4535b75dbc32ebd88f06b7937ce1d297aa5b5527335a",
+                "sha256:e19947a8978e99467e7b1843308d1adc8febaa4e221021d4befdaec83d993ee7"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
-            "version": "==1.20.58"
+            "version": "==1.20.60"
         },
         "cachecontrol": {
             "extras": [
@@ -284,7 +284,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "adb5900dc7574f4cb4c45dd93cc561a6c199cc91"
+            "ref": "19aed245e9b5a470774ee9818f95ab28e9096fcc"
         },
         "lockfile": {
             "hashes": [
@@ -1205,11 +1205,11 @@
         },
         "responses": {
             "hashes": [
-                "sha256:0f0ab4717728d33dae8e66deea61eecc1e38f0398e35249e3963ff74cfc8d0d8",
-                "sha256:75529f9bea08276cea43545dcb6129f137c299d6a12269485a753785c869e0e2"
+                "sha256:18a5b88eb24143adbf2b4100f328a2f5bfa72fbdacf12d97d41f07c26c45553d",
+                "sha256:b54067596f331786f5ed094ff21e8d79e6a1c68ef625180a7d34808d6f36c11b"
             ],
             "index": "pypi",
-            "version": "==0.13.2"
+            "version": "==0.13.3"
         },
         "rfc3986": {
             "hashes": [
