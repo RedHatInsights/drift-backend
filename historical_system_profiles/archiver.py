@@ -207,7 +207,7 @@ def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
             time.sleep(delay_seconds)
             for data in consumer:
                 try:
-                    logger.info("kafka message recieved: '%s'", str(data))
+                    logger.debug(("kafka message recieved: '%s'", str(data)))
                     _archive_profile(data, ptc, logger, notification_service)
                 except Exception:
                     _emit_archiver_error(data, ptc, logger)
