@@ -31,7 +31,7 @@ flask-migrate = "*"
 bitmath = "*"
 jsonpatch = "*"
 insights-core = "*"
-kerlescan = {editable = true, ref = "0.68", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.69", git = "https://github.com/RedHatInsights/kerlescan.git"}
 
 [requires]
 python_version = "3.8"
