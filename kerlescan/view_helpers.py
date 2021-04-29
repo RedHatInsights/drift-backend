@@ -73,6 +73,9 @@ def ensure_has_permission(**kwargs):
         if auth.get("identity", {}).get("type", None) == "System":
             request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
             if request_shared_secret and request_shared_secret == drift_shared_secret:
+                kwargs["logger"].audit(
+                    "shared-secret found, auth/entitlement authorized"
+                )
                 return  # shared secret set and is correct
 
     if not enable_rbac:
@@ -121,6 +124,7 @@ def ensure_entitled(request, app_name, logger):
         if auth.get("identity", {}).get("type", None) == "System":
             request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
             if request_shared_secret and request_shared_secret == drift_shared_secret:
+                logger.audit("shared-secret found, auth/entitlement authorized")
                 return  # shared secret set and is correct
 
     entitlement_key = "insights"
