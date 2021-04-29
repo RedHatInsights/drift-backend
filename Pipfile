@@ -3,7 +3,7 @@ python_version = "3.8"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "~=2.7"}
-kerlescan = {editable = true, ref = "0.67", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.69", git = "https://github.com/RedHatInsights/kerlescan.git"}
 prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"

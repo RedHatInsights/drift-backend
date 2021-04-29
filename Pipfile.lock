@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1297650f8156481c9a63ec666da696d31fd1bf90084c38d8656bd9f84d47602d"
+            "sha256": "5309c0baeff3b673f1d4768a98b345edbb3953861c6e203f14f06192ca35b128"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -34,19 +34,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:4caf01511a07e229855b964d43ddbc6b3db1fd88a3747a4a7ca6d398ce04f3d3",
-                "sha256:fcd1a0318919bddf4efd0a8858214ed07d08a870d79d20f9b2d6df5d3092b8d8"
+                "sha256:35b099fa55f5db6e99a92855b9f320736121ae985340adfc73bc46fb443809e9",
+                "sha256:53fd4c7df86f78e51168f832b42ca1c284333b3f5af0266bf10d13af41aeff5c"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
-            "version": "==1.17.58"
+            "version": "==1.17.61"
         },
         "botocore": {
             "hashes": [
-                "sha256:0de54af6af58d59237377f1bbe43edc4395d88848cddbe00f546703d4026c638",
-                "sha256:2830596e0d92d82abaf78a7926e49a3b7a80c93cdc75e95717a1dd4ea9027283"
+                "sha256:c765ddd0648e32b375ced8b82bfcc3f8437107278b2d2c73b7da7f41297b5388",
+                "sha256:d48f94573c75a6c1d6d0152b9e21432083a1b0a0fc39b41f57128464982cb0a0"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
-            "version": "==1.20.58"
+            "version": "==1.20.61"
         },
         "certifi": {
             "hashes": [
@@ -250,7 +250,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "adb5900dc7574f4cb4c45dd93cc561a6c199cc91"
+            "ref": "cd043c80a9263f684f107f0899c16e1cbacf1c3f"
         },
         "logstash-formatter": {
             "hashes": [
