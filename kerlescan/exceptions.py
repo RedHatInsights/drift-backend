@@ -53,3 +53,12 @@ class UnparsableNEVRAError(RuntimeError):
         """
         super(RuntimeError, self).__init__()
         self.message = message
+
+
+class IllegalHttpMethodError(ValueError):
+    def __init__(self, message):
+        """
+        Raise this exception if we detect illegal HTTP method
+        """
+        super(IllegalHttpMethodError, self).__init__()
+        self.message = message
