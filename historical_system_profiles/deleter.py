@@ -61,6 +61,7 @@ def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
             time.sleep(delay_seconds)
             for data in consumer:
                 try:
+                    logger.debug(("kafka message recieved: '%s'", str(data)))
                     if data.value["type"] == "delete":
                         _delete_profiles(data, ptc, logger)
                 except Exception:
