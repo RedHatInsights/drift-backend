@@ -5,6 +5,7 @@ from kerlescan import config
 from kerlescan.constants import (
     AUTH_HEADER_NAME,
     BASELINE_SVC_ENDPOINT,
+    INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT,
     INTERNAL_BASELINE_SVC_ENDPOINT,
 )
 from kerlescan.service_interface import fetch_data, fetch_url, internal_auth_header
@@ -51,5 +52,28 @@ def fetch_system_baseline_associations(system_id, service_auth_key, logger):
         logger,
         metrics.baseline_service_requests,
         metrics.baseline_service_exceptions,
+    )
+    return result
+
+
+def delete_system_baseline_associations(system_id, service_auth_key, logger):
+    """
+    call baseline systems association endpoint to delete records with the system
+    """
+
+    auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
+
+    url = (
+        urljoin(config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT)
+        % system_id
+    )
+
+    result = fetch_url(
+        url,
+        auth_header,
+        logger,
+        metrics.baseline_service_requests,
+        metrics.baseline_service_exceptions,
+        method="delete",
     )
     return result
