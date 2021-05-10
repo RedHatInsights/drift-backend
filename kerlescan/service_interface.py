@@ -1,8 +1,13 @@
 import requests
 
 from kerlescan.config import drift_shared_secret
-from kerlescan.constants import AUTH_HEADER_NAME
-from kerlescan.exceptions import ServiceError, ItemNotReturned, RBACDenied
+from kerlescan.constants import AUTH_HEADER_NAME, VALID_HTTP_VERBS
+from kerlescan.exceptions import (
+    ServiceError,
+    ItemNotReturned,
+    RBACDenied,
+    IllegalHttpMethodError,
+)
 
 
 def get_key_from_headers(incoming_headers):
@@ -48,14 +53,20 @@ def _validate_service_response(response, logger, auth_header):
         raise ServiceError("Error received from backend service")
 
 
-def fetch_url(url, auth_header, logger, time_metric, exception_metric):
+def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="get"):
     """
     helper to make a single request
     """
+
+    if method not in VALID_HTTP_VERBS:
+        raise IllegalHttpMethodError(
+            "Provided method '%s' is not valid HTTP method." % method
+        )
+
     logger.debug("fetching %s" % url)
     with time_metric.time():
         with exception_metric.count_exceptions():
-            response = requests.get(url, headers=auth_header)
+            response = requests.request(method, url, headers=auth_header)
     logger.debug("fetched %s" % url)
     _validate_service_response(response, logger, auth_header)
     return response.json()

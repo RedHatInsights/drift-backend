@@ -1,4 +1,5 @@
 AUTH_HEADER_NAME = "X-RH-IDENTITY"
+VALID_HTTP_VERBS = ["get", "options", "head", "post", "put", "patch", "delete"]
 FACT_NAMESPACE = "system_profile"
 INVENTORY_SVC_SYSTEMS_ENDPOINT = "/api/inventory/v1/hosts/%s"
 INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT = "/api/inventory/v1/hosts/%s/system_profile"
