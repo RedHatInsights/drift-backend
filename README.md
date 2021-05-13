@@ -7,6 +7,9 @@ If running on Fedora 32, docker is no longer supported out of the box. Check thi
 The article above has steps to get docker running on Fedora 32.
 NOTE: In the firewall-cmd section, I had to add masquerade to the "default" zone, not the "FedoraWorkstation" zone, because the "default" zone is what my system was using. Likely this is a remnant of upgrading Fedora over several versions and not a fresh Fedora 32 install.
 
+Update 5/13/21: Docker support for Fedora 32 and beyond:
+ * https://docs.docker.com/engine/install/fedora/
+
 ---
 
 ## Run All Components
