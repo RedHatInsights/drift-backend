@@ -110,7 +110,6 @@ def _archive_profile(data, ptc, logger, notification_service):
         _check_and_send_notifications(
             host["id"],
             host["account"],
-            host["insights_id"],
             host["updated"],
             host["display_name"],
             host["tags"],
@@ -123,7 +122,6 @@ def _archive_profile(data, ptc, logger, notification_service):
 def _check_and_send_notifications(
     inventory_id,
     account_id,
-    insights_id,
     system_check_in,
     display_name,
     tags,
@@ -145,7 +143,7 @@ def _check_and_send_notifications(
     if baseline_ids:
         drift_found = False
         event = EventDriftBaselineDetected(
-            account_id, insights_id, inventory_id, system_check_in, display_name, tags
+            account_id, inventory_id, system_check_in, display_name, tags
         )
         for baseline_id in baseline_ids:
             comparison = check_for_drift(

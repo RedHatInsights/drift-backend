@@ -76,16 +76,9 @@ class EventDriftBaselineDetected(_NotificationEventBase):
     """Message for drift-baseline-detected notification event"""
 
     def __init__(
-        self,
-        account_id,
-        insights_id,
-        inventory_id,
-        system_check_in,
-        display_name,
-        tags=[],
+        self, account_id, inventory_id, system_check_in, display_name, tags=[],
     ):
         context = {
-            "insights_id": insights_id,
             "inventory_id": inventory_id,
             "system_check_in": system_check_in,
             "display_name": display_name,
