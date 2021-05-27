@@ -54,4 +54,6 @@ SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED = {
     "enabled_services",
 }
 SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED = {"installed_services"}
+SYSTEM_PROFILE_LISTS_OF_STRINGS = {"gpg_pubkeys"}
+GPG_KEY_PREFIX = "gpg-pubkey-"
 SAP_RELATED_FACTS = {"sap_system", "sap_sids", "sap_instance_number", "sap_version"}
