@@ -335,6 +335,7 @@ SYSTEM_WITH_PROFILE = {
     "system_profile": {
         "salutation": "hi",
         "system_profile_exists": False,
+        "gpg_pubkeys": ["gpg-pubkey-11111111-22222222", "gpg-pubkey-33333333-44444444"],
         "installed_packages": [
             "openssl-1.1.1c-2.fc30.x86_64",
             "python2-libs-2.7.16-2.fc30.x86_64",

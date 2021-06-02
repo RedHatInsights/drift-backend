@@ -18,7 +18,7 @@ python-semantic-release = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "~=2.6"}
-Flask = "*"
+Flask = "==1.1.4"
 gunicorn = "*"
 prometheus_client = "*"
 boto3 = "*"
@@ -31,7 +31,7 @@ flask-migrate = "*"
 bitmath = "*"
 jsonpatch = "*"
 insights-core = "*"
-kerlescan = {editable = true, ref = "0.69", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.70", git = "https://github.com/RedHatInsights/kerlescan.git"}
 
 [requires]
 python_version = "3.8"
