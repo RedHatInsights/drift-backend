@@ -20,7 +20,7 @@ docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:${IMAGE_TAG}"
 
 # To enable backwards compatibility with ci, qa, and smoke, always push latest and qa tags
 
-for TAG in "latest" "qa"; do
+for TAG in "latest" "qa-new"; do
     docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
     docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
 done
