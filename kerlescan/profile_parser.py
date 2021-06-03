@@ -40,7 +40,7 @@ def parse_profile(system_profile, display_name, logger):
                 for item in system_profile.get(list_of_strings, []):
                     if item.startswith(GPG_KEY_PREFIX):
                         parsed_profile[list_of_strings].append(
-                            item[: len(GPG_KEY_PREFIX)]
+                            item[len(GPG_KEY_PREFIX) :]  # noqa
                         )
                     else:
                         parsed_profile[list_of_strings].append(item)
