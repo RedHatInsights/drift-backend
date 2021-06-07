@@ -22,7 +22,7 @@ class ItemNotReturned(Exception):
         """
         Raise this exception if an item was not returned by inventory service
         """
-        super(ItemNotReturned, self).__init__()
+        super().__init__()
         self.message = message
 
 
@@ -32,7 +32,7 @@ class ServiceError(Exception):
         Raise this exception if the inventory service is not reachable or does
         not provide a valid response
         """
-        super(ServiceError, self).__init__()
+        super().__init__()
         self.message = message
 
 
@@ -42,7 +42,7 @@ class RBACDenied(Exception):
         Raise this exception if the inventory service reports that you do not
         have rbac permission to access the service
         """
-        super(RBACDenied, self).__init__()
+        super().__init__()
         self.message = message
 
 
@@ -51,7 +51,7 @@ class UnparsableNEVRAError(RuntimeError):
         """
         Raise this exception if we cannot parse a nevra
         """
-        super(RuntimeError, self).__init__()
+        super().__init__()
         self.message = message
 
 
@@ -60,5 +60,5 @@ class IllegalHttpMethodError(ValueError):
         """
         Raise this exception if we detect illegal HTTP method
         """
-        super(IllegalHttpMethodError, self).__init__()
+        super().__init__()
         self.message = message
