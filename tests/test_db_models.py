@@ -279,3 +279,23 @@ class SystemBaselineMappedSystemTest(DbModelTest):
             self.assertIn(
                 system_baseline.display_name, ("baseline3", "baseline4",),
             )
+
+    def test_delete_systems_by_ids(self):
+        self.populate_db_with_stuff()
+
+        SystemBaselineMappedSystem.delete_by_system_ids(
+            [system_id2, system_id5, system_id8], account1,
+        )
+
+        systems = SystemBaselineMappedSystem.query.all()
+        system_ids = [system.system_id for system in systems]
+
+        self.assertIn(system_id1, system_ids)
+        self.assertNotIn(system_id2, system_ids)
+        self.assertIn(system_id3, system_ids)
+        self.assertIn(system_id4, system_ids)
+        self.assertNotIn(system_id5, system_ids)
+        self.assertIn(system_id6, system_ids)
+        self.assertIn(system_id7, system_ids)
+        self.assertNotIn(system_id8, system_ids)
+        self.assertIn(system_id9, system_ids)

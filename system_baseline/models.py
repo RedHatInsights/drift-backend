@@ -98,3 +98,10 @@ class SystemBaselineMappedSystem(db.Model):
         UUID(as_uuid=True), ForeignKey("system_baselines.id"), nullable=False
     )
     system_id = db.Column(UUID(as_uuid=True), nullable=False, index=True)
+
+    @classmethod
+    def delete_by_system_ids(cls, system_ids, account_number):
+        cls.query.filter(cls.system_id.in_(system_ids)).delete(
+            synchronize_session="fetch"
+        )
+        db.session.commit()
