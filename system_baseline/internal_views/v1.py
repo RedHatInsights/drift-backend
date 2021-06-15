@@ -46,3 +46,24 @@ def get_baselines_by_system_id(system_id=None):
     current_app.logger.audit(message, request=request, success=True)
 
     return [result.system_baseline_id for result in query_results]
+
+
+@metrics.baseline_delete_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def delete_systems_by_ids(system_ids):
+    """
+    delete a list of systems given their system IDs as a list
+    """
+    validate_uuids(system_ids)
+    account_number = view_helpers.get_account_number(request)
+    try:
+        SystemBaselineMappedSystem.delete_by_system_ids(system_ids, account_number)
+    except Exception:
+        message = "Unknown error when deleting systems by ids"
+        current_app.logger.audit(message, request=request, success=False)
+        raise
+
+    message = "delete systems by ids"
+    current_app.logger.audit(message, request=request, success=True)
+
+    return "OK"
