@@ -64,6 +64,31 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /systems/deletion_request:
+    post:
+      summary: create a request to delete one or more systems
+      description: "create a request to delete one or more systems"
+      operationId:
+        system_baseline.internal_views.v1.create_systems_deletion_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   responses:
     InternalServerError:
@@ -122,6 +147,17 @@ components:
       items:
         type: string
         format: uuid
+    SystemIdsList:
+      type: object
+      additionalProperties: false
+      required:
+        - system_ids
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
   parameters:
     SystemIdParam:
       name: system_id

@@ -67,3 +67,13 @@ def delete_systems_by_ids(system_ids):
     current_app.logger.audit(message, request=request, success=True)
 
     return "OK"
+
+
+@metrics.baseline_delete_requests.time()
+@metrics.api_exceptions.count_exceptions()
+def create_systems_deletion_request(body):
+    """
+    delete a list of systems given their system IDs as a list
+    """
+    system_ids = body["system_ids"]
+    return delete_systems_by_ids(system_ids)
