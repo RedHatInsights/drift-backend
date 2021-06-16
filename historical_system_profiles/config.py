@@ -30,6 +30,8 @@ notification_app = os.getenv("NOTIFICATION_APP", "drift")
 
 enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
 kafka_ssl_cert = os.getenv("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
+kafka_sasl_username = os.getenv("KAFKA_SASL_USERNAME", None)
+kafka_sasl_password = os.getenv("KAFKA_SASL_PASSWORD", None)
 
 # logging params used outside of flask
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
