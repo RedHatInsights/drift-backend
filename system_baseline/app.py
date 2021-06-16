@@ -12,7 +12,7 @@ from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
 from system_baseline import db_config, app_config
-from system_baseline.views import v1
+from system_baseline.views.v1 import section as v1_bp
 from system_baseline.models import db
 
 
@@ -57,7 +57,7 @@ def create_connexion_app():
     flask_app.config["SQLALCHEMY_POOL_TIMEOUT"] = db_config.db_pool_timeout
     db.init_app(flask_app)
 
-    flask_app.register_blueprint(v1.section)
+    flask_app.register_blueprint(v1_bp)
     flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app
 
