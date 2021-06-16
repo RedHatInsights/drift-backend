@@ -13,6 +13,7 @@ from kerlescan.metrics_registry import create_prometheus_registry_dir
 
 from system_baseline import db_config, app_config
 from system_baseline.views.v1 import section as v1_bp
+from system_baseline.internal_views.v1 import section as internal_v1_bp
 from system_baseline.models import db
 
 
@@ -58,6 +59,7 @@ def create_connexion_app():
     db.init_app(flask_app)
 
     flask_app.register_blueprint(v1_bp)
+    flask_app.register_blueprint(internal_v1_bp)
     flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app
 

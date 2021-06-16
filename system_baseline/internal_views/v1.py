@@ -7,7 +7,7 @@ from system_baseline import metrics
 from system_baseline.version import app_version
 from system_baseline.models import SystemBaselineMappedSystem
 
-section = Blueprint("v1", __name__)
+section = Blueprint("internal_v1", __name__)
 
 FACTS_MAXSIZE = 2 ** 19  # 512KB
 
