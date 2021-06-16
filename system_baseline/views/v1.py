@@ -15,10 +15,11 @@ from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.paginate import build_paginated_baseline_list_response
 
-from system_baseline import metrics, app_config, validators
+from system_baseline import metrics, validators
 from system_baseline.version import app_version
 from system_baseline.models import SystemBaseline, db
 from system_baseline.exceptions import FactValidationError
+from system_baseline.global_helpers import ensure_rbac_write, ensure_rbac_notify
 
 section = Blueprint("v1", __name__)
 
@@ -722,59 +723,3 @@ def _validate_facts(facts):
     validators.check_for_invalid_whitespace_name_values(facts)
     validators.check_for_value_values(facts)
     validators.check_name_value_length(facts)
-
-
-@section.before_app_request
-def log_username():
-    view_helpers.log_username(current_app.logger, request)
-    message = "logged username"
-    current_app.logger.audit(message, request=request)
-
-
-@section.before_app_request
-def ensure_entitled():
-    return view_helpers.ensure_entitled(
-        request, app_config.get_app_name(), current_app.logger
-    )
-
-
-@section.before_app_request
-def ensure_account_number():
-    return view_helpers.ensure_account_number(request, current_app.logger)
-
-
-@section.before_app_request
-def ensure_rbac_read():
-    return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:baselines:read"],
-        application="drift",
-        app_name="system-baseline",
-        request=request,
-        logger=current_app.logger,
-        request_metric=metrics.rbac_requests,
-        exception_metric=metrics.rbac_exceptions,
-    )
-
-
-def ensure_rbac_write():
-    return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:baselines:write"],
-        application="drift",
-        app_name="system-baseline",
-        request=request,
-        logger=current_app.logger,
-        request_metric=metrics.rbac_requests,
-        exception_metric=metrics.rbac_exceptions,
-    )
-
-
-def ensure_rbac_notify():
-    return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:notifications:write"],
-        application="drift",
-        app_name="system_baseline",
-        request=request,
-        logger=current_app.logger,
-        request_metric=metrics.rbac_requests,
-        exception_metric=metrics.rbac_exceptions,
-    )
