@@ -625,7 +625,7 @@ def list_systems_with_baseline(baseline_id):
 
 
 def create_systems_with_baseline(baseline_id, body):
-    ensure_rbac_write()
+    ensure_rbac_notify()
     validate_uuids([baseline_id])
     system_ids = body["system_ids"]
     validate_uuids(system_ids)
@@ -665,7 +665,7 @@ def create_systems_with_baseline(baseline_id, body):
 
 
 def delete_systems_with_baseline(baseline_id, system_ids):
-    ensure_rbac_write()
+    ensure_rbac_notify()
     validate_uuids([baseline_id])
     validate_uuids(system_ids)
     if len(set(system_ids)) < len(system_ids):
@@ -703,7 +703,7 @@ def delete_systems_with_baseline(baseline_id, system_ids):
 
 
 def create_deletion_request_for_systems(baseline_id, body):
-    ensure_rbac_write()
+    ensure_rbac_notify()
     validate_uuids([baseline_id])
     system_ids = body["system_ids"]
     validate_uuids(system_ids)
@@ -761,6 +761,18 @@ def ensure_rbac_write():
         permissions=["drift:*:*", "drift:baselines:write"],
         application="drift",
         app_name="system-baseline",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )
+
+
+def ensure_rbac_notify():
+    return view_helpers.ensure_has_permission(
+        permissions=["drift:*:*", "drift:notifications:write"],
+        application="drift",
+        app_name="system_baseline",
         request=request,
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
