@@ -2,17 +2,22 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: drift-backend
+  name: drift
 
 objects:
 - apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
   metadata:
-    name: drift-backend
+    name: drift
     labels:
-      app: drift-backend
+      app: drift
   spec:
     envName: ${ENV_NAME}
+    dependencies:
+    - host-inventory
+    - rbac
+    - system-baseline
+    - historical-system-profiles
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
@@ -49,12 +54,6 @@ objects:
         env:
           - name: APP_CONFIG
             value: gunicorn.conf.py
-          - name: BASELINE_SVC_URL
-            value: "http://${SYSTEM_BASELINE_HOST}:8080"
-          - name: HSP_SVC_URL
-            value: "http://${HSP_HOST}:8080"
-          - name: RBAC_SVC_URL
-            value: "http://${RBAC_HOST}:8080"
           - name: ENABLE_RBAC
             value: "${DRIFT_ENABLE_RBAC}"
           - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
@@ -69,22 +68,6 @@ objects:
             value: 'true'
           - name: prometheus_multiproc_dir
             value: /prometheus-data
-          - name: INVENTORY_SVC_URL
-            value: "http://${HOST_INVENTORY_HOST}:8080"
-          - name: CW_LOG_GROUP
-            value: "${CLOUD_WATCH_LOG_GROUP}"
-          - name: AWS_REGION
-            value: 'us-east-1'
-          - name: CW_AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                key: CW_AWS_ACCESS_KEY_ID
-                name: cloudwatch
-          - name: CW_AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                key: CW_AWS_SECRET_ACCESS_KEY
-                name: cloudwatch
           - name: DRIFT_SHARED_SECRET
             valueFrom:
               secretKeyRef:
@@ -127,24 +110,12 @@ objects:
     targetCPUUtilizationPercentage: 50
 
 parameters:
-  - name: HOST_INVENTORY_HOST
-    description: inventory service host for accessing API within cluster
-  - name: RBAC_HOST
-    description: rbac service host for accessing API within cluster
   - name: DRIFT_ENABLE_RBAC
     description: enable rbac. needs to be "True" or "False".
     value: "True"
   - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
     description: enable the smart mgmt entitlement check on requests. Needs to be "True" or "False".
     value: "False"
-  - name: HSP_HOST
-    description: hsp service host for accessing API within cluster
-  - name: SYSTEM_BASELINE_HOST
-    description: baseline service host for accessing API within cluster
-    value: system-baseline-backend
-  - name: CLOUD_WATCH_LOG_GROUP
-    description: AWS CloudWatch log group
-    value: platform-dev
   - name: IMAGE_TAG
     description: image tag to pull
     value: latest
