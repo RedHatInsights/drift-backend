@@ -1,16 +1,15 @@
+TEMPDIR=`mktemp -d`
 if [[ "$OSTYPE" == "darwin"* ]]
 then
 	echo "THIS IS AS MACOS"
-	TEMPDIR=`mktemp -d`
 	curl -L https://github.com/openshift/source-to-image/releases/download/v1.2.0/source-to-image-v1.2.0-2a579ecd-darwin-amd64.tar.gz > $TEMPDIR/s2i.tar.gz
-	cd $TEMPDIR
-	tar xfz s2i.tar.gz
 else
-	TEMPDIR=`mktemp -d`
 	curl -L https://github.com/openshift/source-to-image/releases/download/v1.2.0/source-to-image-v1.2.0-2a579ecd-linux-amd64.tar.gz > $TEMPDIR/s2i.tar.gz
-	cd $TEMPDIR
-	tar xfz s2i.tar.gz
 fi
+
+cd $TEMPDIR
+tar xfz s2i.tar.gz
+
 # s2i builds
 ./s2i build https://github.com/RedHatInsights/system-baseline-backend.git  centos/python-38-centos7 system-baseline:latest -e ENABLE_PIPENV=true
 ./s2i build https://github.com/RedHatInsights/drift-backend.git  centos/python-38-centos7 drift:latest -e ENABLE_PIPENV=true
