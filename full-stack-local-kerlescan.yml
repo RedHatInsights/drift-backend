@@ -96,7 +96,8 @@ services:
       POSTGRES_USER: insights
       POSTGRES_DB: insights
   inventory:
-    image: inventory:mq # we expect this image to exist already
+    #image: inventory:mq # we expect this image to exist already
+    image: quay.io/cloudservices/insights-inventory:latest
     command: bash -c "make upgrade_db && make run_inv_mq_service"
     environment:
       - INVENTORY_DB_HOST=db
@@ -111,7 +112,8 @@ services:
     ports:
       - "8081:8080"
   inventory-rest:
-    image: inventory:mq # we expect this image to exist already
+    #image: inventory:mq # we expect this image to exist already
+    image: quay.io/cloudservices/insights-inventory:latest
     command: bash -c "make upgrade_db && make run_inv_web_service"
     environment:
       - INVENTORY_DB_HOST=db

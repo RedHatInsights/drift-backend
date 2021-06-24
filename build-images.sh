@@ -14,7 +14,7 @@ tar xfz s2i.tar.gz
 ./s2i build https://github.com/RedHatInsights/system-baseline-backend.git  centos/python-38-centos7 system-baseline:latest -e ENABLE_PIPENV=true
 ./s2i build https://github.com/RedHatInsights/drift-backend.git  centos/python-38-centos7 drift:latest -e ENABLE_PIPENV=true
 ./s2i build https://github.com/RedHatInsights/historical-system-profiles-backend.git  centos/python-38-centos7 hsp:latest -e ENABLE_PIPENV=true
-./s2i build https://github.com/RedHatInsights/insights-host-inventory.git  centos/python-36-centos7 inventory:mq -e ENABLE_PIPENV=true
+#./s2i build https://github.com/RedHatInsights/insights-host-inventory.git  centos/python-36-centos7 inventory:mq -e ENABLE_PIPENV=true
 
 # ingress build
 git clone https://github.com/RedHatInsights/insights-ingress-go.git

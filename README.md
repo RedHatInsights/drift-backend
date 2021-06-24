@@ -23,6 +23,8 @@ Update 5/13/21: Docker support for Fedora 32 and beyond:
 ```
 
  * `docker login https://registry.redhat.io` (needed so you can pull base images during build process)
+ * `docker login https://quay.io` (needed so you can pull base images during build process)
+ * if you need to remove all images run `docker rmi -f $(docker images -a -q)`
  * `bash build-images.sh`
  * `docker-compose -f full-stack.yml up -d`
  * confirm everything is up: `docker-compose -f full-stack.yml ps` and confirm everything is either "running" or "exit 0"
