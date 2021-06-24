@@ -28,7 +28,7 @@ def ensure_account_number():
 
 
 @global_helpers_bp.before_app_request
-def ensure_rbac_read():
+def ensure_rbac_baselines_read():
     return view_helpers.ensure_has_permission(
         permissions=["drift:*:*", "drift:baselines:read"],
         application="drift",
@@ -40,7 +40,7 @@ def ensure_rbac_read():
     )
 
 
-def ensure_rbac_write():
+def ensure_rbac_baselines_write():
     return view_helpers.ensure_has_permission(
         permissions=["drift:*:*", "drift:baselines:write"],
         application="drift",
@@ -52,9 +52,21 @@ def ensure_rbac_write():
     )
 
 
-def ensure_rbac_notify():
+def ensure_rbac_notifications_read():
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:notifications:write"],
+        permissions=["drift:*:*", "drift:notifications:read", "drift:baselines:read"],
+        application="drift",
+        app_name="system_baseline",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )
+
+
+def ensure_rbac_notifications_write():
+    return view_helpers.ensure_has_permission(
+        permissions=["drift:*:*", "drift:notifications:write", "drift:baselines:read"],
         application="drift",
         app_name="system_baseline",
         request=request,

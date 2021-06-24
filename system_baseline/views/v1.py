@@ -19,7 +19,12 @@ from system_baseline import metrics, validators
 from system_baseline.version import app_version
 from system_baseline.models import SystemBaseline, db
 from system_baseline.exceptions import FactValidationError
-from system_baseline.global_helpers import ensure_rbac_write, ensure_rbac_notify
+from system_baseline.global_helpers import (
+    ensure_rbac_baselines_read,
+    ensure_rbac_baselines_write,
+    ensure_rbac_notifications_read,
+    ensure_rbac_notifications_write,
+)
 
 section = Blueprint("v1", __name__)
 
@@ -54,6 +59,7 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     """
     return a list of baselines given their ID
     """
+    ensure_rbac_baselines_read()
     validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
         message = "duplicate IDs in request"
@@ -108,7 +114,7 @@ def delete_baselines_by_ids(baseline_ids):
     """
     delete a list of baselines given their ID
     """
-    ensure_rbac_write()
+    ensure_rbac_baselines_write()
     validate_uuids(baseline_ids)
     if len(set(baseline_ids)) < len(baseline_ids):
         message = "duplicate IDs in request"
@@ -128,7 +134,7 @@ def create_deletion_request(body):
     """
     delete a list of baselines given their IDs as a list
     """
-    ensure_rbac_write()
+    ensure_rbac_baselines_write()
     baseline_ids = body["baseline_ids"]
     validate_uuids(baseline_ids)
 
@@ -203,6 +209,7 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     return a list of baselines given their display_name
     if no display_names given, return a list of all baselines for this account
     """
+    ensure_rbac_baselines_read()
     account_number = view_helpers.get_account_number(request)
     query = SystemBaseline.query.filter(SystemBaseline.account == account_number)
 
@@ -303,7 +310,7 @@ def create_baseline(system_baseline_in):
     """
     create a baseline
     """
-    ensure_rbac_write()
+    ensure_rbac_baselines_write()
     account_number = view_helpers.get_account_number(request)
 
     if "values" in system_baseline_in and "value" in system_baseline_in:
@@ -493,7 +500,7 @@ def copy_baseline_by_id(baseline_id, display_name):
     """
     create a new baseline given an existing ID
     """
-    ensure_rbac_write()
+    ensure_rbac_baselines_write()
     validate_uuids([baseline_id])
 
     # ensure display_name is not null
@@ -535,7 +542,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     """
     update a baseline
     """
-    ensure_rbac_write()
+    ensure_rbac_baselines_write()
     validate_uuids([baseline_id])
 
     account_number = view_helpers.get_account_number(request)
@@ -600,6 +607,7 @@ def update_baseline(baseline_id, system_baseline_patch):
 
 
 def list_systems_with_baseline(baseline_id):
+    ensure_rbac_notifications_read()
     validate_uuids([baseline_id])
     account_number = view_helpers.get_account_number(request)
 
@@ -626,7 +634,7 @@ def list_systems_with_baseline(baseline_id):
 
 
 def create_systems_with_baseline(baseline_id, body):
-    ensure_rbac_notify()
+    ensure_rbac_notifications_write()
     validate_uuids([baseline_id])
     system_ids = body["system_ids"]
     validate_uuids(system_ids)
@@ -666,7 +674,7 @@ def create_systems_with_baseline(baseline_id, body):
 
 
 def delete_systems_with_baseline(baseline_id, system_ids):
-    ensure_rbac_notify()
+    ensure_rbac_notifications_write()
     validate_uuids([baseline_id])
     validate_uuids(system_ids)
     if len(set(system_ids)) < len(system_ids):
@@ -704,7 +712,7 @@ def delete_systems_with_baseline(baseline_id, system_ids):
 
 
 def create_deletion_request_for_systems(baseline_id, body):
-    ensure_rbac_notify()
+    ensure_rbac_notifications_write()
     validate_uuids([baseline_id])
     system_ids = body["system_ids"]
     validate_uuids(system_ids)
