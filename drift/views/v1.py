@@ -1,22 +1,23 @@
 import csv
 import io
 
-from flask import Blueprint, jsonify, request, current_app, make_response
 from http import HTTPStatus
 
-from drift import info_parser, metrics, app_config
-from drift.version import app_version
-from drift.baseline_service_interface import fetch_baselines
-
+from flask import Blueprint, current_app, jsonify, make_response, request
 from kerlescan import view_helpers
-from kerlescan.view_helpers import validate_uuids
+from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
+from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.inventory_service_interface import (
     ensure_correct_system_count,
     fetch_systems_with_profiles,
 )
-from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.service_interface import get_key_from_headers
-from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
+from kerlescan.view_helpers import validate_uuids
+
+from drift import app_config, info_parser, metrics
+from drift.baseline_service_interface import fetch_baselines
+from drift.version import app_version
+
 
 section = Blueprint("v1", __name__)
 
@@ -77,9 +78,7 @@ def _csvify(comparisons):
 
     for historical_sys_profile in comparisons["historical_system_profiles"]:
         record_ids.append(historical_sys_profile["id"])
-        system_names[historical_sys_profile["id"]] = historical_sys_profile[
-            "display_name"
-        ]
+        system_names[historical_sys_profile["id"]] = historical_sys_profile["display_name"]
 
     output = io.StringIO()
     csvwriter = csv.DictWriter(output, fieldnames=fieldnames + record_ids)
@@ -128,7 +127,8 @@ def comparison_report(
             str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
         )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message=message,
+            HTTPStatus.BAD_REQUEST,
+            message=message,
         )
     if len(system_ids) > len(set(system_ids)):
         message = "duplicate UUID specified in system_ids list"
@@ -136,7 +136,8 @@ def comparison_report(
             str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
         )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message=message,
+            HTTPStatus.BAD_REQUEST,
+            message=message,
         )
 
     if len(baseline_ids) > len(set(baseline_ids)):
@@ -145,7 +146,8 @@ def comparison_report(
             str(HTTPStatus.BAD_REQUEST) + " " + message, request=request, success=False
         )
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message=message,
+            HTTPStatus.BAD_REQUEST,
+            message=message,
         )
 
     if system_ids:
@@ -164,7 +166,8 @@ def comparison_report(
                 success=False,
             )
             raise HTTPError(
-                HTTPStatus.BAD_REQUEST, message=message,
+                HTTPStatus.BAD_REQUEST,
+                message=message,
             )
 
     try:
@@ -185,9 +188,7 @@ def comparison_report(
                 # can raise RBACDenied exception
                 message = "reading baselines"
                 current_app.logger.audit(message, request=request)
-                baseline_results = fetch_baselines(
-                    baseline_ids, auth_key, current_app.logger
-                )
+                baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
                 ensure_correct_system_count(baseline_ids, baseline_results)
 
             if historical_sys_profile_ids:
@@ -202,9 +203,7 @@ def comparison_report(
                 )
         except RBACDenied as error:
             message = error.message
-            current_app.logger.audit(
-                str(HTTPStatus.FORBIDDEN) + " " + message, request=request
-            )
+            current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
             raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         comparisons = info_parser.build_comparisons(
@@ -301,9 +300,7 @@ def log_username():
 
 @section.before_app_request
 def ensure_entitled():
-    return view_helpers.ensure_entitled(
-        request, app_config.get_app_name(), current_app.logger
-    )
+    return view_helpers.ensure_entitled(request, app_config.get_app_name(), current_app.logger)
 
 
 @section.before_app_request

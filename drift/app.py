@@ -3,14 +3,14 @@ import os
 
 import connexion
 
-from drift.views import v1
 from kerlescan import config
+from kerlescan.audit_logging import setup_audit_logging
+from kerlescan.cloudwatch import setup_cw_logging
 from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
-from kerlescan.audit_logging import setup_audit_logging
-from kerlescan.cloudwatch import setup_cw_logging
+from drift.views import v1
 
 
 def create_app():
@@ -21,12 +21,8 @@ def create_app():
     """
     app_name = os.getenv("APP_NAME", "drift")
     openapi_args = {"path_prefix": config.path_prefix, "app_name": app_name}
-    connexion_app = connexion.App(
-        __name__, specification_dir="openapi/", arguments=openapi_args
-    )
-    connexion_app.add_api(
-        "api.spec.yaml", validate_responses=True, strict_validation=True
-    )
+    connexion_app = connexion.App(__name__, specification_dir="openapi/", arguments=openapi_args)
+    connexion_app.add_api("api.spec.yaml", validate_responses=True, strict_validation=True)
     connexion_app.add_api("mgmt_api.spec.yaml")
     flask_app = connexion_app.app
 

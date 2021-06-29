@@ -6,4 +6,3 @@ tags_path = "tests/reports/inputs/inventory/report1-tags.json"
 profiles_path = "tests/reports/inputs/inventory/report1-system_profiles.json"
 baselines_path = "tests/reports/inputs/baselines/report1-baselines.json"
 hsps_path = "tests/reports/inputs/hsps/report1-hsps.json"
-
