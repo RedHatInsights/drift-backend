@@ -1,21 +1,22 @@
 import csv
 import json
 import logging
+import unittest
+
 from io import StringIO
 
+import mock
+
+from kerlescan.exceptions import ItemNotReturned, ServiceError
+
 from drift import app
-from kerlescan.exceptions import ServiceError, ItemNotReturned
 
 from . import fixtures
-import mock
-import unittest
 
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
-        self.rbac_patcher = mock.patch(
-            "drift.views.v1.view_helpers.ensure_has_permission"
-        )
+        self.rbac_patcher = mock.patch("drift.views.v1.view_helpers.ensure_has_permission")
         patched_rbac = self.rbac_patcher.start()
         patched_rbac.return_value = None  # validate all RBAC requests
         self.addCleanup(self.stopPatches)
@@ -108,8 +109,7 @@ class ApiTests(unittest.TestCase):
     def test_system_metadata_timestamp(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+            "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
             headers=fixtures.AUTH_HEADER,
         )
         system_metadata = json.loads(response.data)["systems"]
@@ -125,12 +125,9 @@ class ApiTests(unittest.TestCase):
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_system_metadata_timestamp_captured_date(self, mock_fetch_systems):
-        mock_fetch_systems.return_value = (
-            fixtures.FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT
-        )
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT
         response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+            "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
             headers=fixtures.AUTH_HEADER,
         )
         system_metadata = json.loads(response.data)["systems"]
@@ -205,9 +202,7 @@ class ApiTests(unittest.TestCase):
 
     @mock.patch("drift.views.v1.fetch_baselines")
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
-    def test_comparison_report_api_baselines(
-        self, mock_fetch_systems, mock_fetch_baselines
-    ):
+    def test_comparison_report_api_baselines(self, mock_fetch_systems, mock_fetch_baselines):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         mock_fetch_baselines.return_value = fixtures.FETCH_BASELINES_RESULT
         response = self.client.get(
@@ -227,9 +222,7 @@ class ApiTests(unittest.TestCase):
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_same_facts(self, mock_fetch_systems):
-        mock_fetch_systems.return_value = (
-            fixtures.FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT
-        )
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT
         response = self.client.get(
             "api/drift/v1/comparison_report?"
             "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
@@ -286,6 +279,4 @@ class DebugLoggingApiTests(unittest.TestCase):
         self.client.get("api/drift/v1/comparison_report")
         self.handler.flush()
         self.assertNotIn("identity header not sent for request", self.stream.getvalue())
-        self.assertIn(
-            "username from identity header: test_user", self.stream.getvalue()
-        )
+        self.assertIn("username from identity header: test_user", self.stream.getvalue())

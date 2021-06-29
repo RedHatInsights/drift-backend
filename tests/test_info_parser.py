@@ -1,9 +1,8 @@
 import unittest
-from mock import MagicMock
 
 from kerlescan import profile_parser
-
 from kerlescan.exceptions import UnparsableNEVRAError
+from mock import MagicMock
 
 
 class InfoParserTests(unittest.TestCase):
@@ -30,9 +29,7 @@ class InfoParserTests(unittest.TestCase):
     def test_running_process_parsing(self):
         profile = {"id": "1234", "running_processes": ["vim", "vim", "doom.exe"]}
         fake_plastic_tree = MagicMock()
-        result = profile_parser.parse_profile(
-            profile, "some_display_name", fake_plastic_tree
-        )
+        result = profile_parser.parse_profile(profile, "some_display_name", fake_plastic_tree)
         self.assertEqual(result["running_processes.vim"], "2")
         self.assertEqual(result["running_processes.doom.exe"], "1")
 
@@ -45,8 +42,6 @@ class InfoParserTests(unittest.TestCase):
             ],
         }
         fake_plastic_tree = MagicMock()
-        result = profile_parser.parse_profile(
-            profile, "some_display_name", fake_plastic_tree
-        )
+        result = profile_parser.parse_profile(profile, "some_display_name", fake_plastic_tree)
         self.assertEqual(result["network_interfaces.fake-nic.mtu"], "9876")
         self.assertEqual(result["network_interfaces.no_mtu.mtu"], "N/A")

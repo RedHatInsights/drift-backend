@@ -1,8 +1,7 @@
 import json
+import unittest
 
 from drift import app
-
-import unittest
 
 
 class ManagementApiTests(unittest.TestCase):

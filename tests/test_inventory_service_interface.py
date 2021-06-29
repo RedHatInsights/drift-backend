@@ -1,11 +1,14 @@
+import unittest
+
+import mock
 import requests
 import responses
-import unittest
-import mock
+
+from kerlescan import inventory_service_interface
+from kerlescan.exceptions import ItemNotReturned, ServiceError
 
 from drift import app
-from kerlescan import inventory_service_interface
-from kerlescan.exceptions import ServiceError, ItemNotReturned
+
 from . import fixtures
 
 

@@ -1,18 +1,17 @@
-from flask import current_app
-from dateutil.parser import parse as dateparse
 import re
 
+from dateutil.parser import parse as dateparse
+from flask import current_app
+from kerlescan import profile_parser
 from kerlescan.constants import (
-    SYSTEM_ID_KEY,
-    COMPARISON_SAME,
     COMPARISON_DIFFERENT,
     COMPARISON_INCOMPLETE_DATA,
     COMPARISON_INCOMPLETE_DATA_OBFUSCATED,
+    COMPARISON_SAME,
     OBFUSCATED_FACTS_PATTERNS,
     SAP_RELATED_FACTS,
+    SYSTEM_ID_KEY,
 )
-
-from kerlescan import profile_parser
 
 
 def build_comparisons(
@@ -54,9 +53,7 @@ def build_comparisons(
                     drift_event_notify = True
 
     grouped_comparisons = _group_comparisons(stripped_comparisons)
-    sorted_comparisons = sorted(
-        grouped_comparisons, key=lambda comparison: comparison["name"]
-    )
+    sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
 
     # create metadata
     baseline_mappings = [_baseline_mapping(baseline) for baseline in baselines]
@@ -65,12 +62,9 @@ def build_comparisons(
         for historical_sys_profile in historical_sys_profiles
     ]
     system_mappings = [
-        _system_mapping(system_with_profile)
-        for system_with_profile in systems_with_profiles
+        _system_mapping(system_with_profile) for system_with_profile in systems_with_profiles
     ]
-    sorted_system_mappings = sorted(
-        system_mappings, key=lambda system: system["display_name"]
-    )
+    sorted_system_mappings = sorted(system_mappings, key=lambda system: system["display_name"])
 
     sorted_historical_sys_profile_mappings = sorted(
         historical_sys_profile_mappings,
@@ -130,9 +124,7 @@ def _group_comparisons(comparisons):
     # set summary state if grouped comparison contains groups
     for grouped_comparison in grouped_comparisons:
         if "comparisons" in grouped_comparison:
-            states = {
-                comparison["state"] for comparison in grouped_comparison["comparisons"]
-            }
+            states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
             if COMPARISON_DIFFERENT in states:
                 grouped_comparison["state"] = COMPARISON_DIFFERENT
             elif COMPARISON_INCOMPLETE_DATA in states:
@@ -182,9 +174,7 @@ def _select_applicable_info(
             historical_sys_profile_name,
             current_app.logger,
         )
-        parsed_system_profiles.append(
-            {**parsed_historical_sys_profile, "is_baseline": False}
-        )
+        parsed_system_profiles.append({**parsed_historical_sys_profile, "is_baseline": False})
 
     # add baselines into parsed_system_profiles
     for baseline in baselines:
@@ -195,9 +185,7 @@ def _select_applicable_info(
             elif "values" in baseline_fact:
                 prefix = baseline_fact["name"]
                 for nested_fact in baseline_fact["values"]:
-                    baseline_facts[prefix + "." + nested_fact["name"]] = nested_fact[
-                        "value"
-                    ]
+                    baseline_facts[prefix + "." + nested_fact["name"]] = nested_fact["value"]
         parsed_system_profiles.append({**baseline_facts, "is_baseline": True})
 
     # find the set of all keys to iterate over
@@ -295,9 +283,7 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
         for system in systems
     ]
 
-    sorted_system_id_values = sorted(
-        system_id_values, key=lambda system: system["name"]
-    )
+    sorted_system_id_values = sorted(system_id_values, key=lambda system: system["name"])
 
     sorted_system_id_values = sorted(
         sorted_system_id_values, key=lambda system: system["is_baseline"], reverse=True
@@ -313,20 +299,14 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
     # in multi-value facts
     if not multivalue:
         sorted_system_id_values_without_obfuscated = [
-            system
-            for system in sorted_system_id_values
-            if not system.get("is_obfuscated")
+            system for system in sorted_system_id_values if not system.get("is_obfuscated")
         ]
 
-        system_values = {
-            system["value"] for system in sorted_system_id_values_without_obfuscated
-        }
+        system_values = {system["value"] for system in sorted_system_id_values_without_obfuscated}
 
         if "N/A" in system_values:  # one or more values are missing
             info_comparison = COMPARISON_DIFFERENT
-        elif (
-            len(system_values) <= 1
-        ):  # when there is only one or zero non-obfuscated values left
+        elif len(system_values) <= 1:  # when there is only one or zero non-obfuscated values left
             info_comparison = COMPARISON_SAME
 
         # we specifically want to check for more than one system not baselines below
@@ -380,9 +360,7 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
             info_comparison = COMPARISON_SAME
 
         if (
-            len(sorted_system_id_values)
-            - len(sorted_system_id_values_without_obfuscated)
-            > 0
+            len(sorted_system_id_values) - len(sorted_system_id_values_without_obfuscated) > 0
         ):  # when there is one or more obfuscated values
             info_comparison = COMPARISON_INCOMPLETE_DATA_OBFUSCATED
 
@@ -402,9 +380,7 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
                 if reference_id == system["id"]:
                     reference_value = system["value"]
         else:
-            sorted_system_values = [
-                system["value"] for system in sorted_system_id_values
-            ]
+            sorted_system_values = [system["value"] for system in sorted_system_id_values]
 
         for value in sorted_system_values:
             if not isinstance(value, list):
@@ -465,12 +441,8 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
         while row < row_count:
             expanded_systems = []
             for system in sorted_system_id_values:
-                expanded_systems.append(
-                    {"id": system["id"], "value": system["value"][row]}
-                )
-            multivalues.append(
-                {"state": multivalue_comparisons[row], "systems": expanded_systems}
-            )
+                expanded_systems.append({"id": system["id"], "value": system["value"][row]})
+            multivalues.append({"state": multivalue_comparisons[row], "systems": expanded_systems})
             row += 1
 
         # change "N/A" to empty string for better display, and remove

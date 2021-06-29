@@ -1,11 +1,11 @@
 from urllib.parse import urljoin
 
-from flask import request, current_app
+from flask import current_app, request
+from kerlescan import config
+from kerlescan.constants import AUTH_HEADER_NAME, BASELINE_SVC_ENDPOINT
+from kerlescan.service_interface import fetch_data, internal_auth_header
 
 from drift import metrics
-from kerlescan import config
-from kerlescan.service_interface import fetch_data, internal_auth_header
-from kerlescan.constants import AUTH_HEADER_NAME, BASELINE_SVC_ENDPOINT
 
 
 def fetch_baselines(baseline_ids, service_auth_key, logger):

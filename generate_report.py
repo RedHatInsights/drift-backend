@@ -1,10 +1,12 @@
-from drift import info_parser
-from drift.app import create_app
-import json
-import toml
 import argparse
+import json
+
+import toml
 
 from kerlescan.inventory_service_interface import interleave_systems_and_profiles
+
+from drift import info_parser
+from drift.app import create_app
 
 
 def _read_file(path):
@@ -61,11 +63,13 @@ app = create_app()
 app.app.app_context().push()
 
 for report in conf:
-    systems_with_profiles, baselines, hsps, expected_output = _read_inputs(
-        **conf[report]
-    )
+    systems_with_profiles, baselines, hsps, expected_output = _read_inputs(**conf[report])
     comparisons = info_parser.build_comparisons(
-        systems_with_profiles, baselines, hsps, None, False,
+        systems_with_profiles,
+        baselines,
+        hsps,
+        None,
+        False,
     )
     if args.write:
         outpath = conf[report]["expected_output_path"]
