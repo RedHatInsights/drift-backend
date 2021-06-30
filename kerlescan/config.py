@@ -1,7 +1,8 @@
 import os
 
+from app_common_python import LoadedConfig, isClowderEnabled
 
-# small helper to convert strings to boolean
+
 def str_to_bool(s):
     try:
         if s.lower() == "true":
@@ -13,12 +14,37 @@ def str_to_bool(s):
     raise ValueError("Unable to determine boolean value from given string argument")
 
 
+def load_hosts_setting(env_name, clowder_endpoint, default):
+    if isClowderEnabled():
+        cfg = LoadedConfig
+
+        final_endpoint = ""
+        for endpoint in cfg.endpoints:
+            if endpoint.app == clowder_endpoint:
+                final_endpoint = f"http://{endpoint.hostname}:{endpoint.port}"
+                return final_endpoint
+
+        if final_endpoint == "":
+            return default
+
+    return os.getenv(env_name, default)
+
+
+inventory_svc_hostname = load_hosts_setting(
+    "INVENTORY_SVC_URL", "host-inventory", "http://inventory_svc_url_is_not_set"
+)
+
+baseline_svc_hostname = load_hosts_setting(
+    "BASELINE_SVC_URL", "system-baseline", "http://baseline_svc_url_is_not_set"
+)
+
+rbac_svc_hostname = load_hosts_setting("RBAC_SVC_URL", "rbac", "http://rbac_svc_url_is_not_set")
+
+hsp_svc_hostname = load_hosts_setting("HSP_SVC_URL", "hsp", "http://hsp_svc_url_is_not_set")
+
+drift_svc_hostname = load_hosts_setting("DRIFT_SVC_URL", "drift", "http://drift_svc_url_is_not_set")
+
 log_level = os.getenv("LOG_LEVEL", "INFO")
-inventory_svc_hostname = os.getenv("INVENTORY_SVC_URL", "http://inventory_svc_url_is_not_set")
-baseline_svc_hostname = os.getenv("BASELINE_SVC_URL", "http://baseline_svc_url_is_not_set")
-rbac_svc_hostname = os.getenv("RBAC_SVC_URL", "http://rbac_svc_url_is_not_set")
-hsp_svc_hostname = os.getenv("HSP_SVC_URL", "http://hsp_svc_url_is_not_set")
-drift_svc_hostname = os.getenv("DRIFT_SVC_URL", "http://drift_svc_url_is_not_set")
 
 drift_shared_secret = os.getenv("DRIFT_SHARED_SECRET", None)
 
