@@ -22,7 +22,7 @@ class RBACTests(unittest.TestCase):
         mock_request = mm()
         mock_request.path = "/some/path"
         view_helpers.ensure_has_permission(
-            permissions=["myperm:*:*"],
+            permissions=[["myperm:*:*"]],
             application="app",
             app_name="app-name",
             request=mock_request,

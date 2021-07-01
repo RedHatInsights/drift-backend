@@ -86,9 +86,23 @@ def ensure_has_permission(**kwargs):
                 kwargs["request_metric"],
                 kwargs["exception_metric"],
             )
-            for p in perms:
-                if p in kwargs["permissions"]:
-                    return  # allow
+            # kwargs["permissions"] is now a list of lists.
+            # At least one of the lists must work ("or"), but all permissions in each
+            # sublist must work in order for that list to "work" ("and").
+            # For example:
+            # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+            # If we just have *:*, it works, but if not, we need both notifications:read and
+            # baselines:read in order to allow access.
+            all_match = True
+            found_one = False
+            for p in kwargs["permissions"]:
+                for one_of_required in p:
+                    if one_of_required not in perms:
+                        all_match = False
+                if all_match:
+                    found_one = True
+            if found_one:
+                return  # allow
             raise HTTPError(
                 HTTPStatus.FORBIDDEN,
                 message="user does not have access to %s" % kwargs["permissions"],
