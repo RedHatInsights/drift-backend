@@ -26,8 +26,14 @@ def ensure_account_number():
 
 @global_helpers_bp.before_app_request
 def ensure_rbac_baselines_read():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:baselines:read"],
+        permissions=[["drift:*:*"], ["drift:baselines:read"]],
         application="drift",
         app_name="system-baseline",
         request=request,
@@ -38,8 +44,14 @@ def ensure_rbac_baselines_read():
 
 
 def ensure_rbac_baselines_write():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:baselines:write"],
+        permissions=[["drift:*:*"], ["drift:baselines:write"]],
         application="drift",
         app_name="system-baseline",
         request=request,
@@ -50,8 +62,17 @@ def ensure_rbac_baselines_write():
 
 
 def ensure_rbac_notifications_read():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:notifications:read", "drift:baselines:read"],
+        permissions=[
+            ["drift:*:*"],
+            ["drift:notifications:read", "drift:baselines:read"],
+        ],
         application="drift",
         app_name="system_baseline",
         request=request,
@@ -62,8 +83,17 @@ def ensure_rbac_notifications_read():
 
 
 def ensure_rbac_notifications_write():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:notifications:write", "drift:baselines:read"],
+        permissions=[
+            ["drift:*:*"],
+            ["drift:notifications:write", "drift:baselines:read"],
+        ],
         application="drift",
         app_name="system_baseline",
         request=request,
