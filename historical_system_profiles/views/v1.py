@@ -186,9 +186,15 @@ def ensure_account_number():
 
 
 @section.before_app_request
-def ensure_rbac():
+def ensure_rbac_hsps_read():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:historical-system-profiles:read"],
+        permissions=[["drift:*:*"], ["drift:historical-system-profiles:read"]],
         application="drift",
         app_name="historical-system-profiles",
         request=request,
