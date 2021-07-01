@@ -10,7 +10,7 @@ mock = "*"
 nose = "*"
 responses = "*"
 yamllint = "*"
-black = "==19.3b0"
+black = "==21.6b0"
 
 [packages]
 boto3 = "*"

@@ -1,6 +1,6 @@
 import os
-from flask import g
 
+from flask import g
 from prometheus_client import CollectorRegistry, multiprocess
 
 from kerlescan.config import prometheus_multiproc_dir

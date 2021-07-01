@@ -1,6 +1,8 @@
-from flask import request, Response
-from urllib.parse import urlencode
 import json
+
+from urllib.parse import urlencode
+
+from flask import Response, request
 
 
 def _create_link(path, limit, offset, order_by, order_how, args_dict):
@@ -24,9 +26,7 @@ def _create_previous_link(path, limit, offset, count, order_by, order_how, args_
     # Example return string:
     # "/api/item-service/v1/items?limit=20&offset=20&order_by=captured_date&order_how=desc"
     if offset == 0 or offset - limit < 0:
-        return _create_first_link(
-            path, limit, offset, count, order_by, order_how, args_dict
-        )
+        return _create_first_link(path, limit, offset, count, order_by, order_how, args_dict)
     return _create_link(path, limit, offset - limit, order_by, order_how, args_dict)
 
 
@@ -35,9 +35,7 @@ def _create_next_link(path, limit, offset, count, order_by, order_how, args_dict
     # Example return string:
     # "/api/item-service/v1/items?limit=20&offset=40&order_by=captured_date&order_how=desc"
     if limit + offset >= count:
-        return _create_last_link(
-            path, limit, offset, count, order_by, order_how, args_dict
-        )
+        return _create_last_link(path, limit, offset, count, order_by, order_how, args_dict)
     return _create_link(path, limit, limit + offset, order_by, order_how, args_dict)
 
 

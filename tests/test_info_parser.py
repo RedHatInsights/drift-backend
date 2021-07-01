@@ -1,7 +1,6 @@
 import unittest
 
 from kerlescan import profile_parser
-
 from kerlescan.exceptions import UnparsableNEVRAError
 
 
@@ -67,9 +66,7 @@ class SystemTagsParserTests(unittest.TestCase):
             ],
         }
         parsed_profile = profile_parser.parse_profile(tests, "fake-name", None)
-        self.assertEqual(
-            parsed_profile["tags.insights-client.Zone"], "eastern time zone"
-        )
+        self.assertEqual(parsed_profile["tags.insights-client.Zone"], "eastern time zone")
 
     def test_system_tags_parsing_two_namespaces(self):
         tests = {
@@ -91,9 +88,7 @@ class SystemTagsParserTests(unittest.TestCase):
         self.assertEqual(
             parsed_profile["tags.insights-client.myTag"],
             "Insights Client Namespace Tag",
-            self.assertEqual(
-                parsed_profile["tags.satellite.myTag"], "Satellite Namespace Tag"
-            ),
+            self.assertEqual(parsed_profile["tags.satellite.myTag"], "Satellite Namespace Tag"),
         )
 
     def test_system_tags_parsing_multiple_tag_values(self):

@@ -1,6 +1,7 @@
 import unittest
-import responses
+
 import mock
+import responses
 
 from kerlescan import system_baseline_service_interface as sbsi
 

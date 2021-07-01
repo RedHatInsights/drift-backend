@@ -1,10 +1,14 @@
 from urllib.parse import urljoin
 
 from kerlescan import config
-from kerlescan.constants import AUTH_HEADER_NAME, INVENTORY_SVC_SYSTEMS_ENDPOINT
-from kerlescan.constants import INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT
-from kerlescan.constants import INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT
-from kerlescan.constants import SYSTEM_PROFILE_INTEGERS, SYSTEM_PROFILE_STRINGS
+from kerlescan.constants import (
+    AUTH_HEADER_NAME,
+    INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT,
+    INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT,
+    INVENTORY_SVC_SYSTEMS_ENDPOINT,
+    SYSTEM_PROFILE_INTEGERS,
+    SYSTEM_PROFILE_STRINGS,
+)
 from kerlescan.exceptions import ItemNotReturned
 from kerlescan.service_interface import fetch_data
 
@@ -18,22 +22,16 @@ def ensure_correct_system_count(system_ids_requested, result):
     if len(result) < len(system_ids_requested):
         system_ids_returned = {system["id"] for system in result}
         missing_ids = set(system_ids_requested) - system_ids_returned
-        raise ItemNotReturned(
-            "ids [%s] not available to display" % ", ".join(missing_ids)
-        )
+        raise ItemNotReturned("ids [%s] not available to display" % ", ".join(missing_ids))
 
 
-def interleave_systems_and_profiles(
-    systems_result, system_profiles_result, system_tags_result
-):
+def interleave_systems_and_profiles(systems_result, system_profiles_result, system_tags_result):
     """
     given a system result and system profile result, interleave them and create
     records suitable for a drift comparison.
     """
     # create a blank profile for each system
-    system_profiles = {
-        system["id"]: {"system_profile": {}} for system in systems_result
-    }
+    system_profiles = {system["id"]: {"system_profile": {}} for system in systems_result}
     # update with actual profile info if we have it
     for profile in system_profiles_result:
         system_profiles[profile["id"]] = profile
@@ -47,9 +45,7 @@ def interleave_systems_and_profiles(
         if system_profiles[system_id]["system_profile"]:
             system_profiles[system_id]["system_profile"]["system_profile_exists"] = True
         else:
-            system_profiles[system_id]["system_profile"][
-                "system_profile_exists"
-            ] = False
+            system_profiles[system_id]["system_profile"]["system_profile_exists"] = False
             systems_without_profile_count += 1
         # TODO: populate more than just integers and strings
         for key in SYSTEM_PROFILE_INTEGERS | SYSTEM_PROFILE_STRINGS:
@@ -62,9 +58,7 @@ def interleave_systems_and_profiles(
         # we do not use the 'facts' field
         system_with_profile.pop("facts", None)
 
-        system_with_profile["system_profile"] = system_profiles[system["id"]][
-            "system_profile"
-        ]
+        system_with_profile["system_profile"] = system_profiles[system["id"]]["system_profile"]
         # we duplicate a bit of metadata in the inner dict to make parsing easier
         system_with_profile["system_profile"]["id"] = system["id"]
         system_with_profile["system_profile"]["fqdn"] = system["fqdn"]
@@ -73,9 +67,7 @@ def interleave_systems_and_profiles(
         # now add tags if any exist for the system.
         # system_tags_result is a dict keyed on uuid.
         if system_tags_result.get(system["id"]):
-            system_with_profile["system_profile"]["tags"] = system_tags_result[
-                system["id"]
-            ]
+            system_with_profile["system_profile"]["tags"] = system_tags_result[system["id"]]
 
         systems_with_profiles.append(system_with_profile)
 
@@ -89,9 +81,7 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
 
     auth_header = {AUTH_HEADER_NAME: service_auth_key}
 
-    system_location = urljoin(
-        config.inventory_svc_hostname, INVENTORY_SVC_SYSTEMS_ENDPOINT
-    )
+    system_location = urljoin(config.inventory_svc_hostname, INVENTORY_SVC_SYSTEMS_ENDPOINT)
 
     system_profile_location = urljoin(
         config.inventory_svc_hostname, INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT

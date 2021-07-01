@@ -1,8 +1,9 @@
-import logging
-import json
 import base64
+import json
+import logging
 
 from kerlescan.service_interface import get_key_from_headers
+
 
 AUDIT_LEVEL_NAME = "AUDIT"
 AUDIT_LEVEL_NUM = int((logging.INFO + logging.WARNING) / 2)

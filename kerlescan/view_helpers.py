@@ -1,20 +1,15 @@
+import base64
 import json
 import logging
-import base64
 import re
 
 from http import HTTPStatus
 from uuid import UUID
 
-from kerlescan.config import (
-    path_prefix,
-    enable_rbac,
-    enable_smart_mgmt_check,
-    drift_shared_secret,
-)
-from kerlescan.service_interface import get_key_from_headers
-from kerlescan.rbac_service_interface import get_perms
+from kerlescan.config import drift_shared_secret, enable_rbac, enable_smart_mgmt_check, path_prefix
 from kerlescan.exceptions import HTTPError, RBACDenied
+from kerlescan.rbac_service_interface import get_perms
+from kerlescan.service_interface import get_key_from_headers
 
 
 def get_account_number(request):
@@ -73,9 +68,7 @@ def ensure_has_permission(**kwargs):
         if auth.get("identity", {}).get("type", None) == "System":
             request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
             if request_shared_secret and request_shared_secret == drift_shared_secret:
-                kwargs["logger"].audit(
-                    "shared-secret found, auth/entitlement authorized"
-                )
+                kwargs["logger"].audit("shared-secret found, auth/entitlement authorized")
                 return  # shared secret set and is correct
 
     if not enable_rbac:
@@ -147,9 +140,7 @@ def ensure_entitled(request, app_name, logger):
 
     # if we got here, reject the request
     logger.debug("entitlement not found for account.")
-    raise HTTPError(
-        HTTPStatus.BAD_REQUEST, message="Entitlement not found for account."
-    )
+    raise HTTPError(HTTPStatus.BAD_REQUEST, message="Entitlement not found for account.")
 
 
 def log_username(logger, request):
@@ -157,9 +148,7 @@ def log_username(logger, request):
         auth_key = get_key_from_headers(request.headers)
         if auth_key:
             identity = json.loads(base64.b64decode(auth_key))["identity"]
-            logger.debug(
-                "username from identity header: %s" % identity["user"]["username"]
-            )
+            logger.debug("username from identity header: %s" % identity["user"]["username"])
         else:
             logger.debug("identity header not sent for request")
 

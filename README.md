@@ -1,6 +1,29 @@
 # kerlescan
 shared service lib
 
+## Required dependencies:
+- pipenv
+- pre-commit
+
+## Work with pre-commit hooks
+
+```bash
+# installs pre-commit hooks into the repo
+pre-commit install --install-hooks
+
+# run pre-commit hooks for staged files
+pre-commit run
+
+# run pre-commit hooks for all files in repo
+pre-commit run --all-files
+
+# bump versions of the pre-commit hooks automatically
+pre-commit autoupdate
+
+# bypass pre-commit check
+git commit --no-verify
+```
+
 ## To run tests
 1. `pipenv install --dev`
 2. `pipenv shell`

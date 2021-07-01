@@ -1,9 +1,11 @@
 import unittest
+
 import mock
-from kerlescan.exceptions import HTTPError
+
 from mock import MagicMock as mm
 
 from kerlescan import view_helpers
+from kerlescan.exceptions import HTTPError
 
 
 class RBACTests(unittest.TestCase):

@@ -1,5 +1,7 @@
 import unittest
+
 import responses
+
 from mock import MagicMock as mm
 
 from kerlescan import service_interface

@@ -14,12 +14,8 @@ def str_to_bool(s):
 
 
 log_level = os.getenv("LOG_LEVEL", "INFO")
-inventory_svc_hostname = os.getenv(
-    "INVENTORY_SVC_URL", "http://inventory_svc_url_is_not_set"
-)
-baseline_svc_hostname = os.getenv(
-    "BASELINE_SVC_URL", "http://baseline_svc_url_is_not_set"
-)
+inventory_svc_hostname = os.getenv("INVENTORY_SVC_URL", "http://inventory_svc_url_is_not_set")
+baseline_svc_hostname = os.getenv("BASELINE_SVC_URL", "http://baseline_svc_url_is_not_set")
 rbac_svc_hostname = os.getenv("RBAC_SVC_URL", "http://rbac_svc_url_is_not_set")
 hsp_svc_hostname = os.getenv("HSP_SVC_URL", "http://hsp_svc_url_is_not_set")
 drift_svc_hostname = os.getenv("DRIFT_SVC_URL", "http://drift_svc_url_is_not_set")

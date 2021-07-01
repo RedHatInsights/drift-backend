@@ -1,11 +1,8 @@
 from urllib.parse import urljoin
 
 from kerlescan import config
+from kerlescan.constants import AUTH_HEADER_NAME, INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT
 from kerlescan.service_interface import fetch_url
-from kerlescan.constants import (
-    AUTH_HEADER_NAME,
-    INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT,
-)
 
 
 def delete_systems_from_notifications(system_ids, service_auth_key, logger, counters):

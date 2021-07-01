@@ -1,18 +1,22 @@
-import bitmath
 import ipaddress
 import re
 
 from ipaddress import AddressValueError
+
+import bitmath
+
 from insights.parsers.installed_rpms import InstalledRpm
 
-from kerlescan.constants import GPG_KEY_PREFIX
-from kerlescan.constants import SYSTEM_ID_KEY
-from kerlescan.constants import SYSTEM_PROFILE_STRINGS, SYSTEM_PROFILE_INTEGERS
-from kerlescan.constants import SYSTEM_PROFILE_BOOLEANS
-from kerlescan.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED
-from kerlescan.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED
-from kerlescan.constants import SYSTEM_PROFILE_LISTS_OF_STRINGS
-
+from kerlescan.constants import (
+    GPG_KEY_PREFIX,
+    SYSTEM_ID_KEY,
+    SYSTEM_PROFILE_BOOLEANS,
+    SYSTEM_PROFILE_INTEGERS,
+    SYSTEM_PROFILE_LISTS_OF_STRINGS,
+    SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED,
+    SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED,
+    SYSTEM_PROFILE_STRINGS,
+)
 from kerlescan.exceptions import UnparsableNEVRAError
 
 
@@ -39,9 +43,7 @@ def parse_profile(system_profile, display_name, logger):
                     parsed_profile[list_of_strings] = []
                 for item in system_profile.get(list_of_strings, []):
                     if item.startswith(GPG_KEY_PREFIX):
-                        parsed_profile[list_of_strings].append(
-                            item[len(GPG_KEY_PREFIX) :]  # noqa
-                        )
+                        parsed_profile[list_of_strings].append(item[len(GPG_KEY_PREFIX) :])  # noqa
                     else:
                         parsed_profile[list_of_strings].append(item)
                     parsed_profile[list_of_strings].sort()
@@ -55,9 +57,7 @@ def parse_profile(system_profile, display_name, logger):
         for process in processes:
             process_fact_name = "running_processes." + process
             if process_fact_name in parsed_profile:
-                parsed_profile[process_fact_name] = str(
-                    int(parsed_profile[process_fact_name]) + 1
-                )
+                parsed_profile[process_fact_name] = str(int(parsed_profile[process_fact_name]) + 1)
             else:
                 parsed_profile[process_fact_name] = "1"
 
@@ -65,15 +65,9 @@ def parse_profile(system_profile, display_name, logger):
         """
         helper method to convert yum repo objects to comparable facts
         """
-        parsed_profile["yum_repos." + name + ".base_url"] = yum_repo.get(
-            "base_url", "N/A"
-        )
-        parsed_profile["yum_repos." + name + ".enabled"] = str(
-            yum_repo.get("enabled", "N/A")
-        )
-        parsed_profile["yum_repos." + name + ".gpgcheck"] = str(
-            yum_repo.get("gpgcheck", "N/A")
-        )
+        parsed_profile["yum_repos." + name + ".base_url"] = yum_repo.get("base_url", "N/A")
+        parsed_profile["yum_repos." + name + ".enabled"] = str(yum_repo.get("enabled", "N/A"))
+        parsed_profile["yum_repos." + name + ".gpgcheck"] = str(yum_repo.get("gpgcheck", "N/A"))
 
     def _canonicalize_ipv6_addr(addr):
         """
@@ -90,8 +84,7 @@ def parse_profile(system_profile, display_name, logger):
         helper method to convert network interface objects to comparable facts
         """
         ipv6_addresses = [
-            _canonicalize_ipv6_addr(addr)
-            for addr in interface.get("ipv6_addresses", ["N/A"])
+            _canonicalize_ipv6_addr(addr) for addr in interface.get("ipv6_addresses", ["N/A"])
         ]
         # Added check for the case of receiving empty lists from satellite managed hosts
         if not ipv6_addresses:
@@ -100,24 +93,14 @@ def parse_profile(system_profile, display_name, logger):
         # Added check for the case of receiving empty lists from satellite managed hosts
         if not ipv4_addresses:
             ipv4_addresses = ["N/A"]
-        parsed_profile["network_interfaces." + name + ".ipv4_addresses"] = ", ".join(
-            ipv4_addresses
-        )
-        parsed_profile["network_interfaces." + name + ".ipv6_addresses"] = ", ".join(
-            ipv6_addresses
-        )
+        parsed_profile["network_interfaces." + name + ".ipv4_addresses"] = ", ".join(ipv4_addresses)
+        parsed_profile["network_interfaces." + name + ".ipv6_addresses"] = ", ".join(ipv6_addresses)
         parsed_profile["network_interfaces." + name + ".mac_address"] = interface.get(
             "mac_address", "N/A"
         )
-        parsed_profile["network_interfaces." + name + ".mtu"] = str(
-            interface.get("mtu", "N/A")
-        )
-        parsed_profile["network_interfaces." + name + ".state"] = interface.get(
-            "state", "N/A"
-        )
-        parsed_profile["network_interfaces." + name + ".type"] = interface.get(
-            "type", "N/A"
-        )
+        parsed_profile["network_interfaces." + name + ".mtu"] = str(interface.get("mtu", "N/A"))
+        parsed_profile["network_interfaces." + name + ".state"] = interface.get("state", "N/A")
+        parsed_profile["network_interfaces." + name + ".type"] = interface.get("type", "N/A")
 
     def _parse_tags(tags):
         """
@@ -134,9 +117,7 @@ def parse_profile(system_profile, display_name, logger):
                 value_list.append(tag["value"])
         for tag_name in sorted(tag_dict):
             parsed_profile["tags." + tag_name] = (
-                ", ".join(sorted(tag_dict[tag_name]))
-                if tag_dict[tag_name]
-                else "(no value)"
+                ", ".join(sorted(tag_dict[tag_name])) if tag_dict[tag_name] else "(no value)"
             )
 
     # start with metadata that we have brought down from the system record
@@ -164,9 +145,7 @@ def parse_profile(system_profile, display_name, logger):
     # convert bytes to human readable format
     if "system_memory_bytes" in system_profile:
         with bitmath.format(fmt_str="{value:.2f} {unit}"):
-            formatted_size = bitmath.Byte(
-                system_profile["system_memory_bytes"]
-            ).best_prefix()
+            formatted_size = bitmath.Byte(system_profile["system_memory_bytes"]).best_prefix()
             parsed_profile["system_memory"] = str(formatted_size)
         system_profile.pop("system_memory_bytes")
 

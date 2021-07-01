@@ -2,12 +2,7 @@ import requests
 
 from kerlescan.config import drift_shared_secret
 from kerlescan.constants import AUTH_HEADER_NAME, VALID_HTTP_VERBS
-from kerlescan.exceptions import (
-    ServiceError,
-    ItemNotReturned,
-    RBACDenied,
-    IllegalHttpMethodError,
-)
+from kerlescan.exceptions import IllegalHttpMethodError, ItemNotReturned, RBACDenied, ServiceError
 
 
 def get_key_from_headers(incoming_headers):
@@ -29,15 +24,11 @@ def _validate_service_response(response, logger, auth_header):
     Raise an exception if the response was not what we expected.
     """
     if response.status_code == requests.codes.not_found:
-        logger.info(
-            "%s error received from service: %s" % (response.status_code, response.text)
-        )
+        logger.info("%s error received from service: %s" % (response.status_code, response.text))
         raise ItemNotReturned(response.text)
 
     if response.status_code in [requests.codes.forbidden, requests.codes.unauthorized]:
-        logger.info(
-            "%s error received from service: %s" % (response.status_code, response.text)
-        )
+        logger.info("%s error received from service: %s" % (response.status_code, response.text))
         # Log identity header if 401 (unauthorized)
         if response.status_code == requests.codes.unauthorized:
             if isinstance(auth_header, dict) and AUTH_HEADER_NAME in auth_header:
@@ -47,9 +38,7 @@ def _validate_service_response(response, logger, auth_header):
         raise RBACDenied(response.text)
 
     if response.status_code != requests.codes.ok:
-        logger.warn(
-            "%s error received from service: %s" % (response.status_code, response.text)
-        )
+        logger.warn("%s error received from service: %s" % (response.status_code, response.text))
         raise ServiceError("Error received from backend service")
 
 
@@ -59,9 +48,7 @@ def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="g
     """
 
     if method not in VALID_HTTP_VERBS:
-        raise IllegalHttpMethodError(
-            "Provided method '%s' is not valid HTTP method." % method
-        )
+        raise IllegalHttpMethodError("Provided method '%s' is not valid HTTP method." % method)
 
     logger.debug("fetching %s" % url)
     with time_metric.time():
