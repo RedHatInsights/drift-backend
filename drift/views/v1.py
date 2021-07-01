@@ -304,9 +304,15 @@ def ensure_entitled():
 
 
 @section.before_app_request
-def ensure_rbac():
+def ensure_rbac_comparisons_read():
+    # permissions consist of a list of "or" permissions where any will work,
+    # and each sublist is a set of "and" permissions that all must be true.
+    # For example:
+    # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+    # If we just have *:*, it works, but if not, we need both notifications:read and
+    # baselines:read in order to allow access.
     return view_helpers.ensure_has_permission(
-        permissions=["drift:*:*", "drift:comparisons:read"],
+        permissions=[["drift:*:*"], ["drift:comparisons:read"]],
         application="drift",
         app_name="drift",
         request=request,
