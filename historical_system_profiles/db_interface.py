@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+
+from flask import current_app, request
 from sqlalchemy.exc import SQLAlchemyError
-from flask import request, current_app
 
 from historical_system_profiles.models import HistoricalSystemProfile, db
 
@@ -27,7 +28,9 @@ def rollback_on_exception(func):
 @rollback_on_exception
 def create_profile(inventory_id, profile, account_number):
     profile = HistoricalSystemProfile(
-        account=account_number, inventory_id=inventory_id, system_profile=profile,
+        account=account_number,
+        inventory_id=inventory_id,
+        system_profile=profile,
     )
     db.session.add(profile)
     db.session.commit()
@@ -106,9 +109,7 @@ def clean_expired_records(days_til_expired):
     now = datetime.now()
     expired_time = now - timedelta(days=days_til_expired)
 
-    query = HistoricalSystemProfile.query.filter(
-        HistoricalSystemProfile.created_on < expired_time
-    )
+    query = HistoricalSystemProfile.query.filter(HistoricalSystemProfile.created_on < expired_time)
     count = query.delete(synchronize_session="fetch")
 
     db.session.commit()

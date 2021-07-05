@@ -1,9 +1,8 @@
 import logging
 
 import connexion
+
 from flask_migrate import Migrate
-
-
 from kerlescan import config as kerlescan_config
 from kerlescan.audit_logging import setup_audit_logging
 from kerlescan.cloudwatch import setup_cw_logging
@@ -11,9 +10,9 @@ from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
-from historical_system_profiles import config, app_config
-from historical_system_profiles.views import v1
+from historical_system_profiles import app_config, config
 from historical_system_profiles.models import db
+from historical_system_profiles.views import v1
 
 
 def create_app():
@@ -30,12 +29,8 @@ def create_connexion_app():
         "path_prefix": kerlescan_config.path_prefix,
         "app_name": app_config.get_app_name(),
     }
-    connexion_app = connexion.App(
-        __name__, specification_dir="openapi/", arguments=openapi_args
-    )
-    connexion_app.add_api(
-        "api.spec.yaml", strict_validation=True, validate_responses=True
-    )
+    connexion_app = connexion.App(__name__, specification_dir="openapi/", arguments=openapi_args)
+    connexion_app.add_api("api.spec.yaml", strict_validation=True, validate_responses=True)
     connexion_app.add_api("mgmt_api.spec.yaml", strict_validation=True)
     flask_app = connexion_app.app
 

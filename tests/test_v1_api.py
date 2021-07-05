@@ -1,10 +1,9 @@
 import json
 
-from . import fixtures
-from . import utils
-
 # needed to do deletes + creates
 from historical_system_profiles import db_interface
+
+from . import fixtures, utils
 
 
 class HSPApiTests(utils.ApiTest):
@@ -42,9 +41,7 @@ class HSPApiTests(utils.ApiTest):
 
         # add one record, confirm count
         with self.test_flask_app.app_context():
-            db_interface.create_profile(
-                "6887d404-ab27-11ea-b3ae-98fa9b07d419", {}, "1234"
-            )
+            db_interface.create_profile("6887d404-ab27-11ea-b3ae-98fa9b07d419", {}, "1234")
 
         response = self.client.get(
             "/api/historical-system-profiles/v1/systems/6887d404-ab27-11ea-b3ae-98fa9b07d419",
@@ -55,9 +52,7 @@ class HSPApiTests(utils.ApiTest):
 
         # delete all records, confirm count
         with self.test_flask_app.app_context():
-            db_interface.delete_hsps_by_inventory_id(
-                "6887d404-ab27-11ea-b3ae-98fa9b07d419"
-            )
+            db_interface.delete_hsps_by_inventory_id("6887d404-ab27-11ea-b3ae-98fa9b07d419")
 
         response = self.client.get(
             "/api/historical-system-profiles/v1/systems/6887d404-ab27-11ea-b3ae-98fa9b07d419",
@@ -77,9 +72,7 @@ class HSPApiTests(utils.ApiTest):
     def test_missing_hsp_in_list(self):
         # get a 404 if one out of two records is missing
         with self.test_flask_app.app_context():
-            db_interface.create_profile(
-                "eca1c5c4-ab27-11ea-958a-98fa9b07d419", {}, "1234"
-            )
+            db_interface.create_profile("eca1c5c4-ab27-11ea-958a-98fa9b07d419", {}, "1234")
 
         self.addInventoryRecord("eca1c5c4-ab27-11ea-958a-98fa9b07d419", "test_name")
         response = self.client.get(

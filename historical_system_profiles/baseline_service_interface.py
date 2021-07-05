@@ -1,9 +1,10 @@
 from urllib.parse import urljoin
 
-from historical_system_profiles import metrics
 from kerlescan import config
-from kerlescan.service_interface import fetch_url, internal_auth_header
 from kerlescan.constants import AUTH_HEADER_NAME, INTERNAL_BASELINE_SVC_ENDPOINT
+from kerlescan.service_interface import fetch_url, internal_auth_header
+
+from historical_system_profiles import metrics
 
 
 def fetch_system_baseline_associations(system_id, service_auth_key, logger):
@@ -14,10 +15,7 @@ def fetch_system_baseline_associations(system_id, service_auth_key, logger):
 
     auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
 
-    url = (
-        urljoin(config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_ENDPOINT)
-        % system_id
-    )
+    url = urljoin(config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_ENDPOINT) % system_id
 
     result = fetch_url(
         url,

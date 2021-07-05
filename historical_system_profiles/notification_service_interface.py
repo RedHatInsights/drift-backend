@@ -1,6 +1,7 @@
 import json
 
 from datetime import datetime, timezone
+
 from kafka import KafkaProducer
 
 from historical_system_profiles import config
@@ -78,7 +79,12 @@ class EventDriftBaselineDetected(_NotificationEventBase):
     """Message for drift-baseline-detected notification event"""
 
     def __init__(
-        self, account_id, inventory_id, system_check_in, display_name, tags=[],
+        self,
+        account_id,
+        inventory_id,
+        system_check_in,
+        display_name,
+        tags=[],
     ):
         context = {
             "inventory_id": inventory_id,

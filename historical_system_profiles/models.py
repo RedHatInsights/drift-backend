@@ -1,10 +1,13 @@
 import uuid
+
 from datetime import datetime
-import pytz
+
 import dateutil
+import pytz
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
+
 
 db = SQLAlchemy()
 
@@ -47,10 +50,7 @@ class HistoricalSystemProfile(db.Model):
         TZ due to a bug I introduced that's since been fixed.
 
         """
-        if (
-            datetime_in.tzinfo is None
-            or datetime_in.tzinfo.utcoffset(datetime_in) is None
-        ):
+        if datetime_in.tzinfo is None or datetime_in.tzinfo.utcoffset(datetime_in) is None:
             return pytz.utc.localize(datetime_in)
         else:
             return datetime_in

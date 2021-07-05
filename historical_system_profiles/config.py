@@ -3,6 +3,7 @@ import os
 
 from kerlescan.config import str_to_bool
 
+
 # pull the app name from the env var; we are not fully initialized yet
 app_name = os.getenv("APP_NAME", "historical-system-profiles")
 logger = logging.getLogger(app_name)

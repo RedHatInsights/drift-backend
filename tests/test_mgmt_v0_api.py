@@ -1,8 +1,7 @@
 import json
+import unittest
 
 from historical_system_profiles import app
-
-import unittest
 
 
 class ManagementApiTests(unittest.TestCase):

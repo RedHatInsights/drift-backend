@@ -1,7 +1,8 @@
-from historical_system_profiles import app
-
 import unittest
+
 import mock
+
+from historical_system_profiles import app
 
 
 class ApiTest(unittest.TestCase):

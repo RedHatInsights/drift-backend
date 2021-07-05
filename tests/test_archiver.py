@@ -1,10 +1,10 @@
-from . import fixtures
-from . import utils
+import mock
+
+from mock import MagicMock
 
 from historical_system_profiles import archiver, db_interface
 
-import mock
-from mock import MagicMock
+from . import fixtures, utils
 
 
 class ArchiverTests(utils.ApiTest):
@@ -29,6 +29,4 @@ class ArchiverTests(utils.ApiTest):
 
         # cleanup
         with self.test_flask_app.app_context():
-            db_interface.delete_hsps_by_inventory_id(
-                "6388350e-b18d-11ea-ad7f-98fa9b07d419"
-            )
+            db_interface.delete_hsps_by_inventory_id("6388350e-b18d-11ea-ad7f-98fa9b07d419")

@@ -1,0 +1,28 @@
+[tool.black]
+line-length=100
+target-version=["py38"]
+
+[tool.isort]
+profile = "black"
+atomic=true
+line_length = 100
+lines_after_imports=2
+lines_between_types=1
+known_third_party=[
+    "pytest",
+    "click",
+]
+known_first_party=["historical-system-profiles-backend"]
+
+[tool.coverage.run]
+branch = false
+source = ["historical-system-profiles-backend"]
+omit = ["historical-system-profiles-backend/tests/*",]
+
+[tool.coverage.paths]
+source = ["historical-system-profiles-backend/"]
+
+[tool.coverage.report]
+fail_under = 73
+skip_covered = true
+show_missing = true

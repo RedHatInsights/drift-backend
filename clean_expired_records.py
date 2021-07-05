@@ -1,10 +1,10 @@
 import time
 
-from historical_system_profiles import config, listener_logging
-from historical_system_profiles.app import create_app
-from historical_system_profiles import db_interface
-from historical_system_profiles import listener_metrics as metrics
 from prometheus_client import start_http_server as start_metrics_server
+
+from historical_system_profiles import config, db_interface, listener_logging
+from historical_system_profiles import listener_metrics as metrics
+from historical_system_profiles.app import create_app
 
 
 def main():
@@ -30,12 +30,8 @@ def expired_record_cleaning_loop(flask_app, logger):
                 logger.info("deleted %s expired records" % deleted_count)
                 metrics.records_cleaned.inc(deleted_count)
             except Exception:
-                logger.exception(
-                    "An error occurred during expired record cleaning loop"
-                )
-            logger.info(
-                "sleeping for %s minutes" % config.expired_cleaner_sleep_minutes
-            )
+                logger.exception("An error occurred during expired record cleaning loop")
+            logger.info("sleeping for %s minutes" % config.expired_cleaner_sleep_minutes)
             time.sleep(config.expired_cleaner_sleep_minutes * 60)
 
 

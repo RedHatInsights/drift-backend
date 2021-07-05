@@ -1,7 +1,5 @@
 from flask import jsonify
-
 from kerlescan.metrics_registry import get_registry
-
 from prometheus_client import generate_latest
 
 

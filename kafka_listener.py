@@ -1,13 +1,16 @@
 import json
 
 from kafka import KafkaConsumer
-
-from historical_system_profiles import config, listener_logging
-from historical_system_profiles.app import create_app
-from historical_system_profiles import archiver
-from historical_system_profiles import deleter
-from historical_system_profiles import payload_tracker_interface
 from prometheus_client import start_http_server as start_metrics_server
+
+from historical_system_profiles import (
+    archiver,
+    config,
+    deleter,
+    listener_logging,
+    payload_tracker_interface,
+)
+from historical_system_profiles.app import create_app
 
 
 def main():

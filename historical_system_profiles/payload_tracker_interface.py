@@ -1,9 +1,11 @@
 import json
-from historical_system_profiles import config
+
+from datetime import datetime
+
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-from datetime import datetime
+from historical_system_profiles import config
 
 
 class PayloadTrackerClient:
@@ -49,9 +51,7 @@ class PayloadTrackerClient:
                 "unable to send update on %s to tracker topic" % message["request_id"]
             )
 
-    def _create_message(
-        self, status, message, request_id=-1, account=-1, inventory_id=-1
-    ):
+    def _create_message(self, status, message, request_id=-1, account=-1, inventory_id=-1):
         # date format supplied by payload-tracker team
         now = str(datetime.now().isoformat())
         message = {

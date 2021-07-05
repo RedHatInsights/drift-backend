@@ -5,9 +5,11 @@ Revises:
 Create Date: 2020-01-09 16:25:25.100053
 
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
 revision = "5d803f844a03"
@@ -25,9 +27,7 @@ def upgrade():
         sa.Column("inventory_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("created_on", sa.DateTime(), nullable=True),
         sa.Column("modified_on", sa.DateTime(), nullable=True),
-        sa.Column(
-            "system_profile", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("system_profile", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###

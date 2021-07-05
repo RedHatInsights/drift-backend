@@ -1,13 +1,14 @@
+import logging
 import os
 import sys
-import logging
 
 import watchtower
 
-from logstash_formatter import LogstashFormatterV1
 from boto3.session import Session
+from logstash_formatter import LogstashFormatterV1
 
 from historical_system_profiles import app_config, config
+
 
 # borrowed from https://git.io/JvKsY
 

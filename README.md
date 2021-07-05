@@ -6,6 +6,29 @@ A service to return older system profile records
 (need to fill this in)
  * make sure you have `libpq-devel` installed
 
+## Required dependencies:
+- pipenv
+- pre-commit
+
+## Work with pre-commit hooks
+
+```bash
+# installs pre-commit hooks into the repo
+pre-commit install --install-hooks
+
+# run pre-commit hooks for staged files
+pre-commit run
+
+# run pre-commit hooks for all files in repo
+pre-commit run --all-files
+
+# bump versions of the pre-commit hooks automatically
+pre-commit autoupdate
+
+# bypass pre-commit check
+git commit --no-verify
+```
+
 ## db changes and migration
 
 The db schema is defined by the objects defined in models.py.  When a change is made to these model objects, a database migration needs to be created.  This migration will be applied automatically when an updated image is spun up in a pod.  The steps to create the database migration are below:

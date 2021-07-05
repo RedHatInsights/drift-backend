@@ -1,17 +1,17 @@
 import datetime
 
-from flask import Blueprint, request, current_app
-from dateutil.relativedelta import relativedelta
-from http import HTTPStatus
 from collections import Counter
+from http import HTTPStatus
 
+from dateutil.relativedelta import relativedelta
+from flask import Blueprint, current_app, request
 from kerlescan import view_helpers
-from kerlescan.view_helpers import validate_uuids
+from kerlescan.exceptions import HTTPError, RBACDenied
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
-from kerlescan.exceptions import HTTPError, RBACDenied
+from kerlescan.view_helpers import validate_uuids
 
-from historical_system_profiles import metrics, db_interface, config
+from historical_system_profiles import config, db_interface, metrics
 
 
 section = Blueprint("v1", __name__)
@@ -32,7 +32,10 @@ def _get_current_names_for_profiles(hsps):
 
     try:
         systems = fetch_systems_with_profiles(
-            inventory_ids, auth_key, current_app.logger, _get_event_counters(),
+            inventory_ids,
+            auth_key,
+            current_app.logger,
+            _get_event_counters(),
         )
         message = "read systems"
         current_app.logger.audit(message, request=request, success=True)
@@ -85,7 +88,8 @@ def _check_for_missing_ids(requested_ids, result):
         message = "ids [%s] not available to display" % ", ".join(missing_ids)
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND, message=message,
+            HTTPStatus.NOT_FOUND,
+            message=message,
         )
 
 
@@ -104,7 +108,8 @@ def _check_for_duplicates(requested_ids):
         message = "duplicate IDs requested: %s" % duplicate_ids
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.BAD_REQUEST, message=message,
+            HTTPStatus.BAD_REQUEST,
+            message=message,
         )
 
 
@@ -151,7 +156,8 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
         message = "no historical profiles found for inventory_id %s" % inventory_id
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
-            HTTPStatus.NOT_FOUND, message=message,
+            HTTPStatus.NOT_FOUND,
+            message=message,
         )
 
     # TODO: request just these three fields from the DB, instead of fetching
