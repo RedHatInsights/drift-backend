@@ -5,8 +5,9 @@ Revises: 1b7d3a5f6702
 Create Date: 2019-06-19 13:57:50.865477
 
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 
 # revision identifiers, used by Alembic.
@@ -17,9 +18,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        "system_baselines", sa.Column("fact_count", sa.Integer(), nullable=True)
-    )
+    op.add_column("system_baselines", sa.Column("fact_count", sa.Integer(), nullable=True))
 
 
 def downgrade():

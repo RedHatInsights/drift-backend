@@ -152,4 +152,3 @@ The db schema is defined by the objects defined in models.py.  When a change is 
 java -jar /path/to/sonar-scanner-cli-4.6.0.2311.jar -D project.settings=sonar-scanner.properties
 ```
 5. Review the results in your SonarQube web instance.
-

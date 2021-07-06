@@ -1,5 +1,6 @@
 from system_baseline.exceptions import FactValidationError
 
+
 FACTS_MAXSIZE = 2 ** 20  # 1 MB
 
 
@@ -24,9 +25,7 @@ def check_for_value_values(facts):
     """
     for fact in facts:
         if "values" in fact and "value" in fact:
-            raise FactValidationError(
-                "fact %s cannot have value and values defined" % fact["name"]
-            )
+            raise FactValidationError("fact %s cannot have value and values defined" % fact["name"])
         elif "values" in fact:
             check_for_value_values(fact["values"])
 
@@ -52,15 +51,12 @@ def check_for_invalid_whitespace_name_values(facts):
         if "values" in fact:
             check_for_invalid_whitespace_name_values(fact["values"])
         if "name" in fact and not check_whitespace(fact["name"]):
-            raise FactValidationError(
-                "fact name cannot have leading or trailing whitespace"
-            )
+            raise FactValidationError("fact name cannot have leading or trailing whitespace")
         elif "value" in fact:
             if not isinstance(fact["value"], list):
                 if not check_whitespace(fact["value"]):
                     raise FactValidationError(
-                        "value for %s cannot have leading or trailing whitespace"
-                        % fact["name"]
+                        "value for %s cannot have leading or trailing whitespace" % fact["name"]
                     )
 
 
@@ -78,9 +74,7 @@ def check_facts_length(facts):
     check if fact length is greater than FACTS_MAXSIZE
     """
     if len(str(facts)) > FACTS_MAXSIZE:
-        raise FactValidationError(
-            "attempted to save fact list over %s bytes" % FACTS_MAXSIZE
-        )
+        raise FactValidationError("attempted to save fact list over %s bytes" % FACTS_MAXSIZE)
 
 
 def check_name_value_length(facts):
@@ -93,10 +87,6 @@ def check_name_value_length(facts):
         if "values" in fact:
             check_name_value_length(fact["values"])
         if "name" in fact and len(fact["name"]) > 500:
-            raise FactValidationError(
-                "fact name %s is over 500 characters" % fact["name"]
-            )
+            raise FactValidationError("fact name %s is over 500 characters" % fact["name"])
         elif "value" in fact and len(fact["value"]) > 1000:
-            raise FactValidationError(
-                "value %s is over 1000 characters" % fact["value"]
-            )
+            raise FactValidationError("value %s is over 1000 characters" % fact["value"])

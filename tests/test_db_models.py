@@ -1,8 +1,11 @@
-from flask import Flask
-from system_baseline import db_config
-from system_baseline.models import SystemBaseline, SystemBaselineMappedSystem, db
 import unittest
 import uuid
+
+from flask import Flask
+
+from system_baseline import db_config
+from system_baseline.models import SystemBaseline, SystemBaselineMappedSystem, db
+
 
 baseline_facts = [
     {"name": "arch", "value": "x86_64"},
@@ -51,9 +54,18 @@ class DbModelTest(unittest.TestCase):
                 display_name="baseline1",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
-                    SystemBaselineMappedSystem(account=account1, system_id=system_id1,),
-                    SystemBaselineMappedSystem(account=account1, system_id=system_id2,),
-                    SystemBaselineMappedSystem(account=account1, system_id=system_id3,),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        system_id=system_id1,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        system_id=system_id2,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        system_id=system_id3,
+                    ),
                 ],
             ),
             SystemBaseline(
@@ -61,8 +73,14 @@ class DbModelTest(unittest.TestCase):
                 display_name="baseline2",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
-                    SystemBaselineMappedSystem(account=account1, system_id=system_id4,),
-                    SystemBaselineMappedSystem(account=account1, system_id=system_id5,),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        system_id=system_id4,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        system_id=system_id5,
+                    ),
                 ],
             ),
             SystemBaseline(
@@ -70,8 +88,14 @@ class DbModelTest(unittest.TestCase):
                 display_name="baseline3",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
-                    SystemBaselineMappedSystem(account=account2, system_id=system_id6,),
-                    SystemBaselineMappedSystem(account=account2, system_id=system_id7,),
+                    SystemBaselineMappedSystem(
+                        account=account2,
+                        system_id=system_id6,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account2,
+                        system_id=system_id7,
+                    ),
                 ],
             ),
             SystemBaseline(
@@ -79,9 +103,18 @@ class DbModelTest(unittest.TestCase):
                 display_name="baseline4",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
-                    SystemBaselineMappedSystem(account=account2, system_id=system_id6,),
-                    SystemBaselineMappedSystem(account=account2, system_id=system_id8,),
-                    SystemBaselineMappedSystem(account=account2, system_id=system_id9,),
+                    SystemBaselineMappedSystem(
+                        account=account2,
+                        system_id=system_id6,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account2,
+                        system_id=system_id8,
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account2,
+                        system_id=system_id9,
+                    ),
                 ],
             ),
         ]
@@ -254,15 +287,17 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         self.populate_db_with_stuff()
         query = SystemBaseline.query.filter(
             SystemBaseline.account == account2,
-            SystemBaseline.mapped_systems.any(
-                SystemBaselineMappedSystem.system_id == system_id6
-            ),
+            SystemBaseline.mapped_systems.any(SystemBaselineMappedSystem.system_id == system_id6),
         )
         self.assertEqual(query.count(), 2)
         results = query.all()
         for system_baseline in results:
             self.assertIn(
-                system_baseline.display_name, ("baseline3", "baseline4",),
+                system_baseline.display_name,
+                (
+                    "baseline3",
+                    "baseline4",
+                ),
             )
 
     def test_retrieve_baselines_for_str_system_id(self):
@@ -277,14 +312,19 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         results = query.all()
         for system_baseline in results:
             self.assertIn(
-                system_baseline.display_name, ("baseline3", "baseline4",),
+                system_baseline.display_name,
+                (
+                    "baseline3",
+                    "baseline4",
+                ),
             )
 
     def test_delete_systems_by_ids(self):
         self.populate_db_with_stuff()
 
         SystemBaselineMappedSystem.delete_by_system_ids(
-            [system_id2, system_id5, system_id8], account1,
+            [system_id2, system_id5, system_id8],
+            account1,
         )
 
         systems = SystemBaselineMappedSystem.query.all()

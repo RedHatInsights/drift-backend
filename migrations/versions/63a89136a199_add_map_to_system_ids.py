@@ -5,9 +5,11 @@ Revises: 16a84bebd064
 Create Date: 2021-03-24 22:32:00.267482
 
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
 revision = "63a89136a199"
@@ -24,7 +26,10 @@ def upgrade():
         sa.Column("account", sa.String(length=10), nullable=False),
         sa.Column("system_baseline_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("system_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.ForeignKeyConstraint(["system_baseline_id"], ["system_baselines.id"],),
+        sa.ForeignKeyConstraint(
+            ["system_baseline_id"],
+            ["system_baselines.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
             "system_baseline_id", "system_id", name="_system_baseline_mapped_system_uc"

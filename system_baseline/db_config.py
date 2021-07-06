@@ -1,5 +1,6 @@
 import os
 
+
 # please ensure these are all documented in README.md
 
 _db_user = os.getenv("BASELINE_DB_USER", "insights")

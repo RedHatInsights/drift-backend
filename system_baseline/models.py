@@ -1,12 +1,14 @@
 import uuid
+
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.schema import UniqueConstraint, ForeignKey
-from sqlalchemy.orm import validates, relationship
+from sqlalchemy.orm import relationship, validates
+from sqlalchemy.schema import ForeignKey, UniqueConstraint
 
 from system_baseline import validators
+
 
 db = SQLAlchemy()
 
@@ -16,9 +18,7 @@ FACTS_MAXSIZE = 2 ** 19  # 512KB
 class SystemBaseline(db.Model):
     __tablename__ = "system_baselines"
     # do not allow two records in the same account to have the same display name
-    __table_args__ = (
-        UniqueConstraint("account", "display_name", name="_account_display_name_uc"),
-    )
+    __table_args__ = (UniqueConstraint("account", "display_name", name="_account_display_name_uc"),)
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     account = db.Column(db.String(10), nullable=False)
@@ -29,7 +29,8 @@ class SystemBaseline(db.Model):
     )
     baseline_facts = db.Column(JSONB)
     mapped_systems = relationship(
-        "SystemBaselineMappedSystem", cascade="all, delete, delete-orphan",
+        "SystemBaselineMappedSystem",
+        cascade="all, delete, delete-orphan",
     )
 
     @property
@@ -63,9 +64,7 @@ class SystemBaseline(db.Model):
         return json_dict
 
     def add_mapped_system(self, system_id):
-        new_mapped_system = SystemBaselineMappedSystem(
-            system_id=system_id, account=self.account
-        )
+        new_mapped_system = SystemBaselineMappedSystem(system_id=system_id, account=self.account)
         self.mapped_systems.append(new_mapped_system)
         db.session.add(new_mapped_system)
 
@@ -79,8 +78,7 @@ class SystemBaseline(db.Model):
         if not system_id_removed:
             # do we want to raise exception here?
             raise ValueError(
-                "Failed to remove system id %s from mapped systems - not in list"
-                % system_id
+                "Failed to remove system id %s from mapped systems - not in list" % system_id
             )
 
 
@@ -101,7 +99,5 @@ class SystemBaselineMappedSystem(db.Model):
 
     @classmethod
     def delete_by_system_ids(cls, system_ids, account_number):
-        cls.query.filter(cls.system_id.in_(system_ids)).delete(
-            synchronize_session="fetch"
-        )
+        cls.query.filter(cls.system_id.in_(system_ids)).delete(synchronize_session="fetch")
         db.session.commit()

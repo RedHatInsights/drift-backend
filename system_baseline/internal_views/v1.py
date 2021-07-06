@@ -1,11 +1,11 @@
-from flask import Blueprint, request, current_app
-
+from flask import Blueprint, current_app, request
 from kerlescan import view_helpers
 from kerlescan.view_helpers import validate_uuids
 
 from system_baseline import metrics
-from system_baseline.version import app_version
 from system_baseline.models import SystemBaselineMappedSystem
+from system_baseline.version import app_version
+
 
 section = Blueprint("internal_v1", __name__)
 

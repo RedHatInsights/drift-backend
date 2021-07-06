@@ -11,4 +11,3 @@ echo "Kerlescan $TAG installed"
 echo "Creating manifest"
 pipenv run scripts/create-manifest.py
 echo "Manifest created."
-

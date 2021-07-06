@@ -1,11 +1,10 @@
 import logging
+
 from logging.config import fileConfig
 
-from flask import current_app
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
 from alembic import context
+from flask import current_app
+from sqlalchemy import engine_from_config, pool
 
 
 # this is the Alembic Config object, which provides
@@ -22,9 +21,7 @@ logger = logging.getLogger("alembic.env")
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-config.set_main_option(
-    "sqlalchemy.url", current_app.config.get("SQLALCHEMY_DATABASE_URI")
-)
+config.set_main_option("sqlalchemy.url", current_app.config.get("SQLALCHEMY_DATABASE_URI"))
 target_metadata = current_app.extensions["migrate"].db.metadata
 
 

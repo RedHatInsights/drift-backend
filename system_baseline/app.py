@@ -1,9 +1,8 @@
 import logging
 
 import connexion
+
 from flask_migrate import Migrate
-
-
 from kerlescan import config
 from kerlescan.audit_logging import setup_audit_logging
 from kerlescan.cloudwatch import setup_cw_logging
@@ -11,11 +10,11 @@ from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
-from system_baseline import db_config, app_config
-from system_baseline.views.v1 import section as v1_bp
-from system_baseline.internal_views.v1 import section as internal_v1_bp
+from system_baseline import app_config, db_config
 from system_baseline.global_helpers import global_helpers_bp
+from system_baseline.internal_views.v1 import section as internal_v1_bp
 from system_baseline.models import db
+from system_baseline.views.v1 import section as v1_bp
 
 
 def create_app():
@@ -32,15 +31,9 @@ def create_connexion_app():
         "path_prefix": config.path_prefix,
         "app_name": app_config.get_app_name(),
     }
-    connexion_app = connexion.App(
-        __name__, specification_dir="openapi/", arguments=openapi_args
-    )
-    connexion_app.add_api(
-        "api.spec.yaml", strict_validation=True, validate_responses=True
-    )
-    connexion_app.add_api(
-        "internal_api.spec.yaml", strict_validation=True, validate_responses=True
-    )
+    connexion_app = connexion.App(__name__, specification_dir="openapi/", arguments=openapi_args)
+    connexion_app.add_api("api.spec.yaml", strict_validation=True, validate_responses=True)
+    connexion_app.add_api("internal_api.spec.yaml", strict_validation=True, validate_responses=True)
     connexion_app.add_api("mgmt_api.spec.yaml", strict_validation=True)
     flask_app = connexion_app.app
 

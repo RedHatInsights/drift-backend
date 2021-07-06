@@ -1,24 +1,17 @@
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Gauge, Histogram
 
-api_exceptions = Counter(
-    "baseline_api_exceptions", "count of exceptions raised on public API"
-)
 
-baseline_create_requests = Histogram(
-    "baseline_create_requests", "baseline create request stats"
-)
+api_exceptions = Counter("baseline_api_exceptions", "count of exceptions raised on public API")
 
-baseline_fetch_requests = Histogram(
-    "baseline_fetch_requests", "baseline fetch request stats"
-)
+baseline_create_requests = Histogram("baseline_create_requests", "baseline create request stats")
+
+baseline_fetch_requests = Histogram("baseline_fetch_requests", "baseline fetch request stats")
 
 baseline_fetch_all_requests = Histogram(
     "baseline_fetch_all_requests", "baseline fetch all request stats"
 )
 
-baseline_delete_requests = Histogram(
-    "baseline_delete_requests", "baseline delete request stats"
-)
+baseline_delete_requests = Histogram("baseline_delete_requests", "baseline delete request stats")
 
 inventory_service_requests = Histogram(
     "baseline_inventory_service_requests", "inventory service call stats"
@@ -28,9 +21,7 @@ inventory_service_exceptions = Counter(
     "baseline_inventory_service_exceptions", "count of exceptions raised by inv service"
 )
 
-hsp_service_requests = Histogram(
-    "baseline_hsp_service_requests", "hsp service call stats"
-)
+hsp_service_requests = Histogram("baseline_hsp_service_requests", "hsp service call stats")
 
 hsp_service_exceptions = Counter(
     "baseline_hsp_service_exceptions", "count of exceptions raised by hsp service"
@@ -71,6 +62,4 @@ baseline_account_count_hundred_plus = Gauge(
 )
 
 rbac_requests = Histogram("baseline_rbac_service_requests", "rbac service call stats")
-rbac_exceptions = Counter(
-    "baseline_rbac_exceptions", "count of exceptions raised by rbac service"
-)
+rbac_exceptions = Counter("baseline_rbac_exceptions", "count of exceptions raised by rbac service")

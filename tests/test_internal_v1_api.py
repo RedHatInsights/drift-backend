@@ -1,18 +1,17 @@
 import json
+import unittest
 import uuid
+
+from mock import patch
 
 from system_baseline import app
 
-import unittest
-from mock import patch
 from . import fixtures
 
 
 class ApiTest(unittest.TestCase):
     def setUp(self):
-        self.rbac_patcher = patch(
-            "system_baseline.views.v1.view_helpers.ensure_has_permission"
-        )
+        self.rbac_patcher = patch("system_baseline.views.v1.view_helpers.ensure_has_permission")
         patched_rbac = self.rbac_patcher.start()
         patched_rbac.return_value = None  # validate all RBAC requests
         self.addCleanup(self.stopPatches)
@@ -33,9 +32,7 @@ class ApiSystemsAssociationTests(ApiTest):
             json=fixtures.BASELINE_ONE_LOAD,
         )
 
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.baseline_id = [b["id"] for b in result["data"]][0]
@@ -57,9 +54,7 @@ class ApiSystemsAssociationTests(ApiTest):
         super(ApiSystemsAssociationTests, self).tearDown()
 
         # get all baselines
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         baselines = json.loads(response.data)["data"]
 
         for baseline in baselines:
@@ -74,9 +69,7 @@ class ApiSystemsAssociationTests(ApiTest):
 
             # delete systems
             response = self.client.post(
-                "api/system-baseline/v1/baselines/"
-                + baseline["id"]
-                + "/systems/deletion_request",
+                "api/system-baseline/v1/baselines/" + baseline["id"] + "/systems/deletion_request",
                 headers=fixtures.AUTH_HEADER,
                 json={"system_ids": system_ids},
             )
@@ -111,9 +104,7 @@ class ApiSystemsAssociationTests(ApiTest):
 
         # delete systems
         response = self.client.post(
-            "api/system-baseline/v1/baselines/"
-            + self.baseline_id
-            + "/systems/deletion_request",
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems/deletion_request",
             headers=fixtures.AUTH_HEADER,
             json={"system_ids": system_ids},
         )
@@ -137,9 +128,7 @@ class ApiSystemsAssociationTests(ApiTest):
 
         # delete systems
         response = self.client.post(
-            "api/system-baseline/v1/baselines/"
-            + self.baseline_id
-            + "/systems/deletion_request",
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems/deletion_request",
             headers=fixtures.AUTH_HEADER,
             json=system_ids,
         )
@@ -156,9 +145,7 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(len(response_system_ids), 3)
 
     def test_adding_few_systems(self):
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         baseline_id = [b["id"] for b in result["data"]][0]
@@ -183,9 +170,7 @@ class ApiSystemsAssociationTests(ApiTest):
             self.assertIn(system_id, response_system_ids)
 
     def test_deleting_systems_by_id(self):
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         baseline_id = [b["id"] for b in result["data"]][0]
@@ -209,8 +194,7 @@ class ApiSystemsAssociationTests(ApiTest):
         system_ids_to_remain = system_ids[2:]
 
         response = self.client.delete(
-            "api/system-baseline/internal/v1/systems/%s"
-            % ",".join(system_ids_to_delete),
+            "api/system-baseline/internal/v1/systems/%s" % ",".join(system_ids_to_delete),
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)
@@ -233,9 +217,7 @@ class ApiSystemsAssociationTests(ApiTest):
             self.assertIn(system_id, response_system_ids)
 
     def test_creating_deletion_request_for_systems_by_id(self):
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         baseline_id = [b["id"] for b in result["data"]][0]
@@ -298,9 +280,7 @@ class InternalApiBaselinesTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.baseline_ids = [b["id"] for b in result["data"]]
@@ -308,9 +288,7 @@ class InternalApiBaselinesTests(ApiTest):
 
     def tearDown(self):
         super(InternalApiBaselinesTests, self).tearDown()
-        response = self.client.get(
-            "api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER
-        )
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         data = json.loads(response.data)["data"]
         for baseline in data:
             # get systems for baseline
@@ -324,9 +302,7 @@ class InternalApiBaselinesTests(ApiTest):
 
             # delete systems
             response = self.client.post(
-                "api/system-baseline/v1/baselines/"
-                + baseline["id"]
-                + "/systems/deletion_request",
+                "api/system-baseline/v1/baselines/" + baseline["id"] + "/systems/deletion_request",
                 headers=fixtures.AUTH_HEADER,
                 json=system_ids,
             )

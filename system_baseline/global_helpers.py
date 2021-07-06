@@ -1,8 +1,7 @@
-from flask import Blueprint, request, current_app
-
+from flask import Blueprint, current_app, request
 from kerlescan import view_helpers
 
-from system_baseline import metrics, app_config
+from system_baseline import app_config, metrics
 
 
 global_helpers_bp = Blueprint("global_helpers", __name__)
@@ -17,9 +16,7 @@ def log_username():
 
 @global_helpers_bp.before_app_request
 def ensure_entitled():
-    return view_helpers.ensure_entitled(
-        request, app_config.get_app_name(), current_app.logger
-    )
+    return view_helpers.ensure_entitled(request, app_config.get_app_name(), current_app.logger)
 
 
 @global_helpers_bp.before_app_request

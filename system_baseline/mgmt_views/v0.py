@@ -1,12 +1,11 @@
-from flask import jsonify, current_app, request
-
+from flask import current_app, jsonify, request
 from kerlescan.metrics_registry import get_registry
-from system_baseline.models import SystemBaseline, db
-from system_baseline import metrics as baseline_metrics
-
 from prometheus_client import generate_latest
-
 from sqlalchemy.sql import text
+
+from system_baseline import metrics as baseline_metrics
+from system_baseline.models import SystemBaseline, db
+
 
 RANGES = text(
     "select count(*) from"
@@ -29,17 +28,13 @@ def _update_baseline_counts():
 
     total_accounts_ones = db.engine.execute(RANGES, low=0, high=10).scalar()
     total_accounts_tens = db.engine.execute(RANGES, low=10, high=100).scalar()
-    total_accounts_hundred_plus = db.engine.execute(
-        RANGES, low=100, high=BIGINT_MAX
-    ).scalar()
+    total_accounts_hundred_plus = db.engine.execute(RANGES, low=100, high=BIGINT_MAX).scalar()
 
     baseline_metrics.baseline_count.set(total_baselines)
     baseline_metrics.baseline_account_count.set(total_accounts)
     baseline_metrics.baseline_account_count_ones.set(total_accounts_ones)
     baseline_metrics.baseline_account_count_tens.set(total_accounts_tens)
-    baseline_metrics.baseline_account_count_hundred_plus.set(
-        total_accounts_hundred_plus
-    )
+    baseline_metrics.baseline_account_count_hundred_plus.set(total_accounts_hundred_plus)
 
 
 def metrics():
