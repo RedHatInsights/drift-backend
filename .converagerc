@@ -1,0 +1,7 @@
+[run]
+omit =
+    *migrations*
+    *dashboards*
+    *documentation*
+[report]
+skip_covered=True

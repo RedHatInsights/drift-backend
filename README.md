@@ -8,14 +8,14 @@ directory.
 ## Coding guidelines
 1. All python code must be python 3.8 compatible
 1. The code should follow linting from pylint
-1. The code should follow formater from black
+1. The code should follow formatter from black
 1. The code should follow imports order from isort
 
 ## Required dependencies:
 - pipenv
 - pre-commit
 
-## Work with pre-commit hooks
+### Work with pre-commit hooks
 
 ```bash
 # installs pre-commit hooks into the repo
@@ -34,23 +34,39 @@ pre-commit autoupdate
 git commit --no-verify
 ```
 
-To set up pipenv:
-```
+### To set up pipenv:
+```bash
 yum install -y pipenv
 pipenv install # will pull in deps and create virtualenv, and will print next steps to run
 ```
+### To run unit tests
 
-to set up temp directory (command will return a temp dir that you'll use later)
+With your `pipenv shell` activated.
+
+Run: `./run_unit_tests.sh` to run all unit test. Since we use `pytest` we can pass all pytest args to this script, for example:
+
+- Run with verbose
+```bash
+./run_unit_tests.sh -vv
+```
+
+- Run only one test
+```bash
+./run_unit_tests.sh -k TEST_NAME
+```
+you can aggregate pytest args in same command, eg: `./run_unit_tests.sh -k TEST_NAME -vv`
+
+### to set up temp directory (command will return a temp dir that you'll use later)
 ```
 mktemp -d
 ```
 
-To run (inventory service URL can be obtained from drift or platform team):
+### To run (inventory service URL can be obtained from drift or platform team):
 
 `prometheus_multiproc_dir=`mktemp -d` INVENTORY_SVC_URL=<inventory service url> ./run_app.sh`
 
 
-To set the debug level (`info` by default):
+### To set the debug level (`info` by default):
 
 `LOG_LEVEL=debug prometheus_multiproc_dir=/tmp/tempdir INVENTORY_SVC_URL=<inventory service url> ./run_app.sh`
 
@@ -80,7 +96,7 @@ OK in most cases; even `pdb` runs fine inside of gunicorn.
 However, if you want to use flask's server, use `python3 standalone_flask_server.py`
 with the aforementioned environment vars.
 
-To run SonarQube:
+### To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.
 2. Duplicate the `sonar-scanner.properties.sample` config file.
 ```
