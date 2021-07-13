@@ -29,7 +29,7 @@ bitmath = "*"
 boto3 = "*"
 watchtower = "*"
 insights-core = "*"
-kerlescan = {editable = true, ref = "0.72", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.73", git = "https://github.com/RedHatInsights/kerlescan.git"}
 python-dateutil = "*"
 
 [requires]
