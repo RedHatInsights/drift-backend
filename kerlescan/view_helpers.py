@@ -93,9 +93,9 @@ def ensure_has_permission(**kwargs):
             # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
             # If we just have *:*, it works, but if not, we need both notifications:read and
             # baselines:read in order to allow access.
-            all_match = True
             found_one = False
             for p in kwargs["permissions"]:
+                all_match = True
                 for one_of_required in p:
                     if one_of_required not in perms:
                         all_match = False
