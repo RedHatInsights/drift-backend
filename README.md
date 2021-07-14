@@ -27,7 +27,7 @@ git commit --no-verify
 ## To run tests
 1. `pipenv install --dev`
 2. `pipenv shell`
-3. `nosetests`
+3. `pytest`
 
 ## To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.

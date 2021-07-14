@@ -20,9 +20,19 @@ source = ["kerlescan"]
 omit = ["kerlescan/tests/*",]
 
 [tool.coverage.paths]
-source = ["kerlescan/"]
+source = ["kerlescan/kerlescan"]
 
 [tool.coverage.report]
-fail_under = 73
+fail_under = 0  # we need to change to 73 in the future after we create more tests
 skip_covered = true
 show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.2.1"
+addopts = "-s --tb=native --cov=./kerlescan --no-cov-on-fail"
+testpaths = "./tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning'
+    ]
