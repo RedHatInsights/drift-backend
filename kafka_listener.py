@@ -52,8 +52,8 @@ def init_consumer(queue, logger):
             max_poll_records=config.kafka_max_poll_records,
             security_protocol="SSL",
             ssl_cafile=config.kafka_ssl_cert,
-            sasl_username=config.kafka_sasl_username,
-            sasl_password=config.kafka_sasl_password,
+            sasl_plain_username=config.kafka_sasl_username,
+            sasl_plain_password=config.kafka_sasl_password,
             ssl_check_hostname=False,
         )
     else:

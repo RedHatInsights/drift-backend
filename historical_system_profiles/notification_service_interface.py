@@ -34,8 +34,8 @@ class NotificationServiceInterface:
                     value_serializer=lambda v: json.dumps(v).encode("utf-8"),
                     security_protocol="SSL",
                     ssl_cafile=config.kafka_ssl_cert,
-                    sasl_username=config.kafka_sasl_username,
-                    sasl_password=config.kafka_sasl_password,
+                    sasl_plain_username=config.kafka_sasl_username,
+                    sasl_plain_password=config.kafka_sasl_password,
                     ssl_check_hostname=False,
                 )
             else:
