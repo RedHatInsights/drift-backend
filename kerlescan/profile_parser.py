@@ -12,7 +12,7 @@ from kerlescan.constants import (
     SYSTEM_ID_KEY,
     SYSTEM_PROFILE_BOOLEANS,
     SYSTEM_PROFILE_INTEGERS,
-    SYSTEM_PROFILE_LISTS_OF_STRINGS,
+    # SYSTEM_PROFILE_LISTS_OF_STRINGS,
     SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED,
     SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED,
     SYSTEM_PROFILE_STRINGS,
@@ -133,7 +133,7 @@ def parse_profile(system_profile, display_name, logger):
 
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, "enabled")
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, "installed")
-    _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS, None)
+    #    _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS, None)
 
     _parse_running_processes(system_profile.get("running_processes", []))
 
@@ -152,21 +152,23 @@ def parse_profile(system_profile, display_name, logger):
     for package in system_profile.get("installed_packages", []):
         try:
             name, vra = _get_name_vra_from_string(package)
-            parsed_profile["installed_packages." + name] = vra
+            if name != "gpg-pubkey":
+                parsed_profile["installed_packages." + name] = vra
         except UnparsableNEVRAError as e:
             logger.warn(e.message)
 
     for package in system_profile.get("installed_packages_delta", []):
         try:
             name, vra = _get_name_vra_from_string(package)
-            if "installed_packages." + name in parsed_profile:
-                if not isinstance(parsed_profile["installed_packages." + name], list):
-                    starter_item = parsed_profile["installed_packages." + name]
-                    parsed_profile["installed_packages." + name] = [starter_item]
-                parsed_profile["installed_packages." + name].append(vra)
-                parsed_profile["installed_packages." + name].sort()
-            else:
-                parsed_profile["installed_packages." + name] = vra
+            if name != "gpg-pubkey":
+                if "installed_packages." + name in parsed_profile:
+                    if not isinstance(parsed_profile["installed_packages." + name], list):
+                        starter_item = parsed_profile["installed_packages." + name]
+                        parsed_profile["installed_packages." + name] = [starter_item]
+                    parsed_profile["installed_packages." + name].append(vra)
+                    parsed_profile["installed_packages." + name].sort()
+                else:
+                    parsed_profile["installed_packages." + name] = vra
         except UnparsableNEVRAError as e:
             logger.warn(e.message)
 
