@@ -2,7 +2,10 @@ import time
 
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
-from historical_system_profiles.baseline_service_interface import fetch_system_baseline_associations
+from historical_system_profiles.baseline_service_interface import (
+    fetch_baselines,
+    fetch_system_baseline_associations,
+)
 from historical_system_profiles.drift_service_interface import check_for_drift
 from historical_system_profiles.notification_service_interface import (
     EventDriftBaselineDetected,
@@ -143,9 +146,10 @@ def _check_and_send_notifications(
                 # Add each baseline to our event, then send notification only once
                 # containing the whole list of events for this system
                 drift_found = True
-                # currently using baseline_id in place of baseline_name for testing
-                # will need to make another call to api to get this later
-                event.add_drifted_baseline(baseline_id, baseline_id, comparison)
+                baseline_name = fetch_baselines([baseline_id], service_auth_key, logger)[0][
+                    "display_name"
+                ]
+                event.add_drifted_baseline(baseline_id, baseline_name, comparison)
                 logger.info(
                     "drift detected, baseline added to event baseline id: %s)" % (baseline_id)
                 )
