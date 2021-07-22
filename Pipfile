@@ -6,15 +6,21 @@ verify_ssl = true
 [dev-packages]
 openapi-spec-validator = "*"
 coverage = "*"
+"coverage[toml]" = "*"
 flake8 = "*"
 mock = "*"
-nose = "*"
 responses = "*"
 yamllint = "*"
 black = "==21.6b0"
 ipdb = "*"
 podman-compose = "*"
 python-semantic-release = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+toml = "*"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "~=2.6"}
