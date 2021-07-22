@@ -23,6 +23,16 @@ omit = ["historical-system-profiles-backend/tests/*",]
 source = ["historical-system-profiles-backend/"]
 
 [tool.coverage.report]
-fail_under = 73
+fail_under = 30
 skip_covered = true
 show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.2.1"
+addopts = "-s --tb=native --cov=."
+testpaths = "./tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning'
+    ]

@@ -21,12 +21,16 @@ pytz = "*"
 [dev-packages]
 black = "==21.6b0"
 flake8 = "*"
-nose = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
 coverage = "*"
-codecov = "*"
 yamllint = "*"
 mock = "*"
 ipdb = "*"
+toml = "*"
 
 [pipenv]
 allow_prereleases = true
