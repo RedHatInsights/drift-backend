@@ -1,7 +1,7 @@
 services-drift:historical_system_profiles/python:3.8=alembic:1.6.5
 services-drift:historical_system_profiles/python:3.8=attrs:21.2.0
-services-drift:historical_system_profiles/python:3.8=boto3:1.18.4
-services-drift:historical_system_profiles/python:3.8=botocore:1.21.4
+services-drift:historical_system_profiles/python:3.8=boto3:1.18.5
+services-drift:historical_system_profiles/python:3.8=botocore:1.21.5
 services-drift:historical_system_profiles/python:3.8=certifi:2021.5.30
 services-drift:historical_system_profiles/python:3.8=charset-normalizer:2.0.3
 services-drift:historical_system_profiles/python:3.8=click:7.1.2
