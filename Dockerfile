@@ -13,6 +13,7 @@ RUN chown -R 1001:0 /tmp/src
 USER 1001
 
 ENV ENABLE_PIPENV=true
+ENV APP_SCRIPT=run_app.sh
 
 # Install the dependencies
 RUN /usr/libexec/s2i/assemble
