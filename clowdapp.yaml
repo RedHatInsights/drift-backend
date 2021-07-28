@@ -2,22 +2,20 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: drift
+  name: drift-backend
 
 objects:
 - apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
   metadata:
-    name: drift
+    name: drift-backend
     labels:
-      app: drift
+      app: drift-backend
   spec:
     envName: ${ENV_NAME}
     dependencies:
     - host-inventory
     - rbac
-    - system-baseline
-    - historical-system-profiles
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
@@ -25,17 +23,18 @@ objects:
         public:
           enabled: true
       podSpec:
+        imagePullPolicy: Always
         image: ${IMAGE}:${IMAGE_TAG}
         livenessProbe:
           httpGet:
             path: /mgmt/v0/status
-            port: 8080
+            port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /mgmt/v0/status
-            port: 8080
+            port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
         resources:
@@ -82,17 +81,17 @@ objects:
     name: drift-backend
     annotations:
       prometheus.io/path: /mgmt/v0/metrics
-      prometheus.io/port: '8080'
+      prometheus.io/port: '8000'
       prometheus.io/scrape: 'true'
   spec:
     type: ClusterIP
     selector:
       deploymentconfig: drift-backend
     ports:
-      - name: 8080-tcp
-        port: 8080
+      - name: 8000-tcp
+        port: 8000
         protocol: TCP
-        targetPort: 8080
+        targetPort: 8000
 
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
@@ -136,3 +135,7 @@ parameters:
     value: 100m
   - name: MEMORY_REQUEST
     value: 300Mi
+  - description: ClowdEnv Name
+    name: ENV_NAME
+  - name: CLOWDER_ENABLED
+    value: "true"
