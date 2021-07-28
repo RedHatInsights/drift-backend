@@ -16,6 +16,7 @@ objects:
     dependencies:
     - host-inventory
     - rbac
+    - system-baseline
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
