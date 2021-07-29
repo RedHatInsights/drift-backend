@@ -1,0 +1,36 @@
+---
+openapi: 3.0.1
+info:
+  version: "0.1"
+  title: Drift Backend Service Admin Plane
+  description: Admin API for Drift Service
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: "{{ path_prefix }}{{ app_name }}/admin"
+
+
+paths:
+  /status:
+    get:
+      summary: admin data call
+      operationId: drift.views.admin.status
+      tags:
+        - status
+      responses:
+        '200':
+          description: "A small JSON indicating some information about application"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+components:
+  schemas:
+    Status:
+      required:
+        - status
+      properties:
+        status:
+          type: string

@@ -24,6 +24,7 @@ def create_app():
     connexion_app = connexion.App(__name__, specification_dir="openapi/", arguments=openapi_args)
     connexion_app.add_api("api.spec.yaml", validate_responses=True, strict_validation=True)
     connexion_app.add_api("mgmt_api.spec.yaml")
+    connexion_app.add_api("admin_api.spec.yaml", validate_responses=True, strict_validation=True)
     flask_app = connexion_app.app
 
     create_prometheus_registry_dir()
