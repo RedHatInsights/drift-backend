@@ -7,12 +7,11 @@ import bitmath
 
 from insights.parsers.installed_rpms import InstalledRpm
 
-from kerlescan.constants import (
+from kerlescan.constants import (  # SYSTEM_PROFILE_LISTS_OF_STRINGS,
     GPG_KEY_PREFIX,
     SYSTEM_ID_KEY,
     SYSTEM_PROFILE_BOOLEANS,
     SYSTEM_PROFILE_INTEGERS,
-    # SYSTEM_PROFILE_LISTS_OF_STRINGS,
     SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED,
     SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED,
     SYSTEM_PROFILE_STRINGS,

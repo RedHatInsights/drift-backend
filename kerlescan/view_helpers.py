@@ -54,22 +54,50 @@ def ensure_account_number(request, logger):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
+def check_request_from_drift_service(**kwargs):
+    """
+    check_request_from_drift_service kwargs need to contain: request
+    This method check if the request comes from our drift service.
+    """
+    request = kwargs["request"]
+    auth_key = get_key_from_headers(request.headers)
+
+    auth = json.loads(base64.b64decode(auth_key))
+    identity_type = auth.get("identity", {}).get("type", None)
+    if identity_type == "System":
+        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+        if request_shared_secret and request_shared_secret == drift_shared_secret:
+            kwargs["logger"].audit("shared-secret found, auth/entitlement authorized")
+            return True  # shared secret set and is correct
+
+    return False
+
+
+def check_request_from_turnpike(**kwargs):
+    """
+    check_request_from_turnpike kwargs need to contain: request
+    This method check if the request comes from Turnpike
+    """
+    request = kwargs["request"]
+    auth_key = get_key_from_headers(request.headers)
+
+    auth = json.loads(base64.b64decode(auth_key))
+    identity_type = auth.get("identity", {}).get("type", None)
+
+    if identity_type == "Associate":
+        kwargs["logger"].audit("Associate account found, auth/entitlement authorized")
+        return True
+
+    return False
+
+
 def ensure_has_permission(**kwargs):
     """
     ensure permission exists. kwargs needs to contain:
         permissions, application, app_name, request, logger, request_metric, exception_metric
     """
     request = kwargs["request"]
-    auth_key = get_key_from_headers(request.headers)
-
-    # check if the request comes from our own drift service
-    if auth_key:
-        auth = json.loads(base64.b64decode(auth_key))
-        if auth.get("identity", {}).get("type", None) == "System":
-            request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
-            if request_shared_secret and request_shared_secret == drift_shared_secret:
-                kwargs["logger"].audit("shared-secret found, auth/entitlement authorized")
-                return  # shared secret set and is correct
+    logger = kwargs["logger"]
 
     if not enable_rbac:
         return
@@ -77,44 +105,50 @@ def ensure_has_permission(**kwargs):
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, kwargs["app_name"]):
         return  # allow request
 
-    if auth_key:
-        try:
-            perms = get_perms(
-                kwargs["application"],
-                auth_key,
-                kwargs["logger"],
-                kwargs["request_metric"],
-                kwargs["exception_metric"],
-            )
-            # kwargs["permissions"] is now a list of lists.
-            # At least one of the lists must work ("or"), but all permissions in each
-            # sublist must work in order for that list to "work" ("and").
-            # For example:
-            # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
-            # If we just have *:*, it works, but if not, we need both notifications:read and
-            # baselines:read in order to allow access.
-            found_one = False
-            for p in kwargs["permissions"]:
-                all_match = True
-                for one_of_required in p:
-                    if one_of_required not in perms:
-                        all_match = False
-                if all_match:
-                    found_one = True
-            if found_one:
-                return  # allow
-            raise HTTPError(
-                HTTPStatus.FORBIDDEN,
-                message="user does not have access to %s" % kwargs["permissions"],
-            )
-        except RBACDenied:
-            raise HTTPError(
-                HTTPStatus.FORBIDDEN,
-                message="request to retrieve permissions from RBAC was forbidden",
-            )
-    else:
-        # if we got here, reject the request
+    auth_key = get_key_from_headers(request.headers)
+
+    # check if the request comes from our own drift service
+    if check_request_from_drift_service(**kwargs) or check_request_from_turnpike(**kwargs):
+        return
+
+    if not auth_key:
+        logger.debug("entitlement not found for account.")
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
+
+    try:
+        perms = get_perms(
+            kwargs["application"],
+            auth_key,
+            kwargs["logger"],
+            kwargs["request_metric"],
+            kwargs["exception_metric"],
+        )
+        # kwargs["permissions"] is now a list of lists.
+        # At least one of the lists must work ("or"), but all permissions in each
+        # sublist must work in order for that list to "work" ("and").
+        # For example:
+        # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
+        # If we just have *:*, it works, but if not, we need both notifications:read and
+        # baselines:read in order to allow access.
+        found_one = False
+        for p in kwargs["permissions"]:
+            all_match = True
+            for one_of_required in p:
+                if one_of_required not in perms:
+                    all_match = False
+            if all_match:
+                found_one = True
+        if found_one:
+            return  # allow
+        raise HTTPError(
+            HTTPStatus.FORBIDDEN,
+            message="user does not have access to %s" % kwargs["permissions"],
+        )
+    except RBACDenied:
+        raise HTTPError(
+            HTTPStatus.FORBIDDEN,
+            message="request to retrieve permissions from RBAC was forbidden",
+        )
 
 
 def ensure_entitled(request, app_name, logger):
@@ -122,17 +156,6 @@ def ensure_entitled(request, app_name, logger):
     check if the request is entitled. We run this on all requests and bail out
     if the URL is whitelisted. Returning 'None' allows the request to go through.
     """
-
-    auth_key = get_key_from_headers(request.headers)
-
-    # check if the request comes from our own drift service
-    if auth_key:
-        auth = json.loads(base64.b64decode(auth_key))
-        if auth.get("identity", {}).get("type", None) == "System":
-            request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
-            if request_shared_secret and request_shared_secret == drift_shared_secret:
-                logger.audit("shared-secret found, auth/entitlement authorized")
-                return  # shared secret set and is correct
 
     entitlement_key = "insights"
     if enable_smart_mgmt_check:
@@ -143,17 +166,24 @@ def ensure_entitled(request, app_name, logger):
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
         return  # allow request
 
-    if auth_key:
-        entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
-        if entitlement_key in entitlements:
-            if entitlements[entitlement_key].get("is_entitled"):
-                logger.debug("enabled entitlement found on header")
-                return  # allow request
-    else:
-        logger.debug("identity header not sent for request")
+    auth_key = get_key_from_headers(request.headers)
 
-    # if we got here, reject the request
-    logger.debug("entitlement not found for account.")
+    if not auth_key:
+        logger.debug("entitlement not found for account.")
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
+
+    # check if the request comes from our own drift service
+    if check_request_from_drift_service(request=request) or check_request_from_turnpike(
+        request=request
+    ):
+        return
+
+    entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
+    if entitlement_key in entitlements:
+        if entitlements[entitlement_key].get("is_entitled"):
+            logger.debug("enabled entitlement found on header")
+            return  # allow request
+
     raise HTTPError(HTTPStatus.BAD_REQUEST, message="Entitlement not found for account.")
 
 
@@ -162,7 +192,11 @@ def log_username(logger, request):
         auth_key = get_key_from_headers(request.headers)
         if auth_key:
             identity = json.loads(base64.b64decode(auth_key))["identity"]
-            logger.debug("username from identity header: %s" % identity["user"]["username"])
+            if identity["type"] == "Associate":
+                username = identity["associate"]["email"]
+            else:
+                username = identity["user"]["username"]
+            logger.debug("username/associate from identity header: %s" % username)
         else:
             logger.debug("identity header not sent for request")
 
