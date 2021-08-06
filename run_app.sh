@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # VALIDATES IF WE HAVE CLOWDER ENV 
 if [ -z "$ACG_CONFIG"]; then
   echo "Did not found ACG_CONFIG - RUNNING LOCALLY"
