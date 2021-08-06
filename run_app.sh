@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # VALIDATES IF WE HAVE CLOWDER ENV 
 if [ -z "$ACG_CONFIG"]; then
