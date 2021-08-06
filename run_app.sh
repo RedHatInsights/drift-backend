@@ -1,3 +1,5 @@
+#!/bin/bash
+
 TEMPDIR=`mktemp -d`
 
 if [ -z "$LOG_LEVEL" ];
