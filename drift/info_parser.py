@@ -352,9 +352,9 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
                     reference_value = values["value"]
 
             for values in sorted_system_id_values_without_obfuscated:
-                values["state"] = COMPARISON_SAME
+                values["state"] = [COMPARISON_SAME]
                 if values["value"] != reference_value:
-                    values["state"] = COMPARISON_DIFFERENT
+                    values["state"] = [COMPARISON_DIFFERENT]
 
         if len(system_values) == 1:
             info_comparison = COMPARISON_SAME
@@ -379,6 +379,34 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
                 sorted_system_values.append(system["value"])
                 if reference_id == system["id"]:
                     reference_value = system["value"]
+            for system in sorted_system_id_values:
+                system["state"] = []
+                if not isinstance(reference_value, list):
+                    if not isinstance(system["value"], list):
+                        # I don't think this case is possible with multivalue
+                        # but I'm covering all cases for now.
+                        if reference_value == system["value"]:
+                            system["state"] = [COMPARISON_SAME]
+                        else:
+                            system["state"] = [COMPARISON_DIFFERENT]
+                    else:
+                        for value in system["value"]:
+                            if value == reference_value:
+                                system["state"].append(COMPARISON_SAME)
+                            else:
+                                system["state"].append(COMPARISON_DIFFERENT)
+                else:
+                    if not isinstance(system["value"], list):
+                        if system["value"] in reference_value:
+                            system["state"] = [COMPARISON_SAME]
+                        else:
+                            system["state"] = [COMPARISON_DIFFERENT]
+                    else:
+                        for value in system["value"]:
+                            if value in reference_value:
+                                system["state"].append(COMPARISON_SAME)
+                            else:
+                                system["state"].append(COMPARISON_DIFFERENT)
         else:
             sorted_system_values = [system["value"] for system in sorted_system_id_values]
 
@@ -431,10 +459,6 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
                 if value != "":
                     if value not in sorted_system_id_values[1]["value"]:
                         info_comparison = COMPARISON_DIFFERENT
-
-        # need to account for states compared to a reference if selected
-        # for system in sorted_system_id_values:
-        #    system["state"] = reference_comparison
 
         row = 0
         multivalues = []
