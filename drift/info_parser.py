@@ -432,16 +432,30 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
                     if value not in sorted_system_id_values[1]["value"]:
                         info_comparison = COMPARISON_DIFFERENT
 
-        # need to account for states compared to a reference if selected
-        # for system in sorted_system_id_values:
-        #    system["state"] = reference_comparison
-
         row = 0
         multivalues = []
         while row < row_count:
             expanded_systems = []
+            state = info_comparison
+            reference = next(
+                filter(lambda v: v["id"] == reference_id, sorted_system_id_values), None
+            )
             for system in sorted_system_id_values:
-                expanded_systems.append({"id": system["id"], "value": system["value"][row]})
+                if reference_id:
+                    reference_value = reference["value"][row]
+                    if not isinstance(system["value"], list):
+                        if system["value"] == reference_value:
+                            state = COMPARISON_SAME
+                        else:
+                            state = COMPARISON_DIFFERENT
+                    else:
+                        if system["value"][row] == reference_value:
+                            state = COMPARISON_SAME
+                        else:
+                            state = COMPARISON_DIFFERENT
+                expanded_systems.append(
+                    {"id": system["id"], "value": system["value"][row], "state": state}
+                )
             multivalues.append({"state": multivalue_comparisons[row], "systems": expanded_systems})
             row += 1
 
