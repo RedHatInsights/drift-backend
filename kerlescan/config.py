@@ -42,7 +42,9 @@ rbac_svc_hostname = load_hosts_setting("RBAC_SVC_URL", "rbac", "http://rbac_svc_
 
 hsp_svc_hostname = load_hosts_setting("HSP_SVC_URL", "hsp", "http://hsp_svc_url_is_not_set")
 
-drift_svc_hostname = load_hosts_setting("DRIFT_SVC_URL", "drift", "http://drift_svc_url_is_not_set")
+drift_svc_hostname = load_hosts_setting(
+    "DRIFT_SVC_URL", "drift-backend", "http://drift_svc_url_is_not_set"
+)
 
 log_level = os.getenv("LOG_LEVEL", "INFO")
 
