@@ -3,7 +3,7 @@ python_version = "3.8"
 
 [packages]
 connexion = {extras = ["swagger-ui"],version = "~=2.7"}
-kerlescan = {editable = true, ref = "0.74", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.76", git = "https://github.com/RedHatInsights/kerlescan.git"}
 prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"
@@ -17,6 +17,7 @@ psycopg2 = "*"
 logstash-formatter = "*"
 python-dateutil = "*"
 pytz = "*"
+app-common-python = "*"
 
 [dev-packages]
 black = "==21.6b0"
@@ -26,7 +27,7 @@ pytest-cov = "*"
 pytest-flask = "*"
 pytest-black = "*"
 pytest-mock = "*"
-coverage = "*"
+"coverage[toml]" = "*"
 yamllint = "*"
 mock = "*"
 ipdb = "*"
