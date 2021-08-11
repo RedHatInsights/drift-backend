@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-coverage = "*"
+"coverage[toml]" = "*"
 flake8 = "*"
 mock = "*"
 pytest = "*"
@@ -29,7 +29,7 @@ bitmath = "*"
 boto3 = "*"
 watchtower = "*"
 insights-core = "*"
-kerlescan = {editable = true, ref = "0.75", git = "https://github.com/RedHatInsights/kerlescan.git"}
+kerlescan = {editable = true, ref = "0.76", git = "https://github.com/RedHatInsights/kerlescan.git"}
 python-dateutil = "*"
 app-common-python = "*"
 

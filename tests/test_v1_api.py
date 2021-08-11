@@ -256,6 +256,10 @@ class ApiTests(unittest.TestCase):
 
 class DebugLoggingApiTests(unittest.TestCase):
     def setUp(self):
+        self.rbac_patcher = mock.patch("drift.views.v1.view_helpers.ensure_has_permission")
+        patched_rbac = self.rbac_patcher.start()
+        patched_rbac.return_value = None  # validate all RBAC requests
+
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
         self.client = test_flask_app.test_client()
@@ -265,18 +269,25 @@ class DebugLoggingApiTests(unittest.TestCase):
         test_flask_app.logger.addHandler(self.handler)
         test_flask_app.logger.setLevel(logging.DEBUG)
 
+    def stopPatches(self):
+        self.rbac_patcher.stop()
+
     @mock.patch("drift.views.v1.get_key_from_headers")
     def test_username_logging_on_debug_no_key(self, mock_get_key):
         mock_get_key.return_value = None
         self.client.get("api/drift/v1/comparison_report")
         self.handler.flush()
-        self.assertIn("identity header not sent for request", self.stream.getvalue())
-        self.assertNotIn("username from identity header", self.stream.getvalue())
+
+        result = self.stream.getvalue()
+        self.assertIn("identity header not sent for request", result)
+        self.assertNotIn("username/associate from identity header", result)
 
     @mock.patch("kerlescan.view_helpers.get_key_from_headers")
     def test_username_logging_on_debug_with_key(self, mock_get_key):
         mock_get_key.return_value = fixtures.AUTH_HEADER["X-RH-IDENTITY"]
         self.client.get("api/drift/v1/comparison_report")
         self.handler.flush()
-        self.assertNotIn("identity header not sent for request", self.stream.getvalue())
-        self.assertIn("username from identity header: test_user", self.stream.getvalue())
+
+        result = self.stream.getvalue()
+        self.assertNotIn("identity header not sent for request", result)
+        self.assertIn("username/associate from identity header: test_user", result)
