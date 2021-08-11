@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, current_app, request
+from kerlescan.service_interface import get_key_from_headers
 
-from drift.version import app_version
+from drift.baseline_service_interface import call_baseline_admin_svc
 
 
 section = Blueprint("internal_admin", __name__)
@@ -8,17 +9,8 @@ section = Blueprint("internal_admin", __name__)
 
 @section.before_app_request
 def status():
-    return jsonify(
-        {
-            "drift_version": app_version,
-            "status": "Warning! This is a test data.",
-            "totalBaselinesCount": 541,
-            "customerIdsCount": 279,
-            "BaselinesBuckets": {"1": 206, "2": 46, "3": 11, "4": 4, "10+": 7, "5-10": 5},
-            "createdBaselinesToday": 3,
-            "createdBaselinesWeek": 11,
-            "createdBaselinesMonth": 47,
-            "totalBaselinesWithAssociationsCount": 25,
-            "BaselinesAssociationsBuckets": {"1": 19, "2": 4, "3": 1, "4": 1, "10+": 0, "5-10": 0},
-        }
+    auth_key = get_key_from_headers(request.headers)
+    result = call_baseline_admin_svc(
+        endpoint="status", service_auth_key=auth_key, logger=current_app.logger
     )
+    return result
