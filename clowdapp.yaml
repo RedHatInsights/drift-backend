@@ -17,6 +17,8 @@ objects:
     - host-inventory
     - rbac
     - system-baseline
+    testing:
+      iqePlugin: drift
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
