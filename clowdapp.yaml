@@ -26,6 +26,8 @@ objects:
     dependencies:
     - host-inventory
     - rbac
+    testing:
+      iqePlugin: drift
     database:
       name: system-baseline-db
       version: 12
