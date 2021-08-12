@@ -313,7 +313,7 @@ parameters:
     required: true
   - name: IMAGE
     description: image name
-    value: quay.io/jramos/hsp
+    value: quay.io/cloudservices/historical-system-profiles-backend
   - name: MIN_REPLICAS
     description: minimum pod replicas for horizontal pod autoscaler
     value: "1"
