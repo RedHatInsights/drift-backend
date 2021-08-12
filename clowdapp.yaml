@@ -29,7 +29,8 @@ objects:
     - rbac
     - ingress
     - system-baseline
-
+    testing:
+      iqePlugin: drift
     database:
       name: hsp-db
       version: 12
