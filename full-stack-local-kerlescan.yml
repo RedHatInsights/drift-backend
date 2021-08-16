@@ -295,6 +295,7 @@ services:
       - LINUX=True
       - PLATFORM=linux
       - CUSTOM_CONF=true
+      - USE_CLOUD=true # for cloud.redhat.com resources instead of console.redhat.com
     links:
       - "drift-frontend"
       - "inventory-rest"
