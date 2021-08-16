@@ -68,7 +68,7 @@ objects:
                 name: drift-interpod-comms
 
     deployments:
-    - name: service
+    - name: backend
       minReplicas: ${{MIN_REPLICAS}}
       webServices:
         public:
@@ -91,7 +91,7 @@ objects:
         resources:
           limits:
             cpu: ${CPU_LIMIT}
-            memory: {MEMORY_LIMIT}
+            memory: ${MEMORY_LIMIT}
           requests:
             cpu: ${CPU_REQUEST}
             memory: ${MEMORY_REQUEST}
