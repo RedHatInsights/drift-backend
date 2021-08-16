@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: hsp
+  name: historical-system-profiles
 objects:
 
 - apiVersion: cloud.redhat.com/v1alpha1
@@ -11,16 +11,16 @@ objects:
   metadata:
     name: hsp-migration
   spec:
-    appName: hsp
+    appName: historical-system-profiles
     jobs:
       - hsp-migration
 
 - apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
   metadata:
-    name: hsp
+    name: historical-system-profiles
     labels:
-      app: hsp
+      app: historical-system-profiles
   spec:
     envName: ${ENV_NAME}
     dependencies:
@@ -47,10 +47,10 @@ objects:
         image: ${IMAGE}:${IMAGE_TAG}
         volumes:
           - emptyDir: {}
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         volumeMounts:
           - mountPath: /prometheus-data
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         env:
           - name: APP_CONFIG
             value: gunicorn.conf.py
@@ -63,7 +63,7 @@ objects:
           - name: PATH_PREFIX
             value: /api/
           - name: APP_NAME
-            value: hsp
+            value: historical-system-profiles
           - name: ENABLE_PIPENV
             value: 'true'
           - name: prometheus_multiproc_dir
@@ -121,7 +121,7 @@ objects:
           - name: PATH_PREFIX
             value: /api/
           - name: APP_NAME
-            value: hsp
+            value: historical-system-profiles
           - name: ENABLE_PIPENV
             value: 'true'
           - name: prometheus_multiproc_dir
@@ -132,7 +132,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: hsp-expired-cleaner
+    - name: expired-cleaner
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
@@ -145,10 +145,10 @@ objects:
             memory: ${MEMORY_REQUEST}
         volumes:
           - emptyDir: {}
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         volumeMounts:
           - mountPath: /prometheus-data
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         env:
@@ -176,7 +176,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: hsp-archiver
+    - name: archiver
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
@@ -191,10 +191,10 @@ objects:
           terminationMessagePolicy: File
         volumes:
           - emptyDir: {}
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         volumeMounts:
           - mountPath: /prometheus-data
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         env:
           - name: APP_CONFIG
             value: gunicorn.conf.py
@@ -222,7 +222,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: hsp-deleter
+    - name: deleter
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
@@ -237,10 +237,10 @@ objects:
           terminationMessagePolicy: File
         volumes:
           - emptyDir: {}
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         volumeMounts:
           - mountPath: /prometheus-data
-            name: hsp-prometheus-data
+            name: historical-system-profiles-prometheus-data
         env:
           - name: APP_CONFIG
             value: gunicorn.conf.py
@@ -272,8 +272,8 @@ objects:
   kind: Service
   metadata:
     labels:
-      app: hsp
-    name: hsp
+      app: historical-system-profiles
+    name: historical-system-profiles
     annotations:
       prometheus.io/path: /mgmt/v0/metrics
       prometheus.io/port: '8000'
@@ -291,14 +291,14 @@ objects:
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
   metadata:
-    name: hsp
+    name: historical-system-profiles
     labels:
-      app: hsp
+      app: historical-system-profiles
   spec:
     scaleTargetRef:
       apiVersion: v1
       kind: DeploymentConfig
-      name: hsp
+      name: historical-system-profiles
     minReplicas: ${{MIN_REPLICAS}}
     maxReplicas: ${{MAX_REPLICAS}}
     targetCPUUtilizationPercentage: 50
