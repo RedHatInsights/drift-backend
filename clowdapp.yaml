@@ -24,7 +24,8 @@ objects:
   spec:
     envName: ${ENV_NAME}
     dependencies:
-    #- notifications-backend <-- Wait until we can solve this dependency issue
+    - notifications-backend
+    - notifications-gw
     - host-inventory
     - rbac
     - ingress
