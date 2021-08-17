@@ -30,6 +30,8 @@ objects:
     - rbac
     - ingress
     - system-baseline
+    - drift
+
     testing:
       iqePlugin: drift
     database:
