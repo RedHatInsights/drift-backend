@@ -29,8 +29,18 @@ paths:
 components:
   schemas:
     Status:
-      required:
-        - status
       properties:
-        status:
+        system_baseline_version:
           type: string
+        totalBaselinesCount:
+          type: integer
+        customerIdsCount:
+          type: integer
+        createdBaselinesToday:
+          type: integer
+        createdBaselinesWeek:
+          type: integer
+        createdBaselinesMonth:
+          type: integer
+        totalBaselinesWithAssociationsCount:
+          type: integer
