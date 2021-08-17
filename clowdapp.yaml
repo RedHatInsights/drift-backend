@@ -26,6 +26,9 @@ objects:
     dependencies:
     - host-inventory
     - rbac
+    - drift
+    - historical-system-profiles
+
     testing:
       iqePlugin: drift
     database:
