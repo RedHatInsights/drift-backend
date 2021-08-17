@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "076c291f36a7c8c901d5ae4bf85106de652216c154893d995c2ade521c618c9d"
+            "sha256": "f600924507bd436aafbd868873a63eaa7814f0e34c2d0eb386a289abc9d0b506"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -41,19 +41,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:096f771c259484dc7140af2b7a9078e9c3efba28e2a298d1e8e40fed404fa38e",
-                "sha256:72b1f70a5a42dff0a9c26a71486d3dcb3e098fac5b36126bc8fdcdec8c4d3cf4"
+                "sha256:6cc7011cb857fecee54884ff344d6b793cd22af51142f715706c757d26d02bb1",
+                "sha256:7405ae77ce4f2151fae1b542183f9c0f7ffb57c288b1f152819cfcb88e9cf297"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.18.19"
+            "version": "==1.18.22"
         },
         "botocore": {
             "hashes": [
-                "sha256:2fa40a39b338888c9492dc1e36734d8807f9e1c6f5dd3514247338e97f4da0f6",
-                "sha256:7dce88db827e9b5c88701c978df00742c854d2b751fbda8db7656fb9a571afc5"
+                "sha256:9c133caab58b04b4a9ab3f6523cc61cf815c1a5fde7b5ee279eefa48dc3a01d1",
+                "sha256:9df7a84840bcea10eb68f816d562c77656ec253a3a0dc3724e7e9ac086656e28"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.21.19"
+            "version": "==1.21.22"
         },
         "certifi": {
             "hashes": [
@@ -264,7 +264,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "33b297f2d5bb5a3f348f0ef98b95b2154fdc44f2"
+            "ref": "b31b03f50353d7b3c184277671061a6fe7b87803"
         },
         "logstash-formatter": {
             "hashes": [
@@ -926,11 +926,11 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:a18f47b506a429f6f4b9df81bb02beab9ca21d0a5fee38ed15aef65f0545519f",
-                "sha256:d66e804411278594d764fc69ec36ec13d9ae9147193a1740cd34d272ca383b8e"
+                "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380",
+                "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"
             ],
             "markers": "python_version >= '3.5'",
-            "version": "==2.9.0"
+            "version": "==2.10.0"
         },
         "pyparsing": {
             "hashes": [
