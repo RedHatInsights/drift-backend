@@ -135,7 +135,8 @@ services:
     ports:
       - "8082:8080"
   system-baseline-migration:
-    image: system-baseline:latest
+    #image: system-baseline:latest
+    image: quay.io/cloudservices/system-baseline-backend:latest
     command: bash -c "FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade"
     environment:
       - prometheus_multiproc_dir=/tmp
@@ -146,7 +147,8 @@ services:
     depends_on:
       - baselinedb
   system-baseline-rest:
-    image: system-baseline:latest
+    #image: system-baseline:latest
+    image: quay.io/cloudservices/system-baseline-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - INVENTORY_SVC_URL=http://inventory-rest:8080
@@ -163,7 +165,8 @@ services:
     ports:
       - "8083:8080"
   drift-rest:
-    image: drift:latest
+    #image: drift:latest
+    image: quay.io/cloudservices/drift-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - INVENTORY_SVC_URL=http://inventory-rest:8080
@@ -183,7 +186,8 @@ services:
     ports:
       - "8084:8080"
   hsp-migration:
-    image: hsp:latest
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
     command: bash -c "FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade"
     environment:
       - prometheus_multiproc_dir=/tmp
@@ -194,7 +198,8 @@ services:
     depends_on:
       - hspdb
   hsp-rest:
-    image: hsp:latest
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - INVENTORY_SVC_URL=http://inventory-rest:8080
@@ -211,7 +216,8 @@ services:
     ports:
       - "8085:8080"
   hsp-archiver:
-    image: hsp:latest
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - HSP_DB_HOST=hspdb
@@ -230,7 +236,8 @@ services:
       hspdb:
         condition: service_started
   hsp-deleter:
-    image: hsp:latest
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - HSP_DB_HOST=hspdb
@@ -245,7 +252,8 @@ services:
       hspdb:
         condition: service_started
   hsp-expired-cleaner:
-    image: hsp:latest
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
     environment:
       - prometheus_multiproc_dir=/tmp
       - HSP_DB_HOST=hspdb
