@@ -102,6 +102,7 @@ services:
     environment:
       - INVENTORY_DB_HOST=db
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - BYPASS_RBAC=true
     links:
       - db
     depends_on:
@@ -121,6 +122,7 @@ services:
       - KAFKA_TOPIC=platform.system-profile
       - KAFKA_GROUP=inventory
       - WEB_CONCURRENCY=1
+      - BYPASS_RBAC=true
     links:
       - db
     depends_on:
