@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7631865f3f95bdfb4736398a66287ce183c58b54bc81562f25e1a3a0480f180d"
+            "sha256": "1d7f4733e81852acd8b731a8dc4aa96725ac3b3057f999db87597e0a8b8e2bc2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -40,24 +40,22 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:00748c760dc30be61c6db4b092718f6a9f8d27c767da0e232695a65adb75cde8",
-                "sha256:59b6e8e79b2114e21388288a06a004f2a9378b1e0fc58466a35da8fb74fe2dd8"
+                "sha256:6cc7011cb857fecee54884ff344d6b793cd22af51142f715706c757d26d02bb1",
+                "sha256:7405ae77ce4f2151fae1b542183f9c0f7ffb57c288b1f152819cfcb88e9cf297"
             ],
             "index": "pypi",
-            "version": "==1.18.21"
+            "version": "==1.18.22"
         },
         "botocore": {
             "hashes": [
-                "sha256:12cfe74b0a5c44afb34bdd86c1f8ad74bc2ad9ec168eaed9040ef70cb3db944f",
-                "sha256:fa5ac13829d24fcdd385e82c3b6d78e22d93f427cca8dac38158cae84a8cc2f5"
+                "sha256:9c133caab58b04b4a9ab3f6523cc61cf815c1a5fde7b5ee279eefa48dc3a01d1",
+                "sha256:9df7a84840bcea10eb68f816d562c77656ec253a3a0dc3724e7e9ac086656e28"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.21.21"
+            "version": "==1.21.22"
         },
         "cachecontrol": {
-            "extras": [
-                "redis"
-            ],
+            "extras": [],
             "hashes": [
                 "sha256:10d056fa27f8563a271b345207402a6dcce8efab7e5b377e270329c62471b10d",
                 "sha256:be9aa45477a134aee56c8fac518627e1154df063e85f67d4f83ce0ccc23688e8"
@@ -195,7 +193,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "33b297f2d5bb5a3f348f0ef98b95b2154fdc44f2"
+            "ref": "b31b03f50353d7b3c184277671061a6fe7b87803"
         },
         "lockfile": {
             "hashes": [
