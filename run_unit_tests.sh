@@ -5,4 +5,4 @@
 
 TEMPDIR=`mktemp -d`
 
-prometheus_multiproc_dir=$TEMPDIR pytest  "$@" && prometheus_multiproc_dir=$TEMPDIR python generate_report.py test_reports.toml && rm -rf $TEMPDIR
+prometheus_multiproc_dir=$TEMPDIR pytest "$@" && prometheus_multiproc_dir=$TEMPDIR python generate_report.py test_reports.toml && rm -rf $TEMPDIR

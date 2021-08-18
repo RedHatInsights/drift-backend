@@ -109,3 +109,12 @@ venv.bak/
 
 # SonarQube
 sonar-scanner.properties
+
+#bonfire
+bonfire/
+.cicd_bootstrap.sh
+.bonfire_venv
+
+
+# Unit test
+junit-unittest.xml
