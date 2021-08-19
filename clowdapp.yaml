@@ -270,26 +270,6 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app: historical-system-profiles
-    name: historical-system-profiles
-    annotations:
-      prometheus.io/path: /mgmt/v0/metrics
-      prometheus.io/port: '8000'
-      prometheus.io/scrape: 'true'
-  spec:
-    type: ClusterIP
-    selector:
-      deploymentconfig: hsp
-    ports:
-      - name: 8000-tcp
-        port: 8000
-        protocol: TCP
-        targetPort: 8000
-
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
   metadata:
