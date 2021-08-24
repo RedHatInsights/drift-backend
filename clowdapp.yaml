@@ -24,13 +24,15 @@ objects:
   spec:
     envName: ${ENV_NAME}
     dependencies:
-    - notifications-backend
-    - notifications-gw
-    - host-inventory
-    - rbac
-    - ingress
-    - system-baseline
-    - drift
+      - host-inventory
+      - rbac
+      - ingress
+      - system-baseline
+      - drift
+
+    optionalDependencies:
+      - notifications-backend
+      - notifications-gw
 
     testing:
       iqePlugin: drift

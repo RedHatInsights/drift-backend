@@ -134,3 +134,10 @@ dmypy.json
 
 # SonarQube
 sonar-scanner.properties
+
+#bonfire
+bonfire/
+.cicd_bootstrap.sh
+
+# Unit test
+junit-unittest.xml
