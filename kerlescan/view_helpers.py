@@ -173,9 +173,9 @@ def ensure_entitled(request, app_name, logger):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
     # check if the request comes from our own drift service
-    if check_request_from_drift_service(request=request) or check_request_from_turnpike(
-        request=request
-    ):
+    if check_request_from_drift_service(
+        request=request, logger=logger
+    ) or check_request_from_turnpike(request=request, logger=logger):
         return
 
     entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
