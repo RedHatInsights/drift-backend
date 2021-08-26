@@ -243,6 +243,10 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
 
     json_list = [baseline.to_json(withhold_facts=True) for baseline in query_results]
 
+    # DRFT-830
+    # temporarily check
+    # is systems are being present in inventory
+    check_dirty_baselines(query_results)
     mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(account_number)
     for baseline_count in mapped_systems_count:
         for baseline in json_list:
@@ -259,6 +263,30 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
         count,
         args_dict=link_args_dict,
     )
+
+
+def check_dirty_baselines(baselines):
+    auth_key = get_key_from_headers(request.headers)
+    account_number = view_helpers.get_account_number(request)
+    for baseline in baselines:
+        for system_id in baseline.mapped_system_ids():
+            try:
+                # fetch system from inventory
+                message = "read system with profiles"
+                current_app.logger.audit(message, request=request)
+                fetch_systems_with_profiles(
+                    [system_id], auth_key, current_app.logger, get_event_counters()
+                )
+            except ItemNotReturned:
+                # not in inventory => delete in our db
+                try:
+                    SystemBaselineMappedSystem.delete_by_system_ids([system_id], account_number)
+                except ValueError as error:
+                    message = str(error)
+                    current_app.logger.audit(message, request=request, success=False)
+                except Exception:
+                    message = "Unknown error when deleting system with baseline"
+                    current_app.logger.audit(message, request=request, success=False)
 
 
 def group_baselines(baseline):

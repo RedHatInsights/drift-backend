@@ -5,6 +5,8 @@ import uuid
 
 from urllib.parse import parse_qs, urlsplit
 
+import mock
+
 from kerlescan.exceptions import ItemNotReturned
 from mock import patch
 
@@ -28,7 +30,9 @@ class ApiTest(unittest.TestCase):
 
 
 class EmptyApiTests(ApiTest):
-    def test_fetch_empty_baseline_list(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_empty_baseline_list(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.data)["meta"]["count"], 0)
@@ -99,8 +103,10 @@ class ApiSortTests(ApiTest):
             json=fixtures.BASELINE_UNSORTED_LOAD,
         )
 
-    def tearDown(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def tearDown(self, mock_fetch_systems):
         super(ApiSortTests, self).tearDown()
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         data = json.loads(response.data)["data"]
         for baseline in data:
@@ -110,7 +116,9 @@ class ApiSortTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-    def test_fetch_sorted_baseline_facts(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_sorted_baseline_facts(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -164,7 +172,9 @@ class ApiGeneralTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-    def test_value_values(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_value_values(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -176,14 +186,18 @@ class ApiGeneralTests(ApiTest):
             response.data.decode("utf-8"),
         )
 
-    def test_fetch_baseline_list(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_baseline_list(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.assertEqual(result["meta"]["count"], 2)
         self.assertEqual(result["meta"]["total_available"], 2)
 
-    def test_fetch_baselines_missing_uuid(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_baselines_missing_uuid(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -198,7 +212,9 @@ class ApiGeneralTests(ApiTest):
         message = json.loads(response.data)["message"]
         self.assertEqual(f"ids [{missing_id}] not available to display", message)
 
-    def test_fetch_baseline_list_sort_display_name(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_baseline_list_sort_display_name(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get(
             "api/system-baseline/v1/baselines?order_by=display_name",
             headers=fixtures.AUTH_HEADER,
@@ -214,7 +230,9 @@ class ApiGeneralTests(ApiTest):
         # check that the ascending result is the inverse of the descending result
         self.assertEqual(desc_result["data"][::-1], asc_result["data"])
 
-    def test_create_deletion_request(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_create_deletion_request(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -226,8 +244,10 @@ class ApiGeneralTests(ApiTest):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_fetch_baseline_list_sort_updated(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_baseline_list_sort_updated(self, mock_fetch_systems):
         # modify one baseline
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         uuid_to_modify = json.loads(response.data)["data"][0]["id"]
@@ -255,7 +275,9 @@ class ApiGeneralTests(ApiTest):
         # check that the ascending result is the inverse of the descending result
         self.assertEqual(desc_result["data"][::-1], asc_result["data"])
 
-    def test_fetch_duplicate_uuid(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_duplicate_uuid(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get(
             "api/system-baseline/v1/baselines?display_name=arch",
             headers=fixtures.AUTH_HEADER,
@@ -269,7 +291,9 @@ class ApiGeneralTests(ApiTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_fetch_baseline_search(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_fetch_baseline_search(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get(
             "api/system-baseline/v1/baselines?display_name=arch",
             headers=fixtures.AUTH_HEADER,
@@ -337,7 +361,9 @@ class CopyBaselineTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-    def test_copy_baseline(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_copy_baseline(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -399,8 +425,10 @@ class ApiPatchTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-    def test_patch_baseline(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_patch_baseline(self, mock_fetch_systems):
         # obtain the UUID for a baseline
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -647,7 +675,9 @@ class ApiPaginationTests(ApiTest):
             )
             self.assertEqual(response.status_code, 200)
 
-    def test_links_with_additional_query_param(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_links_with_additional_query_param(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get(
             "api/system-baseline/v1/baselines",
             query_string={"display_name": self.display_name},
@@ -690,10 +720,12 @@ class ApiSystemsAssociationTests(ApiTest):
         )
         self.assertEqual(response.status_code, 200)
 
-    def tearDown(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def tearDown(self, mock_fetch_systems):
         super(ApiSystemsAssociationTests, self).tearDown()
 
         # get all baselines
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         baselines = json.loads(response.data)["data"]
 
@@ -812,7 +844,9 @@ class ApiSystemsAssociationTests(ApiTest):
         response_system_ids = json.loads(response.data)["system_ids"]
         self.assertEqual(len(response_system_ids), 3)
 
-    def test_adding_few_systems(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_adding_few_systems(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -837,7 +871,9 @@ class ApiSystemsAssociationTests(ApiTest):
         for system_id in system_ids:
             self.assertIn(system_id, response_system_ids)
 
-    def test_get_system_count_for_baselines(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_get_system_count_for_baselines(self, mock_fetch_systems):
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)

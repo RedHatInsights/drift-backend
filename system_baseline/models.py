@@ -33,6 +33,7 @@ class SystemBaseline(db.Model):
         "SystemBaselineMappedSystem",
         cascade="all, delete, delete-orphan",
     )
+    dirty_systems = db.Column(db.Boolean, default=False, nullable=False)
 
     @property
     def fact_count(self):
