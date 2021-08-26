@@ -37,23 +37,6 @@ def _is_openapi_url(path, app_name):
     return path == "%s%s/v1/openapi.json" % (path_prefix, app_name)
 
 
-def ensure_account_number(request, logger):
-    if _is_mgmt_url(request.path):  # TODO: pass in app_name for openapi url check
-        return  # allow request
-
-    auth_key = get_key_from_headers(request.headers)
-    if auth_key:
-        identity = json.loads(base64.b64decode(auth_key))["identity"]
-        if "account_number" not in identity:
-            logger.debug("account number not found on identity token %s" % auth_key)
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message="account number not found on identity token",
-            )
-    else:
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
-
-
 def check_request_from_drift_service(**kwargs):
     """
     check_request_from_drift_service kwargs need to contain: request
@@ -89,6 +72,25 @@ def check_request_from_turnpike(**kwargs):
         return True
 
     return False
+
+
+def ensure_account_number(request, logger):
+    if _is_mgmt_url(request.path) or check_request_from_turnpike(
+        request=request, logger=logger
+    ):  # TODO: pass in app_name for openapi url check
+        return  # allow request
+
+    auth_key = get_key_from_headers(request.headers)
+    if auth_key:
+        identity = json.loads(base64.b64decode(auth_key))["identity"]
+        if "account_number" not in identity:
+            logger.debug("account number not found on identity token %s" % auth_key)
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="account number not found on identity token",
+            )
+    else:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
 def ensure_has_permission(**kwargs):
