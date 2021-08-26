@@ -71,7 +71,7 @@ objects:
                 name: drift-interpod-comms
 
     deployments:
-    - name: backend
+    - name: backend-service
       minReplicas: ${{MIN_REPLICAS}}
       webServices:
         public:
