@@ -80,7 +80,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
     deployments:
-    - name: backend
+    - name: backend-service
       minReplicas: ${{MIN_REPLICAS}}
       webServices:
         public:
@@ -136,7 +136,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: expired-cleaner
+    - name: expired-cleaner-service
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
@@ -180,7 +180,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: archiver
+    - name: archiver-service
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
@@ -226,7 +226,7 @@ objects:
                 key: shared-secret
                 name: drift-interpod-comms
 
-    - name: deleter
+    - name: deleter-service
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
