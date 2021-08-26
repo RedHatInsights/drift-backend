@@ -117,6 +117,11 @@ You can also use PATCH calls to a UUID with data like so:
 
 ## contributing to this repo
 
+### development requirements
+
+ * `psql` - postgresql client (`sudo dnf install postgresql` on Fedora)
+
+
 Please ensure the following when making PRs:
 
  * tests pass (`./run_unit_tests.sh`)
