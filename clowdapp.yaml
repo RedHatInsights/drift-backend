@@ -22,7 +22,7 @@ objects:
     testing:
       iqePlugin: drift
     deployments:
-    - name: backend
+    - name: backend-service
       minReplicas: ${{MIN_REPLICAS}}
       webServices:
         public:
