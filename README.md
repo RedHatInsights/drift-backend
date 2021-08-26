@@ -4,7 +4,7 @@ A service to return older system profile records
 
 ### dev setup
 (need to fill this in)
- * make sure you have `libpq-devel` installed
+ * make sure you have `libpq-devel` and `postgresql` (for psql) installed
 
 ## Required dependencies:
 - pipenv
