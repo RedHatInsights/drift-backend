@@ -583,7 +583,7 @@ class ApiDuplicateTests(ApiTest):
             json=fixtures.BASELINE_DUPLICATES_LOAD,
         )
         self.assertIn(
-            "name nested_cpu_sockets declared more than once",
+            "A fact with this name already exists.",
             response.data.decode("utf-8"),
         )
 
@@ -592,15 +592,15 @@ class ApiDuplicateTests(ApiTest):
             headers=fixtures.AUTH_HEADER,
             json=fixtures.BASELINE_DUPLICATES_TWO_LOAD,
         )
-        self.assertIn("memory declared more than once", response.data.decode("utf-8"))
+        self.assertIn("A fact with this name already exists.", response.data.decode("utf-8"))
 
+        # test that a category and fact can have the same name
         response = self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
             json=fixtures.BASELINE_DUPLICATES_THREE_LOAD,
         )
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("memory declared more than once", response.data.decode("utf-8"))
+        self.assertEqual(response.status_code, 200)
 
     def test_create_baseline_with_leading_trailing_whitespace(self):
         response = self.client.post(

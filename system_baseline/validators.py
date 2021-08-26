@@ -9,14 +9,21 @@ def check_for_duplicate_names(facts):
     check if any names are duplicated; raises an exception if duplicates are found.
     """
     names = []
+    categories = []
     for fact in facts:
-        names.append(fact["name"])
         if "values" in fact:
+            categories.append(fact["name"])
             check_for_duplicate_names(fact["values"])
+        else:
+            names.append(fact["name"])
 
     for name in names:
         if names.count(name) > 1:
-            raise FactValidationError("name %s declared more than once" % name)
+            raise FactValidationError("A fact with this name already exists.")
+
+    for category in categories:
+        if categories.count(category) > 1:
+            raise FactValidationError("A category with this name already exists.")
 
 
 def check_for_value_values(facts):
@@ -32,7 +39,7 @@ def check_for_value_values(facts):
 
 def check_for_empty_name_values(facts):
     """
-    check if any names are duplicated; raises an exception if duplicates are found.
+    check if any name values are empty; raises an exception if found.
     """
     for fact in facts:
         if "values" in fact:

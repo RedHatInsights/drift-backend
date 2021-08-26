@@ -425,7 +425,7 @@ def create_baseline(system_baseline_in):
 
     db.session.commit()  # commit now so we get a created/updated time before json conversion
 
-    message = "creat baselines"
+    message = "create baselines"
     current_app.logger.audit(message, request=request)
 
     return baseline.to_json()
@@ -446,7 +446,7 @@ def _check_for_existing_display_name(display_name, account_number):
     current_app.logger.audit(message, request=request)
 
     if count > 0:
-        message = "display_name '%s' already used for this account" % display_name
+        message = "A baseline with this name already exists."
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
@@ -555,10 +555,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     )
 
     if existing_display_name_query.count() > 0:
-        message = (
-            "display_name '%s' already used for this account"
-            % system_baseline_patch["display_name"]
-        )
+        message = "A baseline with this name already exists."
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
