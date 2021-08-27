@@ -471,6 +471,9 @@ class ApiPatchTests(ApiTest):
             json=fixtures.BASELINE_PATCH_LEADING_WHITESPACE_NAME,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Fact name cannot have leading or trailing whitespace.", response.data.decode("utf-8")
+        )
 
         # attempt to add a fact with trailing whitespace
         response = self.client.patch(
@@ -479,6 +482,9 @@ class ApiPatchTests(ApiTest):
             json=fixtures.BASELINE_PATCH_TRAILING_WHITESPACE_NAME,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Fact name cannot have leading or trailing whitespace.", response.data.decode("utf-8")
+        )
 
         # attempt to add a value with leading whitespace
         response = self.client.patch(
@@ -487,6 +493,10 @@ class ApiPatchTests(ApiTest):
             json=fixtures.BASELINE_PATCH_LEADING_WHITESPACE_VALUE,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Value for cpu_sockets_renamed cannot have leading or trailing whitespace.",
+            response.data.decode("utf-8"),
+        )
 
         # attempt to add a value with trailing whitespace
         response = self.client.patch(
@@ -495,6 +505,10 @@ class ApiPatchTests(ApiTest):
             json=fixtures.BASELINE_PATCH_TRAILING_WHITESPACE_VALUE,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Value for cpu_sockets_renamed cannot have leading or trailing whitespace.",
+            response.data.decode("utf-8"),
+        )
 
 
 class CreateFromInventoryTests(ApiTest):
