@@ -4,9 +4,8 @@ from datetime import date, timedelta
 from flask import Blueprint, jsonify
 from sqlalchemy import func
 
-from system_baseline.models import SystemBaseline
+from system_baseline.models import SystemBaseline, SystemBaselineMappedSystem
 from system_baseline.version import app_version
-from system_baseline.views.v1 import _get_total_available_baselines
 
 
 section = Blueprint("internal_admin", __name__)
@@ -15,7 +14,9 @@ section = Blueprint("internal_admin", __name__)
 def status():
     dt = date.today()
 
+    total_baselines = SystemBaseline.query.with_entities(SystemBaseline.id).distinct().count()
     customer_count = SystemBaseline.query.with_entities(SystemBaseline.account).distinct().count()
+
     created_baselines_today = SystemBaseline.query.filter(
         func.date(SystemBaseline.created_on) == dt
     ).count()
@@ -30,16 +31,50 @@ def status():
         )
     ).count()
 
+    baseline_bucket_counts = {}
+
+    for i in range(1, 5):
+        baseline_bucket_counts[i] = (
+            SystemBaseline.query.with_entities(SystemBaseline.account)
+            .group_by(SystemBaseline.account)
+            .having(func.count() == i)
+        ).count()
+
+    baseline_bucket_counts[5] = (
+        SystemBaseline.query.with_entities(SystemBaseline.account)
+        .group_by(SystemBaseline.account)
+        .having(func.count() >= 5)
+        .having(func.count() <= 10)
+    ).count()
+
+    baseline_bucket_counts[11] = (
+        SystemBaseline.query.with_entities(SystemBaseline.account)
+        .group_by(SystemBaseline.account)
+        .having(func.count() > 10)
+    ).count()
+
+    baselines_with_associations = (
+        (SystemBaselineMappedSystem.query.with_entities(SystemBaselineMappedSystem.system_id))
+        .distinct()
+        .count()
+    )
+
     result = {
         "system_baseline_version": app_version,
-        "totalBaselinesCount": _get_total_available_baselines(),
+        "totalBaselinesCount": total_baselines,
         "customerIdsCount": customer_count,
-        # "BaselinesBuckets": {"1": 206, "2": 46, "3": 11, "4": 4, "10+": 7, "5-10": 5},
+        "BaselinesBuckets": {
+            "1": baseline_bucket_counts[1],
+            "2": baseline_bucket_counts[2],
+            "3": baseline_bucket_counts[3],
+            "4": baseline_bucket_counts[4],
+            "10+": baseline_bucket_counts[5],
+            "5-10": baseline_bucket_counts[11],
+        },
         "createdBaselinesToday": created_baselines_today,
         "createdBaselinesWeek": created_baselines_week,
         "createdBaselinesMonth": created_baselines_month,
-        # "totalBaselinesWithAssociationsCount": 25,
-        # "BaselinesAssociationsBuckets": {"1": 19, "2": 4, "3": 1, "4": 1, "10+": 0, "5-10": 0},
+        "totalBaselinesWithAssociationsCount": baselines_with_associations,
     }
 
     return jsonify(result)
