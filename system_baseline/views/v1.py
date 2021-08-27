@@ -459,7 +459,7 @@ def _check_for_whitespace_in_display_name(display_name):
     check to see if the display name has leading or trailing whitespace
     """
     if display_name and (not validators.check_whitespace(display_name)):
-        message = "baseline name cannot have leading or trailing whitespace"
+        message = "Baseline name cannot have leading or trailing whitespace."
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,

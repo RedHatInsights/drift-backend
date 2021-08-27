@@ -595,6 +595,10 @@ class ApiDuplicateTests(ApiTest):
             json=fixtures.BASELINE_NAME_LEADING_WHITESPACE,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Baseline name cannot have leading or trailing whitespace.",
+            response.data.decode("utf-8"),
+        )
 
         response = self.client.post(
             "api/system-baseline/v1/baselines",
@@ -602,6 +606,10 @@ class ApiDuplicateTests(ApiTest):
             json=fixtures.BASELINE_NAME_TRAILING_WHITESPACE,
         )
         self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "Baseline name cannot have leading or trailing whitespace.",
+            response.data.decode("utf-8"),
+        )
 
 
 class ApiPaginationTests(ApiTest):
