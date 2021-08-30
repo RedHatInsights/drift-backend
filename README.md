@@ -11,6 +11,31 @@ Update 5/13/21: Docker support for Fedora 32 and beyond:
  * https://docs.docker.com/engine/install/fedora/
 
 ---
+## Run with Clowder
+OBS: Make sure you have a file called `~/ephemeral-login.sh` in your `$HOME` and you have `bonfire` installed. If any doubts go to [Drift Clowder Docs](https://docs.google.com/document/d/1As5TC4WHTrflrt4dt9rRsfAhWsQD_94yNYCy-ucLc0c/edit#).
+
+* Make sure you add `xjoin-search` to your bonfire configuration file under `apps:`
+
+```
+apps:
+- name: xjoin-search
+  components:
+  - name: xjoin-search
+    host: github
+    repo: RedHatInsights/xjoin-search
+    path: deploy/ephemeral.yaml
+```
+
+* Run the following script to deploy drift to ephemeral cluster:
+  `sh clowder/init_ephemeral_cluster.sh`
+
+This command will do the following:
+
+1) Login to ephemeral cluster
+2) Reserve a namespace with bonfire
+3) Set default `oc project` to the reserved namespace
+4) Deploy drift and it's dependencies to ephemeral cluster
+5) Port-forward the running pods to the localhost
 
 ## Run All Components
 
