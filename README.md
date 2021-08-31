@@ -37,6 +37,9 @@ This command will do the following:
 4) Deploy drift and it's dependencies to ephemeral cluster
 5) Port-forward the running pods to the localhost
 
+* Clean up port forwarding processes
+  `pgrep oc -a | grep port-forward | awk '{print $1}' | xargs -n1 kill`
+
 ## Run All Components
 
  * add this to your `/etc/hosts`:
