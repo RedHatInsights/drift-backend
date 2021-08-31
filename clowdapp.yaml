@@ -26,13 +26,14 @@ objects:
     dependencies:
     - host-inventory
     - rbac
-    - drift
+
+    optionalDependencies:
     - historical-system-profiles
 
     testing:
       iqePlugin: drift
     database:
-      name: system-baseline-db
+      name: system-baseline
       version: 12
     jobs:
     - name: baseline-migration
@@ -151,7 +152,6 @@ parameters:
     value: "False"
   - name: IMAGE_TAG
     description: image tag to pull
-    value: latest
   - name: IMAGE
     description: image name
     value: quay.io/cloudservices/system-baseline-backend
