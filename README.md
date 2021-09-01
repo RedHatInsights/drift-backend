@@ -96,6 +96,14 @@ OK in most cases; even `pdb` runs fine inside of gunicorn.
 However, if you want to use flask's server, use `python3 standalone_flask_server.py`
 with the aforementioned environment vars.
 
+### To build image and deploy to personal repository in quay:
+
+1. Run below command passing your quay username. In the example `jramos`.
+
+```
+sh ephemeral_build_image.sh jramos
+```
+
 ### To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.
 2. Duplicate the `sonar-scanner.properties.sample` config file.
