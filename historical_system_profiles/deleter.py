@@ -1,7 +1,13 @@
+import json
 import time
+
+from base64 import b64encode
 
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
+from historical_system_profiles.baseline_service_interface import (
+    delete_system_baseline_associations,
+)
 
 
 def _delete_profiles(data, ptc, logger):
@@ -14,6 +20,21 @@ def _delete_profiles(data, ptc, logger):
 
     _record_recv_message(request_id, inventory_id, account, ptc)
     db_interface.delete_hsps_by_inventory_id(inventory_id)
+
+    # we don't have identity information in kafka message about deleting the system
+    # so we need to create identity as a System
+    # user.username and account_number is needed for kerlescan logging functions to work
+    identity = {
+        "identity": {
+            "type": "System",
+            "user": {"username": "HSPs deleter"},
+            "account_number": account,
+        }
+    }
+    service_auth_key = b64encode(json.dumps(identity).encode("utf-8"))
+
+    delete_system_baseline_associations(inventory_id, service_auth_key, logger)
+
     logger.info("deleted profiles for inventory_id %s" % inventory_id)
     _record_success_message(request_id, inventory_id, account, ptc)
 
