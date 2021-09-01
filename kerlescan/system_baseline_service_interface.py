@@ -5,7 +5,9 @@ from kerlescan.constants import AUTH_HEADER_NAME, INTERNAL_BASELINE_SVC_DELETE_S
 from kerlescan.service_interface import fetch_url
 
 
-def delete_systems_from_notifications(system_ids, service_auth_key, logger, counters):
+def delete_systems_from_notifications(
+    system_ids, service_auth_key, logger, time_metric, exception_metric
+):
     """
     deletes systems from associations for notifications at system baseline service
     """
@@ -20,8 +22,8 @@ def delete_systems_from_notifications(system_ids, service_auth_key, logger, coun
         deletion_request_location,
         auth_header,
         logger,
-        counters["drift_baseline_service_requests"],
-        counters["drift_baseline_service_exceptions"],
+        time_metric,
+        exception_metric,
         "post",
     )
 

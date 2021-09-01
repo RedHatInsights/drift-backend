@@ -15,10 +15,8 @@ class DeletionRequestForSystemsTests(unittest.TestCase):
         )
         system_ids = [1, 2]
         mock_logger = mock.Mock()
-        mock_counters = {
-            "drift_baseline_service_requests": mock.MagicMock(),
-            "drift_baseline_service_exceptions": mock.MagicMock(),
-        }
+        mock_time_metric = mock.MagicMock()
+        mock_exception_metric = mock.MagicMock()
 
         responses.add(
             **{
@@ -32,7 +30,7 @@ class DeletionRequestForSystemsTests(unittest.TestCase):
         )
 
         result = sbsi.delete_systems_from_notifications(
-            system_ids, "test_auth_key", mock_logger, mock_counters
+            system_ids, "test_auth_key", mock_logger, mock_time_metric, mock_exception_metric
         )
 
         self.assertEqual(result, {"result": "called the http"})
