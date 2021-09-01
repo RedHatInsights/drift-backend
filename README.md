@@ -40,6 +40,14 @@ The db schema is defined by the objects defined in models.py.  When a change is 
 * now run flask to create migration with the command `FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db migrate -m "migration message"`
 * be sure to include the newly created migration file in migrations/versions/ in your pull request
 
+### To build image and deploy to personal repository in quay:
+
+1. Run below command passing your quay username. In the example `jramos`.
+
+```
+sh ephemeral_build_image.sh jramos
+```
+
 ### To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.
 2. Duplicate the `sonar-scanner.properties.sample` config file.

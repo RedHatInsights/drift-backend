@@ -102,11 +102,11 @@ objects:
             periodSeconds: 10
         resources:
           limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
+            cpu: 500m
+            memory: 1Gi
           requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
+            cpu: 100m
+            memory: 512Mi
         volumes:
           - emptyDir: {}
             name: hsp-prometheus-data
@@ -142,11 +142,11 @@ objects:
         image: ${IMAGE}:${IMAGE_TAG}
         resources:
           limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
+            cpu: 250m
+            memory: 512Mi
           requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
+            cpu: 250m
+            memory: 64Mi
         volumes:
           - emptyDir: {}
             name: historical-system-profiles-prometheus-data
@@ -186,11 +186,11 @@ objects:
         image: ${IMAGE}:${IMAGE_TAG}
         resources:
           limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
+            cpu: 250m
+            memory: 1Gi
           requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
+            cpu: 250m
+            memory: 64Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         volumes:
@@ -232,11 +232,11 @@ objects:
         image: ${IMAGE}:${IMAGE_TAG}
         resources:
           limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
+            cpu: 250m
+            memory: 1Gi
           requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
+            cpu: 250m
+            memory: 64Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         volumes:
@@ -306,14 +306,6 @@ parameters:
   - name: MAX_REPLICAS
     description: maximum pod replicas for horizontal pod autoscaler
     value: "1"
-  - name: CPU_LIMIT
-    value: 500m
-  - name: MEMORY_LIMIT
-    value: 500Mi
-  - name: CPU_REQUEST
-    value: 100m
-  - name: MEMORY_REQUEST
-    value: 300Mi
   - description: ClowdEnv Name
     name: ENV_NAME
   - name: CLOWDER_ENABLED
