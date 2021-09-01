@@ -162,13 +162,13 @@ parameters:
     description: maximum pod replicas for horizontal pod autoscaler
     value: "1"
   - name: CPU_LIMIT
-    value: 500m
+    value: 700m
   - name: MEMORY_LIMIT
-    value: 500Mi
+    value: 1Gi
   - name: CPU_REQUEST
     value: 100m
   - name: MEMORY_REQUEST
-    value: 300Mi
+    value: 512Mi
   - description: ClowdEnv Name
     name: ENV_NAME
   - name: CLOWDER_ENABLED
