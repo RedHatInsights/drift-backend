@@ -15,7 +15,9 @@ def delete_systems_from_notifications(
     auth_header = {**{AUTH_HEADER_NAME: service_auth_key}, **internal_auth_header()}
 
     deletion_request_location = urljoin(
-        config.baseline_svc_hostname, INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT
+        config.baseline_svc_hostname,
+        INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT
+        % ",".join([str(system_id) for system_id in system_ids]),
     )
 
     deletion_request_result = fetch_url(

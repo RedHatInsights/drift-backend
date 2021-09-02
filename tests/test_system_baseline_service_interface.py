@@ -1,3 +1,4 @@
+from urllib.parse import urljoin
 import unittest
 
 import mock
@@ -9,11 +10,12 @@ from kerlescan import system_baseline_service_interface as sbsi
 class DeletionRequestForSystemsTests(unittest.TestCase):
     @responses.activate
     def test_http_call(self):
-        url = (
-            "http://baseline_svc_url_is_not_set"
-            + "/api/system-baseline/internal/v1/systems/deletion_request"
-        )
         system_ids = [1, 2]
+        url = urljoin(
+            "http://baseline_svc_url_is_not_set",
+            "/api/system-baseline/internal/v1/systems?system_ids[]=%s"
+            % ",".join([str(system_id) for system_id in system_ids]),
+        )
         mock_logger = mock.Mock()
         mock_time_metric = mock.MagicMock()
         mock_exception_metric = mock.MagicMock()
