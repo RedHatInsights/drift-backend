@@ -36,7 +36,7 @@ objects:
     testing:
       iqePlugin: drift
     database:
-      name: historical-system-profiles-db
+      name: historical-system-profiles
       version: 12
     kafkaTopics:
       - topicName: platform.notifications.ingress
