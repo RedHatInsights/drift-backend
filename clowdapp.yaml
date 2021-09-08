@@ -36,7 +36,7 @@ objects:
     testing:
       iqePlugin: drift
     database:
-      name: hsp-db
+      name: historical-system-profiles-db
       version: 12
     kafkaTopics:
       - topicName: platform.notifications.ingress
