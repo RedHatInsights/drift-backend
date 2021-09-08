@@ -28,7 +28,6 @@ objects:
       - rbac
       - ingress
       - system-baseline
-      - drift
 
     optionalDependencies:
       - notifications-backend
