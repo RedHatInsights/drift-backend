@@ -168,17 +168,17 @@ def ensure_entitled(request, app_name, logger):
     if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
         return  # allow request
 
-    auth_key = get_key_from_headers(request.headers)
-
-    if not auth_key:
-        logger.debug("entitlement not found for account.")
-        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
-
     # check if the request comes from our own drift service
     if check_request_from_drift_service(
         request=request, logger=logger
     ) or check_request_from_turnpike(request=request, logger=logger):
         return
+
+    auth_key = get_key_from_headers(request.headers)
+
+    if not auth_key:
+        logger.debug("entitlement not found for account.")
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
     entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
     if entitlement_key in entitlements:
