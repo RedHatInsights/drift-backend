@@ -45,6 +45,9 @@ def check_request_from_drift_service(**kwargs):
     request = kwargs["request"]
     auth_key = get_key_from_headers(request.headers)
 
+    if auth_key is None:
+        return False
+
     auth = json.loads(base64.b64decode(auth_key))
     identity_type = auth.get("identity", {}).get("type", None)
     if identity_type == "System":
@@ -63,6 +66,9 @@ def check_request_from_turnpike(**kwargs):
     """
     request = kwargs["request"]
     auth_key = get_key_from_headers(request.headers)
+
+    if auth_key is None:
+        return False
 
     auth = json.loads(base64.b64decode(auth_key))
     identity_type = auth.get("identity", {}).get("type", None)
