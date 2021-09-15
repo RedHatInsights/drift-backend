@@ -16,7 +16,7 @@ INTERNAL_BASELINE_SVC_ENDPOINT = (
     "/api/system-baseline/internal/v1/baselines?system_id=%s"  # note missing trailing slash
 )
 INTERNAL_BASELINE_SVC_DELETE_SYSTEM_ENDPOINT = (
-    "/api/system-baseline/internal/v1/systems?system_ids[]=%s"
+    "/api/system-baseline/internal/v1/systems/%s"
 )
 SYSTEM_ID_KEY = "id"
 
