@@ -28,10 +28,12 @@ objects:
       - rbac
       - ingress
       - system-baseline
+      - drift
 
     optionalDependencies:
       - notifications-backend
       - notifications-gw
+
 
     testing:
       iqePlugin: drift
