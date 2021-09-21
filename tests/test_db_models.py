@@ -159,6 +159,20 @@ class SystemBaselineTest(DbModelTest):
         self.assertEqual(results[0].account, account1)
 
 
+class SystemBaselineNotificationEnabledTest(DbModelTest):
+    def test_of_default(self):
+        baseline = SystemBaseline(
+            account=account1,
+            display_name="baseline with default notifications enabled",
+            baseline_facts=baseline_facts,
+        )
+        db.session.add(baseline)
+        db.session.commit()
+        query = SystemBaseline.query.filter(SystemBaseline.account == account1)
+        result = query.one().notifications_enabled
+        self.assertEqual(result, True)
+
+
 class SystemBaselineMappedSystemTest(DbModelTest):
     def test_add_mapped_system(self):
         baseline = SystemBaseline(

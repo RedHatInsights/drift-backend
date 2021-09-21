@@ -384,6 +384,7 @@ components:
         - display_name
         - id
         - updated
+        - notifications_enabled
       properties:
         account:
           type: string
@@ -404,6 +405,8 @@ components:
         updated:
           type: string
           format: date
+        notifications_enabled:
+          type: boolean
     BaselineIn:
       type: object
       additionalProperties: false

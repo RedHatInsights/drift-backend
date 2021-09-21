@@ -34,6 +34,7 @@ class SystemBaseline(db.Model):
         cascade="all, delete, delete-orphan",
     )
     dirty_systems = db.Column(db.Boolean, default=False, nullable=False)
+    notifications_enabled = db.Column(db.Boolean, default=True, nullable=False)
 
     @property
     def fact_count(self):
@@ -59,6 +60,7 @@ class SystemBaseline(db.Model):
         json_dict["fact_count"] = self.fact_count
         json_dict["created"] = self.created_on.isoformat() + "Z"
         json_dict["updated"] = self.modified_on.isoformat() + "Z"
+        json_dict["notifications_enabled"] = self.notifications_enabled
         if not withhold_facts:
             json_dict["baseline_facts"] = self.baseline_facts
         if not withhold_system_ids:
