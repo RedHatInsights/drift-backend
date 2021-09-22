@@ -836,3 +836,9 @@ class ApiSystemsAssociationTests(ApiTest):
 
         for system_id in system_ids:
             self.assertIn(system_id, response_system_ids)
+
+    def test_get_system_count_for_baselines(self):
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["data"][0]["mapped_system_count"], 3)

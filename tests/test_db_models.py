@@ -14,6 +14,11 @@ baseline_facts = [
 account1 = "00000001"
 account2 = "00000002"
 
+baseline_id1 = uuid.uuid4()
+baseline_id2 = uuid.uuid4()
+baseline_id3 = uuid.uuid4()
+baseline_id4 = uuid.uuid4()
+
 system_id1 = uuid.uuid4()
 system_id2 = uuid.uuid4()
 system_id3 = uuid.uuid4()
@@ -51,6 +56,7 @@ class DbModelTest(unittest.TestCase):
         rows = [
             SystemBaseline(
                 account=account1,
+                id=baseline_id1,
                 display_name="baseline1",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
@@ -70,6 +76,7 @@ class DbModelTest(unittest.TestCase):
             ),
             SystemBaseline(
                 account=account1,
+                id=baseline_id2,
                 display_name="baseline2",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
@@ -85,6 +92,7 @@ class DbModelTest(unittest.TestCase):
             ),
             SystemBaseline(
                 account=account2,
+                id=baseline_id3,
                 display_name="baseline3",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
@@ -100,6 +108,7 @@ class DbModelTest(unittest.TestCase):
             ),
             SystemBaseline(
                 account=account2,
+                id=baseline_id4,
                 display_name="baseline4",
                 baseline_facts=baseline_facts,
                 mapped_systems=[
@@ -339,3 +348,18 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         self.assertIn(system_id7, system_ids)
         self.assertNotIn(system_id8, system_ids)
         self.assertIn(system_id9, system_ids)
+
+    def test_get_mapped_system_count(self):
+        self.populate_db_with_stuff()
+
+        mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(account1)
+
+        self.assertEqual(
+            sorted(mapped_systems_count), sorted([(baseline_id1, 3), (baseline_id2, 2)])
+        )
+
+        mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(account2)
+
+        self.assertEqual(
+            sorted(mapped_systems_count), sorted([(baseline_id3, 2), (baseline_id4, 3)])
+        )

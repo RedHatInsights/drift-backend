@@ -22,7 +22,7 @@ from system_baseline.global_helpers import (
     ensure_rbac_notifications_read,
     ensure_rbac_notifications_write,
 )
-from system_baseline.models import SystemBaseline, db
+from system_baseline.models import SystemBaseline, SystemBaselineMappedSystem, db
 from system_baseline.version import app_version
 
 
@@ -242,6 +242,12 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     current_app.logger.audit(message, request=request)
 
     json_list = [baseline.to_json(withhold_facts=True) for baseline in query_results]
+
+    mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(account_number)
+    for baseline_count in mapped_systems_count:
+        for baseline in json_list:
+            if baseline["id"] == str(baseline_count[0]):
+                baseline["mapped_system_count"] = baseline_count[1]
 
     return build_paginated_baseline_list_response(
         limit,

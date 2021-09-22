@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.schema import ForeignKey, UniqueConstraint
@@ -109,3 +110,12 @@ class SystemBaselineMappedSystem(db.Model):
     def delete_by_system_ids(cls, system_ids, account_number):
         cls.query.filter(cls.system_id.in_(system_ids)).delete(synchronize_session="fetch")
         db.session.commit()
+
+    @classmethod
+    def get_mapped_system_count(cls, account_number):
+        return (
+            cls.query.with_entities(cls.system_baseline_id, func.count(cls.system_baseline_id))
+            .group_by(cls.system_baseline_id)
+            .filter(cls.account == account_number)
+            .all()
+        )
