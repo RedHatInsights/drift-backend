@@ -59,6 +59,34 @@ def status():
         .count()
     )
 
+    baseline_associations_bucket_counts = {}
+
+    for i in range(1, 5):
+        baseline_associations_bucket_counts[i] = (
+            SystemBaselineMappedSystem.query.with_entities(
+                SystemBaselineMappedSystem.system_baseline_id
+            )
+            .group_by(SystemBaselineMappedSystem.system_baseline_id)
+            .having(func.count() == i)
+        ).count()
+
+    baseline_associations_bucket_counts[5] = (
+        SystemBaselineMappedSystem.query.with_entities(
+            SystemBaselineMappedSystem.system_baseline_id
+        )
+        .group_by(SystemBaselineMappedSystem.system_baseline_id)
+        .having(func.count() >= 5)
+        .having(func.count() <= 10)
+    ).count()
+
+    baseline_associations_bucket_counts[11] = (
+        SystemBaselineMappedSystem.query.with_entities(
+            SystemBaselineMappedSystem.system_baseline_id
+        )
+        .group_by(SystemBaselineMappedSystem.system_baseline_id)
+        .having(func.count() > 10)
+    ).count()
+
     result = {
         "system_baseline_version": app_version,
         "totalBaselinesCount": total_baselines,
@@ -68,13 +96,21 @@ def status():
             "2": baseline_bucket_counts[2],
             "3": baseline_bucket_counts[3],
             "4": baseline_bucket_counts[4],
-            "10+": baseline_bucket_counts[5],
-            "5-10": baseline_bucket_counts[11],
+            "5-10": baseline_bucket_counts[5],
+            "10+": baseline_bucket_counts[11],
         },
         "createdBaselinesToday": created_baselines_today,
         "createdBaselinesWeek": created_baselines_week,
         "createdBaselinesMonth": created_baselines_month,
         "totalBaselinesWithAssociationsCount": baselines_with_associations,
+        "BaselinesAssociationsBuckets": {
+            "1": baseline_associations_bucket_counts[1],
+            "2": baseline_associations_bucket_counts[2],
+            "3": baseline_associations_bucket_counts[3],
+            "4": baseline_associations_bucket_counts[4],
+            "5-10": baseline_associations_bucket_counts[5],
+            "10+": baseline_associations_bucket_counts[11],
+        },
     }
 
     return jsonify(result)
