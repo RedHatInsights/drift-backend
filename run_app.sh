@@ -1,37 +1,31 @@
 if [ "$ACG_CONFIG" ]
 then
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
-  if [ "$IS_MIGRATION" ]
+
+  if [ -z "$SERVICE_MODE" ];
+    then SERVICE_MODE=REST_API
+  fi
+  if [ "$SERVICE_MODE" == "REST_API" ]
   then
-    echo "RUNNING DB MIGRATION"
+    echo "RUNNING BACKEND SERVICE"
     PORT=8000
     APP_CONFIG='gunicorn.conf.py'
     bash -c "FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade"
-
-  else
-    if [ -z "$SERVICE_MODE" ];
-      then SERVICE_MODE=REST_API
-    fi
-    if [ "$SERVICE_MODE" == "REST_API" ]
+    exec gunicorn wsgi --bind=0.0.0.0:$PORT --access-logfile=- --config "$APP_CONFIG"
+  elif [ "$SERVICE_MODE" == "CLEAN_EXPIRED_RECORDS" ];
     then
-      echo "RUNNING BACKEND SERVICE"
-      PORT=8000
-      APP_CONFIG='gunicorn.conf.py'
-      exec gunicorn wsgi --bind=0.0.0.0:$PORT --access-logfile=- --config "$APP_CONFIG"
-    elif [ "$SERVICE_MODE" == "CLEAN_EXPIRED_RECORDS" ];
-      then
-      echo "RUNNING CLEAN_EXPIRED_RECORDS"
-      python clean_expired_records.py
-    elif [ "$LISTENER_TYPE" == "ARCHIVER" ];
-      then
-      echo "RUNNING ARCHIVER"
-      python kafka_listener.py
-    elif [ "$LISTENER_TYPE" == "DELETER" ];
-      then
-      echo "RUNNING DELETER"
-      python kafka_listener.py
-    fi
+    echo "RUNNING CLEAN_EXPIRED_RECORDS"
+    python clean_expired_records.py
+  elif [ "$LISTENER_TYPE" == "ARCHIVER" ];
+    then
+    echo "RUNNING ARCHIVER"
+    python kafka_listener.py
+  elif [ "$LISTENER_TYPE" == "DELETER" ];
+    then
+    echo "RUNNING DELETER"
+    python kafka_listener.py
   fi
+
 else
   echo "Did not found ACG_CONFIG - RUNNING LOCALLY"
 

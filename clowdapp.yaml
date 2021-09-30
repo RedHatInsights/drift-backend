@@ -7,15 +7,6 @@ metadata:
 objects:
 
 - apiVersion: cloud.redhat.com/v1alpha1
-  kind: ClowdJobInvocation
-  metadata:
-    name: hsp-migration
-  spec:
-    appName: historical-system-profiles
-    jobs:
-      - hsp-migration
-
-- apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
   metadata:
     name: historical-system-profiles
@@ -44,41 +35,7 @@ objects:
         partitions: 1
       - topicName: platform.payload-status
         partitions: 1
-    jobs:
-    - name: hsp-migration
-      podSpec:
-        imagePullPolicy: Always
-        image: ${IMAGE}:${IMAGE_TAG}
-        volumes:
-          - emptyDir: {}
-            name: historical-system-profiles-prometheus-data
-        volumeMounts:
-          - mountPath: /prometheus-data
-            name: historical-system-profiles-prometheus-data
-        env:
-          - name: APP_CONFIG
-            value: gunicorn.conf.py
-          - name: ENABLE_RBAC
-            value: "${DRIFT_ENABLE_RBAC}"
-          - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
-            value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
-          - name: WEB_CONCURRENCY
-            value: "4"
-          - name: PATH_PREFIX
-            value: /api/
-          - name: APP_NAME
-            value: historical-system-profiles
-          - name: ENABLE_PIPENV
-            value: 'true'
-          - name: prometheus_multiproc_dir
-            value: /prometheus-data
-          - name: IS_MIGRATION
-            value: 'true'
-          - name: DRIFT_SHARED_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: shared-secret
-                name: drift-interpod-comms
+
     deployments:
     - name: backend-service
       minReplicas: ${{MIN_REPLICAS}}
