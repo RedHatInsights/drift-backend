@@ -26,15 +26,9 @@ if [ -z "$ACG_CONFIG"]; then
   rm -rf $TEMPDIR
 else
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
-  if [ -z "$IS_MIGRATION" ]; then
-      echo "RUNNING SYSTEM BASELINE SERVICE"
-      PORT=8000
-      APP_CONFIG='gunicorn.conf.py'
-      exec gunicorn wsgi --bind=0.0.0.0:$PORT --access-logfile=- --config "$APP_CONFIG"
-  else
-    echo "RUNNING DB MIGRATION"
-    PORT=8000
-    APP_CONFIG='gunicorn.conf.py'
-    bash -c "FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade"
-  fi
+  echo "RUNNING SYSTEM BASELINE SERVICE"
+  PORT=8000
+  APP_CONFIG='gunicorn.conf.py'
+  bash -c "FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade"
+  exec gunicorn wsgi --bind=0.0.0.0:$PORT --access-logfile=- --config "$APP_CONFIG"
 fi

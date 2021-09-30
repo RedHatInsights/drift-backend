@@ -7,15 +7,6 @@ metadata:
 objects:
 
 - apiVersion: cloud.redhat.com/v1alpha1
-  kind: ClowdJobInvocation
-  metadata:
-    name: migration
-  spec:
-    appName: system-baseline
-    jobs:
-      - baseline-migration
-
-- apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
   metadata:
     name: system-baseline
@@ -35,41 +26,6 @@ objects:
     database:
       name: system-baseline
       version: 12
-    jobs:
-    - name: baseline-migration
-      podSpec:
-        imagePullPolicy: Always
-        image: ${IMAGE}:${IMAGE_TAG}
-        volumes:
-          - emptyDir: {}
-            name: system-baseline-prometheus-data
-        volumeMounts:
-          - mountPath: /prometheus-data
-            name: system-baseline-prometheus-data
-        env:
-          - name: APP_CONFIG
-            value: gunicorn.conf.py
-          - name: ENABLE_RBAC
-            value: "${DRIFT_ENABLE_RBAC}"
-          - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
-            value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
-          - name: WEB_CONCURRENCY
-            value: "4"
-          - name: PATH_PREFIX
-            value: /api/
-          - name: APP_NAME
-            value: system-baseline
-          - name: ENABLE_PIPENV
-            value: 'true'
-          - name: prometheus_multiproc_dir
-            value: /prometheus-data
-          - name: IS_MIGRATION
-            value: 'true'
-          - name: DRIFT_SHARED_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: shared-secret
-                name: drift-interpod-comms
 
     deployments:
     - name: backend-service
