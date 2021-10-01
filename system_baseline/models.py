@@ -108,7 +108,9 @@ class SystemBaselineMappedSystem(db.Model):
 
     @classmethod
     def delete_by_system_ids(cls, system_ids, account_number):
-        cls.query.filter(cls.system_id.in_(system_ids)).delete(synchronize_session="fetch")
+        cls.query.filter(cls.system_id.in_(system_ids), cls.account == account_number).delete(
+            synchronize_session="fetch"
+        )
         db.session.commit()
 
     @classmethod
