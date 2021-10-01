@@ -332,7 +332,7 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         self.populate_db_with_stuff()
 
         SystemBaselineMappedSystem.delete_by_system_ids(
-            [system_id2, system_id5, system_id8],
+            [system_id2, system_id5, system_id4],
             account1,
         )
 
@@ -342,11 +342,11 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         self.assertIn(system_id1, system_ids)
         self.assertNotIn(system_id2, system_ids)
         self.assertIn(system_id3, system_ids)
-        self.assertIn(system_id4, system_ids)
+        self.assertNotIn(system_id4, system_ids)
         self.assertNotIn(system_id5, system_ids)
         self.assertIn(system_id6, system_ids)
         self.assertIn(system_id7, system_ids)
-        self.assertNotIn(system_id8, system_ids)
+        self.assertIn(system_id8, system_ids)
         self.assertIn(system_id9, system_ids)
 
     def test_get_mapped_system_count(self):
