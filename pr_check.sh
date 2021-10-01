@@ -21,6 +21,6 @@ curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
 source $CICD_ROOT/build.sh
 #source $APP_ROOT/ephemeral_unit_test.sh -- Not able to run it in Jenkins node.
-docker run ${IMAGE}:${IMAGE_TAG} /bin/bash -c "pipenv install --dev && ./run_unit_tests.sh"
+#docker run ${IMAGE}:${IMAGE_TAG} /bin/bash -c "pipenv install --dev && ./run_unit_tests.sh"
 source $APP_ROOT/drift_deploy_ephemeral_env.sh
 source $CICD_ROOT/cji_smoke_test.sh
