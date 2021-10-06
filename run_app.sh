@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VALIDATES IF WE HAVE CLOWDER ENV 
+# VALIDATES IF WE HAVE CLOWDER ENV
 if [ -z "$ACG_CONFIG"]; then
   echo "Did not found ACG_CONFIG - RUNNING LOCALLY"
 
@@ -32,11 +32,7 @@ if [ -z "$ACG_CONFIG"]; then
 else
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
   PORT=8000
+  METRICS_PORT=9000
   APP_CONFIG='gunicorn.conf.py'
-  exec gunicorn wsgi --bind=0.0.0.0:$PORT --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --access-logfile=- --config "$APP_CONFIG"
 fi
-
-
-
-
-
