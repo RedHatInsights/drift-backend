@@ -54,7 +54,11 @@ def status():
     ).count()
 
     baselines_with_associations = (
-        (SystemBaselineMappedSystem.query.with_entities(SystemBaselineMappedSystem.system_id))
+        (
+            SystemBaselineMappedSystem.query.with_entities(
+                SystemBaselineMappedSystem.system_baseline_id
+            )
+        )
         .distinct()
         .count()
     )
