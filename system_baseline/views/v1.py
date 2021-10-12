@@ -247,9 +247,15 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     # temporarily check
     # is systems are being present in inventory
     check_dirty_baselines(query_results)
+
+    """
+    mapped_systems_count is a list of baseline ids and their associated systems counts.
+    for loop adds mapped system count for each baseline in the list and sets to 0 if none
+    """
     mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(account_number)
-    for baseline_count in mapped_systems_count:
-        for baseline in json_list:
+    for baseline in json_list:
+        baseline["mapped_system_count"] = 0
+        for baseline_count in mapped_systems_count:
             if baseline["id"] == str(baseline_count[0]):
                 baseline["mapped_system_count"] = baseline_count[1]
 
