@@ -1,5 +1,6 @@
-from urllib.parse import urljoin
 import unittest
+
+from urllib.parse import urljoin
 
 import mock
 import responses
@@ -13,7 +14,7 @@ class DeletionRequestForSystemsTests(unittest.TestCase):
         system_ids = [1, 2]
         url = urljoin(
             "http://baseline_svc_url_is_not_set",
-            "/api/system-baseline/internal/v1/systems?system_ids[]=%s"
+            "/api/system-baseline/internal/v1/systems/%s"
             % ",".join([str(system_id) for system_id in system_ids]),
         )
         mock_logger = mock.Mock()
