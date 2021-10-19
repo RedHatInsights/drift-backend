@@ -4,9 +4,9 @@
 echo "Loggin to Openshift cluster"
 sh ~/ephemeral-login.sh
 echo "Checking for reserved namespace"
-export NAMESPACE=$(bonfire namespace list --mine | grep "ephemeral" | awk '{print $1}' | xargs -n1)
+export NAMESPACE=$(bonfire namespace list --mine | grep "ephemeral" | awk '{print $1$2}' | xargs -n1)
 
-if [[ $NAMESPACE == *"ephemeral"* ]]; then
+if [[ $NAMESPACE == *"ephemeral-"*"true" ]]; then
     echo "Namespace $NAMESPACE reserved, extending for 2 hours"    
     bonfire namespace reserve -d 2 $NAMESPACE 
 else
