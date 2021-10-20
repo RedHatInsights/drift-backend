@@ -145,7 +145,95 @@ The db schema is defined by the objects defined in models.py.  When a change is 
 * now run flask to create migration with the command `FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db migrate -m "migration message"`
 * be sure to include the newly created migration file in migrations/versions/ in your pull request
 
-### To build image and deploy to personal repository in quay:
+## To run locally with Clowder
+We are using the structure used in Clowder to run our app locally. So we created a file called `local_cdappcofig.json` and a script `run_app_locally` to automate the spin up process.
+
+To run follow below process:
+
+1. Make sure you have Ephemeral Envinroment running (https://github.com/RedHatInsights/drift-dev-setup#run-with-clowder)
+2. Add a file with the following name and content to the app folder (this is needed just once). File name: `local_cdappconfig.json`
+3. Content to be added into `local_cdappconfig.json`:
+
+```
+{
+  "database": {
+    "adminPassword": "postgres",
+    "adminUsername": "T0gvQZjRlQAA7n36",
+    "hostname": "localhost",
+    "name": "system-baseline",
+    "password": "Jni4knoEOHplBCgo",
+    "port": 5433,
+    "sslMode": "disable",
+    "username": "DGI1tsPYowbxmouR"
+  },
+  "endpoints": [
+    {
+      "app": "system-baseline",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8083
+    },
+    {
+      "app": "host-inventory",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8082
+    },
+    {
+      "app": "rbac",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8086
+    },
+    {
+      "app": "historical-system-profiles",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8003
+    }
+  ],
+  "kafka": {
+    "brokers": [
+      {
+        "hostname": "localhost",
+        "port": 9092
+      }
+    ],
+    "topics": [
+      {
+        "name": "platform.notifications.ingress",
+        "requestedName": "platform.notifications.ingress"
+      },
+      {
+        "name": "platform.payload-status",
+        "requestedName": "platform.payload-status"
+      }
+    ]
+  },
+  "featureFlags": {
+    "hostname": "non-use-for-now",
+    "port": 4242,
+    "scheme": "http"
+  },
+  "logging": {
+    "cloudwatch": {
+      "accessKeyId": "",
+      "logGroup": "",
+      "region": "",
+      "secretAccessKey": ""
+    },
+    "type": "null"
+  }
+}
+```
+
+4. Run below command
+
+```
+sh run_app_locally.sh
+```
+
+## To build image and deploy to personal repository in quay:
 
 1. Run below command passing your quay username. In the example `jramos`.
 

@@ -115,3 +115,6 @@ sonar-scanner.properties
 bonfire/
 .cicd_bootstrap.sh
 .bonfire_venv
+
+#local dev setup
+local_cdappconfig.json
