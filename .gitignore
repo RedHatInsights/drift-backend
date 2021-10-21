@@ -118,3 +118,6 @@ bonfire/
 
 # Unit test
 junit-unittest.xml
+
+#Local dev setup
+local_cdappconfig.json

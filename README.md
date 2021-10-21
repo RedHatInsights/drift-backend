@@ -96,6 +96,89 @@ OK in most cases; even `pdb` runs fine inside of gunicorn.
 However, if you want to use flask's server, use `python3 standalone_flask_server.py`
 with the aforementioned environment vars.
 
+## To run locally with Clowder
+We are using the structure used in Clowder to run our app locally. So we created a file called `local_cdappcofig.json` and a script `run_app_locally` to automate the spin up process.
+
+To run follow below process:
+
+1. Make sure you have Ephemeral Envinroment running (https://github.com/RedHatInsights/drift-dev-setup#run-with-clowder)
+2. Add a file with the following name and content to the app folder (this is needed just once). File name: `local_cdappconfig.json`
+3. Content to be added into `local_cdappconfig.json`:
+
+```
+{
+  "endpoints": [
+    {
+      "app": "system-baseline",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8003
+    },
+    {
+      "app": "host-inventory",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8082
+    },
+    {
+      "app": "rbac",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8086
+    },
+    {
+      "app": "historical-system-profiles",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8004
+    }
+  ],
+  "kafka": {
+    "brokers": [
+      {
+        "hostname": "localhost",
+        "port": 9092
+      }
+    ],
+    "topics": [
+      {
+        "name": "platform.notifications.ingress",
+        "requestedName": "platform.notifications.ingress"
+      },
+      {
+        "name": "platform.payload-status",
+        "requestedName": "platform.payload-status"
+      }
+    ]
+  },
+  "featureFlags": {
+    "hostname": "non-use-for-now",
+    "port": 4242,
+    "scheme": "http"
+  },
+  "logging": {
+    "cloudwatch": {
+      "accessKeyId": "",
+      "logGroup": "",
+      "region": "",
+      "secretAccessKey": ""
+    },
+    "type": "null"
+  },
+  "metricsPath": "/metrics",
+  "metricsPort": 9000,
+  "privatePort": 10000,
+  "publicPort": 8000,
+  "webPort": 8000
+}
+```
+
+4. Run below command
+
+```
+sh run_app_locally.sh
+```
+
 ### To build image and deploy to personal repository in quay:
 
 1. Run below command passing your quay username. In the example `jramos`.
