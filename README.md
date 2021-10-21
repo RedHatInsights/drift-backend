@@ -40,6 +40,117 @@ The db schema is defined by the objects defined in models.py.  When a change is 
 * now run flask to create migration with the command `FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db migrate -m "migration message"`
 * be sure to include the newly created migration file in migrations/versions/ in your pull request
 
+## To run locally with Clowder
+We are using the structure used in Clowder to run our app locally. So we created a file called `local_cdappcofig.json` and a script `run_app_locally` to automate the spin up process.
+
+To run follow below process:
+
+1. Make sure you have Ephemeral Envinroment running (https://github.com/RedHatInsights/drift-dev-setup#run-with-clowder)
+2. Add a file with the following name and content to the app folder (this is needed just once). File name: `local_cdappconfig.json`
+3. Content to be added into `local_cdappconfig.json`:
+
+```
+{
+  "database": {
+    "adminPassword": "postgres",
+    "adminUsername": "T0gvQZjRlQAA7n36",
+    "hostname": "localhost",
+    "name": "historical-system-profiles",
+    "password": "FGhpSR1U7TUAnpY4",
+    "port": 5434,
+    "sslMode": "disable",
+    "username": "z7ZM6jgpUNGttKwF"
+  },
+  "endpoints": [
+    {
+      "app": "system-baseline",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8003
+    },
+    {
+      "app": "host-inventory",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8082
+    },
+    {
+      "app": "rbac",
+      "hostname": "localhost",
+      "name": "service",
+      "port": 8086
+    },
+    {
+      "app": "historical-system-profiles",
+      "hostname": "localhost",
+      "name": "backend-service",
+      "port": 8085
+    }
+  ],
+  "kafka": {
+    "brokers": [
+      {
+        "hostname": "localhost",
+        "port": 9092
+      }
+    ],
+    "topics": [
+      {
+        "name": "platform.notifications.ingress",
+        "requestedName": "platform.notifications.ingress"
+      },
+      {
+        "name": "platform.payload-status",
+        "requestedName": "platform.payload-status"
+      }
+    ]
+  },
+  "featureFlags": {
+    "hostname": "env-ephemeral-02-featureflags.ephemeral-02.svc",
+    "port": 4242,
+    "scheme": "http"
+  },
+  "logging": {
+    "cloudwatch": {
+      "accessKeyId": "",
+      "logGroup": "",
+      "region": "",
+      "secretAccessKey": ""
+    },
+    "type": "null"
+  },
+  "metricsPath": "/metrics",
+  "metricsPort": 9000,
+  "privatePort": 10000,
+  "publicPort": 8000,
+  "webPort": 8000
+}
+```
+
+4. Run below command to run HSP backend
+
+```
+sh run_app_locally.sh
+```
+
+5. To run Kafka services, you need to setup specific environment variables and add one hostname to `/etc/hosts`.
+
+```
+SERVICE_MODE=LISTENER LISTENER_TYPE=ARCHIVER sh run_app_locally.sh
+```
+
+6. You will see in the logs something like below:
+
+```
+MainThread ERROR kafka.conn - DNS lookup failed for env-ephemeral-09-7fd90ba6-kafka-0.env-ephemeral-09-7fd90ba6-kafka-brokers.ephemeral-09.svc:9092 (AddressFamily.AF_UNSPEC)
+```
+
+7. Add this to `/etc/hosts/`
+
+```
+env-ephemeral-09-7fd90ba6-kafka-0.env-ephemeral-09-7fd90ba6-kafka-brokers.ephemeral-09.svc
+```
+
 ### To build image and deploy to personal repository in quay:
 
 1. Run below command passing your quay username. In the example `jramos`.
