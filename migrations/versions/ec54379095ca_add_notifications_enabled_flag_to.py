@@ -19,7 +19,14 @@ depends_on = None
 
 def upgrade():
     op.add_column(
-        "system_baselines", sa.Column("notifications_enabled", sa.Boolean(), nullable=False)
+        "system_baselines",
+        sa.Column(
+            "notifications_enabled",
+            sa.Boolean(),
+            nullable=False,
+            server_default="true",
+            default=True,
+        ),
     )
 
 
