@@ -162,6 +162,8 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/JsonPatch"
+                notifications_enabled:
+                  type: boolean
       responses:
         '200':
           description: a list of updated Baseline objects

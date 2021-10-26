@@ -580,6 +580,7 @@ def update_baseline(baseline_id, system_baseline_patch):
     """
     update a baseline
     """
+    current_app.logger.error(system_baseline_patch)
     ensure_rbac_baselines_write()
     validate_uuids([baseline_id])
 
@@ -626,7 +627,8 @@ def update_baseline(baseline_id, system_baseline_patch):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message=message)
 
     baseline.display_name = system_baseline_patch["display_name"]
-
+    if "notifications_enabled" in system_baseline_patch.keys():
+        baseline.notifications_enabled = system_baseline_patch["notifications_enabled"]
     baseline.baseline_facts = _sort_baseline_facts(baseline.baseline_facts)
     db.session.add(baseline)
 

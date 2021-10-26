@@ -253,6 +253,7 @@ BASELINE_PATCH = {
             },
         },
     ],
+    "notifications_enabled": True,
 }
 
 BASELINE_PATCH_EMPTY_VALUE = {
@@ -297,7 +298,11 @@ BASELINE_PATCH_LONG_NAME = {
     "display_name": "arch baseline33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333",  # noqa: E501
     "facts_patch": [],
 }
-BASELINE_TOUCH = {"display_name": "updated baseline", "facts_patch": []}
+BASELINE_TOUCH = {
+    "display_name": "updated baseline",
+    "facts_patch": [],
+    "notifications_enabled": True,
+}
 CREATE_FROM_INVENTORY = {
     "display_name": "created_from_inventory",
     "inventory_uuid": "df925152-c45d-11e9-a1f0-c85b761454fa",
