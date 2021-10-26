@@ -115,6 +115,10 @@ def _archive_profile(data, ptc, logger, notification_service):
         )
 
 
+def _check_if_notification_enabled(baseline_id, service_auth_key, logger):
+    return fetch_baselines([baseline_id], service_auth_key, logger)[0]["notifications_enabled"]
+
+
 def _check_and_send_notifications(
     inventory_id,
     account_id,
@@ -140,19 +144,20 @@ def _check_and_send_notifications(
             account_id, inventory_id, system_check_in, display_name, tags
         )
         for baseline_id in baseline_ids:
-            comparison = check_for_drift(inventory_id, baseline_id, service_auth_key, logger)
-            if comparison["drift_event_notify"]:
-                # If anything has changed, send a kafka message to trigger a notification.
-                # Add each baseline to our event, then send notification only once
-                # containing the whole list of events for this system
-                drift_found = True
-                baseline_name = fetch_baselines([baseline_id], service_auth_key, logger)[0][
-                    "display_name"
-                ]
-                event.add_drifted_baseline(baseline_id, baseline_name, comparison)
-                logger.info(
-                    "drift detected, baseline added to event baseline id: %s)" % (baseline_id)
-                )
+            if _check_if_notification_enabled(baseline_id, service_auth_key, logger):
+                comparison = check_for_drift(inventory_id, baseline_id, service_auth_key, logger)
+                if comparison["drift_event_notify"]:
+                    # If anything has changed, send a kafka message to trigger a notification.
+                    # Add each baseline to our event, then send notification only once
+                    # containing the whole list of events for this system
+                    drift_found = True
+                    baseline_name = fetch_baselines([baseline_id], service_auth_key, logger)[0][
+                        "display_name"
+                    ]
+                    event.add_drifted_baseline(baseline_id, baseline_name, comparison)
+                    logger.info(
+                        "drift detected, baseline added to event baseline id: %s)" % (baseline_id)
+                    )
         if drift_found:
             notification_service.send_notification(event)
             logger.info(
