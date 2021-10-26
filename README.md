@@ -172,8 +172,11 @@ To run follow below process:
   "webPort": 8000
 }
 ```
-
-4. Run below command
+4. Run virtual environment
+```
+source .venv/bin/activate
+```
+5. Run below command
 
 ```
 sh run_app_locally.sh
