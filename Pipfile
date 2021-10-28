@@ -22,6 +22,7 @@ watchtower = "*"
 insights-core = "*"
 bitmath = "*"
 app-common-python = "*"
+unleashclient = "*"
 
 [requires]
 python_version = "3.8"
