@@ -6,6 +6,8 @@ import re
 from http import HTTPStatus
 from uuid import UUID
 
+from requests.exceptions import Timeout
+
 from kerlescan.config import drift_shared_secret, enable_rbac, enable_smart_mgmt_check, path_prefix
 from kerlescan.exceptions import HTTPError, RBACDenied
 from kerlescan.rbac_service_interface import get_perms
@@ -138,6 +140,7 @@ def ensure_has_permission(**kwargs):
         # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
         # If we just have *:*, it works, but if not, we need both notifications:read and
         # baselines:read in order to allow access.
+        logger.audit("Validating RBAC permission")
         found_one = False
         for p in kwargs["permissions"]:
             all_match = True
@@ -157,6 +160,8 @@ def ensure_has_permission(**kwargs):
             HTTPStatus.FORBIDDEN,
             message="request to retrieve permissions from RBAC was forbidden",
         )
+    except Timeout:
+        raise HTTPError(HTTPStatus.REQUEST_TIMEOUT, message="Request to RBAC timed out")
 
 
 def ensure_entitled(request, app_name, logger):
