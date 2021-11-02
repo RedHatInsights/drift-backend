@@ -409,6 +409,8 @@ components:
           format: date
         notifications_enabled:
           type: boolean
+        mapped_systems_count:
+          type: integer
     BaselineIn:
       type: object
       additionalProperties: false

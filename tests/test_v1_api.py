@@ -878,3 +878,20 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.assertEqual(result["data"][0]["mapped_system_count"], 3)
+
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def test_get_system_count_for_baselines_by_ids(self, mock_fetch_systems):
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        baseline_uuid = result["data"][0]["id"]  # get one existing baseline for the actual test
+
+        mock_fetch_systems.return_value = fixtures.SYSTEM_WITH_PROFILE
+
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/%s" % baseline_uuid,
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertEqual(result["data"][0]["mapped_system_count"], 3)
