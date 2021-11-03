@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "557940dccd66138d7a873be60a4316f0ed8bab8f8633182227ceb839eaa390c2"
+            "sha256": "3038a4d2560d78b4585c0664b1fddfc5bbf0a569bd814ed02a5716c93bbd7b1c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -225,6 +225,14 @@
             "markers": "python_version >= '3'",
             "version": "==3.2"
         },
+        "importlib-metadata": {
+            "hashes": [
+                "sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15",
+                "sha256:f284b3e11256ad1e5d03ab86bb2ccd6f5339688ff17a4d797a0fe7df326f23b1"
+            ],
+            "markers": "python_version < '3.9'",
+            "version": "==4.8.1"
+        },
         "importlib-resources": {
             "hashes": [
                 "sha256:2480d8e07d1890056cb53c96e3de44fead9c62f2ba949b0f2e4c4345f4afa977",
@@ -306,7 +314,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "6470d523128534961599f93908e98be415b3ac65"
+            "ref": "9f34957c402c4a33c2a184a15b9d1f29b39d3015"
         },
         "lockfile": {
             "hashes": [
@@ -956,7 +964,7 @@
                 "sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15",
                 "sha256:f284b3e11256ad1e5d03ab86bb2ccd6f5339688ff17a4d797a0fe7df326f23b1"
             ],
-            "markers": "python_version >= '3.6'",
+            "markers": "python_version < '3.9'",
             "version": "==4.8.1"
         },
         "iniconfig": {
