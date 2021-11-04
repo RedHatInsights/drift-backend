@@ -19,6 +19,8 @@ objects:
     - system-baseline
     - historical-system-profiles
 
+    featureFlags: true
+
     testing:
       iqePlugin: drift
     deployments:

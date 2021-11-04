@@ -12,6 +12,7 @@ from kerlescan.inventory_service_interface import (
     fetch_systems_with_profiles,
 )
 from kerlescan.service_interface import get_key_from_headers
+from kerlescan.unleash import UNLEASH
 from kerlescan.view_helpers import validate_uuids
 
 from drift import app_config, info_parser, metrics
@@ -26,6 +27,8 @@ def get_version():
     """
     return the service version
     """
+    if UNLEASH.is_enabled("version-test"):
+        return {"version": "UNLEASH-VERSION"}
     return {"version": app_version}
 
 
