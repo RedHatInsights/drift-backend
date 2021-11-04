@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#fetch our shared bonfire config
+curl -o config.yaml https://raw.githubusercontent.com/RedHatInsights/drift-dev-setup/master/clowder/pr_check_bonfire_config.yaml
+
 #Adapted from https://github.com/RedHatInsights/insights-ingress-go/blob/master/pr_check.sh
 
 # --------------------------------------------
