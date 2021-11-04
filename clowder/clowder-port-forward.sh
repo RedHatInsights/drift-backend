@@ -6,6 +6,8 @@ declare -a DBS=('system-baseline-db' 'historical-system-profiles-db')
 declare -a DB_PORTS=('5433' '5434')
 KAFKA_SVCS=$(oc get service | grep kafka-bootstrap | awk '{print $1}')
 KAFKA_PORT='9092'
+FEATURE_FLAGS=$(oc get svc | grep '\-featureflags' | awk '{print $1}')
+FEATURE_FLAGS_PORT='4242'
 
 for I in ${!SERVICES[@]};
 	do
@@ -27,6 +29,10 @@ done
 
 echo "Port-forwarding $KAFKA_PORT to $KAFKA_SVCS"
 oc port-forward "service/$KAFKA_SVCS" "$KAFKA_PORT:9092" > /dev/null 2>&1 &
+echo $!
+
+echo "Port-forwarding $FEATURE_FLAGS_PORT to $FEATURE_FLAGS"
+oc port-forward "service/$FEATURE_FLAGS" "$FEATURE_FLAGS_PORT:4242" > /dev/null 2>&1 &
 echo $!
 
 #TODO: How do we know if a port-forward stopped? PID process?
