@@ -1,0 +1,30 @@
+# Bonfire deployment configuration
+
+# Defines where to fetch the file that defines application configs
+appsFile:
+  host: gitlab
+  repo: insights-platform/cicd-common
+  path: bonfire_configs/ephemeral_apps.yaml
+
+# (optional) define any apps locally. An app defined here with <name> will override config for app
+# <name> in above fetched config.
+apps:
+- name: notifications
+  components:
+  - name: notifications-backend
+    host: github
+    repo: RedHatInsights/notifications-backend
+    path: .rhcicd/clowdapp.yaml
+    ref: ${NOTIFICATIONS_BACKEND__REF}
+    parameters:
+      IMAGE: quay.io/cloudservices/notifications-backend
+      MIN_REPLICAS: 1
+  - name: notifications-gw
+    host: github
+    repo: RedHatInsights/notifications-gw
+    path: .rhcicd/clowdapp.yaml
+    ref: ${NOTIFICATIONS_GW__REF}
+    parameters:
+      IMAGE: quay.io/cloudservices/notifications-gw
+      IMAGE_TAG: latest
+      MIN_REPLICAS: 1
