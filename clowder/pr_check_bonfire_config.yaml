@@ -14,7 +14,7 @@ apps:
   - name: notifications-backend
     host: github
     repo: RedHatInsights/notifications-backend
-    path: .rhcicd/clowdapp.yaml
+    path: .rhcicd/clowdapp-backend.yaml
     ref: master
     parameters:
       IMAGE: quay.io/cloudservices/notifications-backend
