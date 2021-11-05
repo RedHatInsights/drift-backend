@@ -478,7 +478,7 @@ def create_baseline(system_baseline_in):
     message = "create baselines"
     current_app.logger.audit(message, request=request)
 
-    return baseline.to_json()
+    return baseline.to_json(withhold_systems_count=False)
 
 
 def _check_for_existing_display_name(display_name, account_number):
@@ -583,7 +583,7 @@ def copy_baseline_by_id(baseline_id, display_name):
     message = "created baselines"
     current_app.logger.audit(message, request=request)
 
-    return copy_baseline.to_json()
+    return copy_baseline.to_json(withhold_systems_count=False)
 
 
 def update_baseline(baseline_id, system_baseline_patch):

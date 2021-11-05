@@ -52,7 +52,7 @@ class SystemBaseline(db.Model):
             mapped_system_ids.append(str(mapped_system.system_id))
         return mapped_system_ids
 
-    def to_json(self, withhold_facts=False, withhold_system_ids=True):
+    def to_json(self, withhold_facts=False, withhold_system_ids=True, withhold_systems_count=True):
         json_dict = {}
         json_dict["id"] = str(self.id)
         json_dict["account"] = self.account
@@ -65,6 +65,8 @@ class SystemBaseline(db.Model):
             json_dict["baseline_facts"] = self.baseline_facts
         if not withhold_system_ids:
             json_dict["system_ids"] = self.mapped_system_ids()
+        if not withhold_systems_count:
+            json_dict["mapped_systems_count"] = len(self.mapped_system_ids())
         return json_dict
 
     def validate_existing_system(self, system_id):
