@@ -66,7 +66,7 @@ class SystemBaseline(db.Model):
         if not withhold_system_ids:
             json_dict["system_ids"] = self.mapped_system_ids()
         if not withhold_systems_count:
-            json_dict["mapped_systems_count"] = len(self.mapped_system_ids())
+            json_dict["mapped_system_count"] = len(self.mapped_system_ids())
         return json_dict
 
     def validate_existing_system(self, system_id):
