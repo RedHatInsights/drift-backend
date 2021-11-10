@@ -300,6 +300,8 @@ def log_username():
 
 @section.before_app_request
 def ensure_entitled():
+    message = "Ensuring entitlement"
+    current_app.logger.audit(message, request=request)
     return view_helpers.ensure_entitled(request, app_config.get_app_name(), current_app.logger)
 
 
@@ -311,6 +313,8 @@ def ensure_rbac_comparisons_read():
     # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
     # If we just have *:*, it works, but if not, we need both notifications:read and
     # baselines:read in order to allow access.
+    message = "Ensuring RBAC permission"
+    current_app.logger.audit(message, request=request)
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:comparisons:read"]],
         application="drift",
@@ -324,4 +328,6 @@ def ensure_rbac_comparisons_read():
 
 @section.before_app_request
 def ensure_account_number():
+    message = "Validating account number"
+    current_app.logger.audit(message, request=request)
     return view_helpers.ensure_account_number(request, current_app.logger)
