@@ -6,7 +6,7 @@ USER 0
 RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
     yum remove -y npm && \
     yum install -y hostname shared-mime-info && \
-    yum upgrade -y --security && \
+    yum upgrade -y --security --allowerasing && \
     yum clean all -y
 
 COPY . /tmp/src
