@@ -9,6 +9,7 @@ from insights.parsers.installed_rpms import InstalledRpm
 
 from kerlescan.constants import (  # SYSTEM_PROFILE_LISTS_OF_STRINGS,
     GPG_KEY_PREFIX,
+    OBJECT_FACTS,
     SYSTEM_ID_KEY,
     SYSTEM_PROFILE_BOOLEANS,
     SYSTEM_PROFILE_INTEGERS,
@@ -120,6 +121,13 @@ def parse_profile(system_profile, display_name, logger):
             else:
                 parsed_profile["tags." + tag_name] = tag_dict[tag_name][0]
 
+    def _parse_object(objects):
+        for obj in objects:
+            if obj in system_profile.keys():
+                for fact_name in system_profile[obj]:
+                    fact_value = system_profile[obj][fact_name]
+                    parsed_profile[obj + "." + fact_name] = fact_value
+
     # start with metadata that we have brought down from the system record
     parsed_profile = {"id": system_profile[SYSTEM_ID_KEY], "name": display_name}
 
@@ -134,6 +142,8 @@ def parse_profile(system_profile, display_name, logger):
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_ENABLED, "enabled")
     _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS_INSTALLED, "installed")
     #    _parse_lists_of_strings(SYSTEM_PROFILE_LISTS_OF_STRINGS, None)
+
+    _parse_object(OBJECT_FACTS)
 
     _parse_running_processes(system_profile.get("running_processes", []))
 
