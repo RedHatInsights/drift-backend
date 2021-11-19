@@ -4,6 +4,7 @@
 # 'prometheus_multiproc_dir' is set up and torn down.
 
 TEMPDIR=`mktemp -d`
+export UNLEASH_TOKEN="token"
 
 psql 'postgresql://insights:insights@localhost:5432/baselinedb' -c 'create database testdb;'
 
