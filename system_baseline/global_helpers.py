@@ -61,6 +61,23 @@ def ensure_rbac_baselines_write():
     )
 
 
+def ensure_rbac_inventory_read():
+    return view_helpers.ensure_has_permission(
+        permissions=[
+            ["inventory:*:*"],
+            ["inventory:*:read"],
+            ["inventory:hosts:*"],
+            ["inventory:hosts:read"],
+        ],
+        application="inventory",
+        app_name="system-baseline",
+        request=request,
+        logger=current_app.logger,
+        request_metric=metrics.rbac_requests,
+        exception_metric=metrics.rbac_exceptions,
+    )
+
+
 def ensure_rbac_notifications_read():
     # permissions consist of a list of "or" permissions where any will work,
     # and each sublist is a set of "and" permissions that all must be true.

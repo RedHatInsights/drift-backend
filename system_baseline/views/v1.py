@@ -19,6 +19,7 @@ from system_baseline.exceptions import FactValidationError
 from system_baseline.global_helpers import (
     ensure_rbac_baselines_read,
     ensure_rbac_baselines_write,
+    ensure_rbac_inventory_read,
     ensure_rbac_notifications_read,
     ensure_rbac_notifications_write,
 )
@@ -656,6 +657,7 @@ def update_baseline(baseline_id, system_baseline_patch):
 
 def list_systems_with_baseline(baseline_id):
     ensure_rbac_notifications_read()
+    ensure_rbac_inventory_read()
     validate_uuids([baseline_id])
     account_number = view_helpers.get_account_number(request)
 
