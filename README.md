@@ -157,14 +157,14 @@ To run follow below process:
 ```
 {
   "database": {
-    "adminPassword": "postgres",
-    "adminUsername": "T0gvQZjRlQAA7n36",
+    "adminPassword": "password",
+    "adminUsername": "admUsername",
     "hostname": "localhost",
     "name": "system-baseline",
-    "password": "Jni4knoEOHplBCgo",
+    "password": "password",
     "port": 5433,
     "sslMode": "disable",
-    "username": "DGI1tsPYowbxmouR"
+    "username": "username"
   },
   "endpoints": [
     {
