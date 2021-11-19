@@ -52,14 +52,14 @@ To run follow below process:
 ```
 {
   "database": {
-    "adminPassword": "postgres",
-    "adminUsername": "T0gvQZjRlQAA7n36",
+    "adminPassword": "admPassword",
+    "adminUsername": "admUsername",
     "hostname": "localhost",
     "name": "historical-system-profiles",
-    "password": "FGhpSR1U7TUAnpY4",
+    "password": "password",
     "port": 5434,
     "sslMode": "disable",
-    "username": "z7ZM6jgpUNGttKwF"
+    "username": "username"
   },
   "endpoints": [
     {
