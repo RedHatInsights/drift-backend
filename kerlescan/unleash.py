@@ -10,6 +10,7 @@ def initUnleash():
         UNLEASH_URL=os.getenv("UNLEASH_URL"),
         UNLEASH_TOKEN=os.getenv("UNLEASH_TOKEN"),
     )
+    UNLEASH_URL = "http://unleash_svc_url_is_not_set"
     unleash = LoadedConfig.featureFlags
     if unleash:
         UNLEASH_URL = f"{unleash.hostname}:{unleash.port}/api"
