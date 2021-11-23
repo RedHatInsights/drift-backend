@@ -1,5 +1,6 @@
 import logging
 import os
+import tempfile
 
 from app_common_python import KafkaTopics, LoadedConfig, isClowderEnabled
 from kerlescan.config import str_to_bool
@@ -22,6 +23,35 @@ def load_kakfa_setting(env_name, default):
         return f"{broker_cfg.hostname}:{broker_cfg.port}"
 
     return os.getenv(env_name, default).split(",")
+
+
+def load_kafka_ssl_creds(env_name, attribute, default):
+    if isClowderEnabled():
+        cfg = LoadedConfig
+
+        broker_cfg = cfg.kafka.brokers[0]
+
+        try:
+            return broker_cfg.sasl[attribute]
+        except TypeError:
+            return None
+
+    return os.getenv(env_name, default)
+
+
+def load_kafka_ssl_cert(env_name, default):
+    if isClowderEnabled():
+        cfg = LoadedConfig
+        broker_cfg = cfg.kafka.brokers[0]
+
+        cacert_filename = None
+        if broker_cfg.cacert:
+            with tempfile.NamedTemporaryFile(delete=False) as tf:
+                cacert_filename = tf.name
+                tf.write(broker_cfg.cacert.encode("utf-8"))
+        return cacert_filename
+
+    return os.getenv(env_name, default)
 
 
 def topic(topic):
@@ -57,9 +87,9 @@ notification_bundle = os.getenv("NOTIFICATION_BUNDLE", "rhel")
 notification_app = os.getenv("NOTIFICATION_APP", "drift")
 
 enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
-kafka_ssl_cert = os.getenv("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
-kafka_sasl_username = os.getenv("KAFKA_SASL_USERNAME", None)
-kafka_sasl_password = os.getenv("KAFKA_SASL_PASSWORD", None)
+kafka_ssl_cert = load_kafka_ssl_cert("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
+kafka_sasl_username = load_kafka_ssl_creds("KAFKA_SASL_USERNAME", "username", None)
+kafka_sasl_password = load_kafka_ssl_creds("KAFKA_SASL_PASSWORD", "password", None)
 
 # logging params used outside of flask
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
