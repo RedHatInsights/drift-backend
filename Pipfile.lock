@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e412a8586f214708420bce744b6e76c6315ecc57f029a0ad816dbaef8a612adb"
+            "sha256": "2247af72ad2d024915a853318d84f48a8bdf95c984e9a5d31c0f0fe2059c9f82"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -245,7 +245,7 @@
         "kerlescan": {
             "editable": true,
             "git": "https://github.com/RedHatInsights/kerlescan.git",
-            "ref": "165d51f4c3063176d35ec2a71b6c9964356cc952"
+            "ref": "f7a69007ab66a79b7e68b8f66b60ee868ec55473"
         },
         "lockfile": {
             "hashes": [
