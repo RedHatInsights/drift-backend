@@ -16,7 +16,7 @@ USER 1001
 
 ENV ENABLE_PIPENV=true
 ENV APP_SCRIPT=run_app.sh
-ENV PIN_PIPENV_VERSION=2021.5.29
+ENV PIN_PIPENV_VERSION=2021.11.23
 
 # Install the dependencies
 RUN /usr/libexec/s2i/assemble
