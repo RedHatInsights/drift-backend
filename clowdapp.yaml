@@ -182,6 +182,10 @@ objects:
               secretKeyRef:
                 key: shared-secret
                 name: drift-interpod-comms
+          - name: KAFKA_SECURITY_PROTOCOL
+            value: ${KAFKA_SECURITY_PROTOCOL}
+          - name: KAFKA_SASL_MECHANISM
+            value: ${KAFKA_SASL_MECHANISM}
 
     - name: deleter-service
       minReplicas: ${{MIN_REPLICAS}}
@@ -228,6 +232,10 @@ objects:
               secretKeyRef:
                 key: shared-secret
                 name: drift-interpod-comms
+          - name: KAFKA_SECURITY_PROTOCOL
+            value: ${KAFKA_SECURITY_PROTOCOL}
+          - name: KAFKA_SASL_MECHANISM
+            value: ${KAFKA_SASL_MECHANISM}
 
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
@@ -269,3 +277,10 @@ parameters:
     value: "true"
   - name: SERVICE_MODE
   - name: LISTENER_TYPE
+  - name: ENABLE_KAFKA_SSL
+    value: "False"
+  - name: KAFKA_SECURITY_PROTOCOL
+    description: The Kafka Security Protocol
+    value: PLAINTEXT
+  - name: KAFKA_SASL_MECHANISM
+    value: 'PLAIN'
