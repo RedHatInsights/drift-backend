@@ -27,13 +27,14 @@ def load_kakfa_setting(env_name, default):
 
 def load_kafka_ssl_creds(env_name, attribute, default):
     if isClowderEnabled():
+
         cfg = LoadedConfig
 
         broker_cfg = cfg.kafka.brokers[0]
 
         try:
-            return broker_cfg.sasl[attribute]
-        except TypeError:
+            return broker_cfg.sasl.username if attribute == "username" else broker_cfg.sasl.password
+        except AttributeError:
             return None
 
     return os.getenv(env_name, default)
