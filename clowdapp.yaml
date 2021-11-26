@@ -186,6 +186,8 @@ objects:
             value: ${KAFKA_SECURITY_PROTOCOL}
           - name: KAFKA_SASL_MECHANISM
             value: ${KAFKA_SASL_MECHANISM}
+          - name: ENABLE_KAFKA_SSL
+            value: ${ENABLE_KAFKA_SSL}
 
     - name: deleter-service
       minReplicas: ${{MIN_REPLICAS}}
@@ -236,6 +238,8 @@ objects:
             value: ${KAFKA_SECURITY_PROTOCOL}
           - name: KAFKA_SASL_MECHANISM
             value: ${KAFKA_SASL_MECHANISM}
+          - name: ENABLE_KAFKA_SSL
+            value: ${ENABLE_KAFKA_SSL}
 
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
