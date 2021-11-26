@@ -54,7 +54,7 @@ def load_kafka_ssl_cert(env_name, default):
     return os.getenv(env_name, default)
 
 
-def load_kafka_security_protocol(env_name, default):
+"""def load_kafka_security_protocol(env_name, default):
     if isClowderEnabled():
         cfg = LoadedConfig
 
@@ -65,7 +65,7 @@ def load_kafka_security_protocol(env_name, default):
         except AttributeError:
             return None
 
-    return os.getenv(env_name, default)
+    return os.getenv(env_name, default)"""
 
 
 def topic(topic):
@@ -104,7 +104,7 @@ enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
 kafka_ssl_cert = load_kafka_ssl_cert("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
 kafka_sasl_username = load_kafka_ssl_creds("KAFKA_SASL_USERNAME", "username", None)
 kafka_sasl_password = load_kafka_ssl_creds("KAFKA_SASL_PASSWORD", "password", None)
-kafka_security_protocol = load_kafka_security_protocol("KAFKA_SECURITY_PROTOCOL", "PLAINTEXT")
+kafka_security_protocol = os.getenv("KAFKA_SECURITY_PROTOCOL", "PLAINTEXT")
 kafka_sasl_mechanism = os.getenv("KAFKA_SECURITY_PROTOCOL", "PLAIN")
 
 # logging params used outside of flask
