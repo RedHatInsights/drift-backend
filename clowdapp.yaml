@@ -110,10 +110,10 @@ parameters:
     value: quay.io/cloudservices/drift-backend
   - name: MIN_REPLICAS
     description: minimum pod replicas for horizontal pod autoscaler
-    value: "2"
+    value: "3"
   - name: MAX_REPLICAS
     description: maximum pod replicas for horizontal pod autoscaler
-    value: "2"
+    value: "3"
   - name: CPU_LIMIT
     value: 500m
   - name: MEMORY_LIMIT
