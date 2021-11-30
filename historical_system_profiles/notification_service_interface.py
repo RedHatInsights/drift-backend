@@ -32,7 +32,8 @@ class NotificationServiceInterface:
                 self.producer = KafkaProducer(
                     bootstrap_servers=config.bootstrap_servers,
                     value_serializer=lambda v: json.dumps(v).encode("utf-8"),
-                    security_protocol="SSL",
+                    security_protocol=config.kafka_security_protocol,
+                    sasl_mechanism=config.kafka_sasl_mechanism,
                     ssl_cafile=config.kafka_ssl_cert,
                     sasl_plain_username=config.kafka_sasl_username,
                     sasl_plain_password=config.kafka_sasl_password,
