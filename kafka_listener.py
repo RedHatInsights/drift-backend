@@ -40,7 +40,7 @@ def init_consumer(queue, logger):
     logger.info(f"kafka max poll interval (msec): {config.kafka_max_poll_interval_ms}")
     logger.info(f"kafka max poll records: {config.kafka_max_poll_records}")
     if config.enable_kafka_ssl:
-        logger.info("")
+        logger.info("Creating Consumer with SSL")
         consumer = KafkaConsumer(
             queue,
             bootstrap_servers=config.bootstrap_servers,

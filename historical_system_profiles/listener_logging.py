@@ -31,7 +31,9 @@ def config_cloudwatch(logger):
 
 def initialize_logging():
     kafkalogger = logging.getLogger("kafka")
-    kafkalogger.setLevel("ERROR")
+    kafkalogger.addHandler(logging.StreamHandler(sys.stdout))
+    kafkalogger.setLevel(os.getenv("LOG_LEVEL", "INFO"))
+
     if any("KUBERNETES" in k for k in os.environ):
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(LogstashFormatterV1())

@@ -92,6 +92,8 @@ objects:
               secretKeyRef:
                 key: shared-secret
                 name: drift-interpod-comms
+          - name: LOG_LEVEL
+            value: ${LOG_LEVEL}
 
     - name: expired-cleaner-service
       minReplicas: ${{MIN_REPLICAS}}
@@ -136,6 +138,8 @@ objects:
               secretKeyRef:
                 key: shared-secret
                 name: drift-interpod-comms
+          - name: LOG_LEVEL
+            value: ${LOG_LEVEL}
 
     - name: archiver-service
       minReplicas: ${{MIN_REPLICAS}}
@@ -188,6 +192,8 @@ objects:
             value: ${KAFKA_SASL_MECHANISM}
           - name: ENABLE_KAFKA_SSL
             value: ${ENABLE_KAFKA_SSL}
+          - name: LOG_LEVEL
+            value: ${LOG_LEVEL}
 
     - name: deleter-service
       minReplicas: ${{MIN_REPLICAS}}
@@ -240,6 +246,8 @@ objects:
             value: ${KAFKA_SASL_MECHANISM}
           - name: ENABLE_KAFKA_SSL
             value: ${ENABLE_KAFKA_SSL}
+          - name: LOG_LEVEL
+            value: ${LOG_LEVEL}
 
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
@@ -288,3 +296,5 @@ parameters:
     value: PLAINTEXT
   - name: KAFKA_SASL_MECHANISM
     value: 'PLAIN'
+  - name: LOG_LEVEL
+    value: INFO

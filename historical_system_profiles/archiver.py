@@ -200,7 +200,9 @@ def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
         notification_service = NotificationServiceInterface(logger)
         while True:
             time.sleep(delay_seconds)
+            logger.debug("Event loop running")
             for data in consumer:
+                logger.debug("Data found, processing kafka message")
                 try:
                     logger.debug(("kafka message recieved: '%s'", str(data)))
                     _archive_profile(data, ptc, logger, notification_service)
