@@ -55,7 +55,6 @@ def init_consumer(queue, logger):
             ssl_cafile=config.kafka_ssl_cert,
             sasl_plain_username=config.kafka_sasl_username,
             sasl_plain_password=config.kafka_sasl_password,
-            ssl_check_hostname=False,
         )
     else:
         consumer = KafkaConsumer(
