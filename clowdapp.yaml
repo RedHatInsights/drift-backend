@@ -35,6 +35,8 @@ objects:
         partitions: 1
       - topicName: platform.payload-status
         partitions: 1
+      - topicName: platform.inventory.events
+        partitions: 1
 
     deployments:
     - name: backend-service
