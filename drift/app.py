@@ -10,6 +10,7 @@ from kerlescan.error import handle_http_error
 from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
+from drift.hsts_response import register_hsts_response
 from drift.views import v1
 
 
@@ -31,6 +32,8 @@ def create_app():
 
     # set up logging
     setup_audit_logging(logging.Logger)
+
+    register_hsts_response(flask_app)
 
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
