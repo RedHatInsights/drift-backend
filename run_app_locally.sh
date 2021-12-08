@@ -25,9 +25,10 @@ then
     PORT=8004
     METRICS_PORT=9004
     APP_CONFIG='gunicorn.conf.py'
+    export LOG_LEVEL='debug'
     FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade;
     if [[ "$?" != "0" ]]; then exit 1; fi
-    exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --reload --bind=0.0.0.0:"$PORT" --bind=0.0.0.0:"$METRICS_PORT" --log-level="$LOG_LEVEL" --access-logfile=- --config "$APP_CONFIG"
   elif [ "$SERVICE_MODE" == "CLEAN_EXPIRED_RECORDS" ];
     then
     echo "RUNNING CLEAN_EXPIRED_RECORDS"

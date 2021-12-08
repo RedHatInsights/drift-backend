@@ -11,6 +11,7 @@ from kerlescan.exceptions import HTTPError
 from kerlescan.metrics_registry import create_prometheus_registry_dir
 
 from historical_system_profiles import app_config, config
+from historical_system_profiles.hsts_response import register_hsts_response
 from historical_system_profiles.models import db
 from historical_system_profiles.views import v1
 
@@ -41,6 +42,7 @@ def create_connexion_app():
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
     setup_cw_logging(flask_app.logger)
+    register_hsts_response(flask_app)
 
     # set up DB
     engine_options = {
