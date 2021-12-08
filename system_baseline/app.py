@@ -12,6 +12,7 @@ from kerlescan.metrics_registry import create_prometheus_registry_dir
 
 from system_baseline import app_config, db_config
 from system_baseline.global_helpers import global_helpers_bp
+from system_baseline.hsts_response import register_hsts_response
 from system_baseline.internal_views.v1 import section as internal_v1_bp
 from system_baseline.models import db
 from system_baseline.views.v1 import section as v1_bp
@@ -44,6 +45,7 @@ def create_connexion_app():
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
     setup_cw_logging(flask_app.logger)
+    register_hsts_response(flask_app)
 
     # set up DB
     flask_app.config["SQLALCHEMY_ECHO"] = False

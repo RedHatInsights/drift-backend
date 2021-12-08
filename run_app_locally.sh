@@ -39,11 +39,12 @@ else
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
   echo "RUNNING SYSTEM BASELINE SERVICE"
   export prometheus_multiproc_dir=$TEMPDIR
+  export LOG_LEVEL='debug'
   PORT=8003
   METRICS_PORT=9003
   APP_CONFIG='gunicorn.conf.py'
   FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade;
   if [[ "$?" != "0" ]]; then exit 1; fi
-  exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --reload --bind=0.0.0.0:"$PORT" --bind=0.0.0.0:"$METRICS_PORT" --log-level="$LOG_LEVEL" --access-logfile=- --config "$APP_CONFIG"
 fi
 rm -rf $TEMPDIR

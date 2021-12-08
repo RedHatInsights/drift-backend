@@ -118,3 +118,15 @@ def ensure_rbac_notifications_write():
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
     )
+
+
+@global_helpers_bp.after_app_request
+def ensure_hsts_response(response):
+    """
+    This method will insert HSTS header into all responses the server
+    send to client
+    """
+    current_app.logger.debug("Including hsts header in response")
+
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    return response
