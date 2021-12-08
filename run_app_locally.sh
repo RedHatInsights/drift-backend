@@ -32,9 +32,10 @@ if [ -z "$ACG_CONFIG" ]; then
 else
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
   export prometheus_multiproc_dir=$TEMPDIR
+  export LOG_LEVEL='debug'
   PORT=8001
   METRICS_PORT=9001
   APP_CONFIG='gunicorn.conf.py'
-  exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --reload --bind=0.0.0.0:"$PORT" --bind=0.0.0.0:"$METRICS_PORT" --log-level="$LOG_LEVEL" --access-logfile=- --config "$APP_CONFIG"
 fi
 rm -rf $TEMPDIR
