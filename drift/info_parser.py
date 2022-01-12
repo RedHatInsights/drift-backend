@@ -19,6 +19,9 @@ from drift.metrics import performance_timing
 PT_BC_SELECT_APPLICABLE_INFO = performance_timing.labels(
     method="build_comparisons", method_part="select_applicable_info"
 )
+PT_BC_GROUP_COMPARISONS = performance_timing.labels(
+    method="build_comparisons", method_part="group_comparisons"
+)
 
 
 def build_comparisons(
@@ -61,7 +64,9 @@ def build_comparisons(
                 if comparison["drifted_from_baseline"]:
                     drift_event_notify = True
 
-    grouped_comparisons = _group_comparisons(stripped_comparisons)
+    with PT_BC_GROUP_COMPARISONS.time():
+        grouped_comparisons = _group_comparisons(stripped_comparisons)
+
     sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
 
     # create metadata
