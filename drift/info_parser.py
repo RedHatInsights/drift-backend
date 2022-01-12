@@ -25,6 +25,9 @@ PT_BC_GROUP_COMPARISONS = performance_timing.labels(
 PT_BC_REMOVE_METADATA = performance_timing.labels(
     method="build_comparisons", method_part="remove_metadata"
 )
+PT_BC_CREATE_METADATA = performance_timing.labels(
+    method="build_comparisons", method_part="create_metadata"
+)
 
 
 def build_comparisons(
@@ -73,22 +76,22 @@ def build_comparisons(
 
     sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
 
-    # create metadata
-    baseline_mappings = [_baseline_mapping(baseline) for baseline in baselines]
-    historical_sys_profile_mappings = [
-        _historical_sys_profile_mapping(historical_sys_profile)
-        for historical_sys_profile in historical_sys_profiles
-    ]
-    system_mappings = [
-        _system_mapping(system_with_profile) for system_with_profile in systems_with_profiles
-    ]
-    sorted_system_mappings = sorted(system_mappings, key=lambda system: system["display_name"])
-
-    sorted_historical_sys_profile_mappings = sorted(
-        historical_sys_profile_mappings,
-        key=lambda hsp: dateparse(hsp["updated"]),
-        reverse=True,
-    )
+    with PT_BC_CREATE_METADATA.time():
+        # create metadata
+        baseline_mappings = [_baseline_mapping(baseline) for baseline in baselines]
+        historical_sys_profile_mappings = [
+            _historical_sys_profile_mapping(historical_sys_profile)
+            for historical_sys_profile in historical_sys_profiles
+        ]
+        system_mappings = [
+            _system_mapping(system_with_profile) for system_with_profile in systems_with_profiles
+        ]
+        sorted_system_mappings = sorted(system_mappings, key=lambda system: system["display_name"])
+        sorted_historical_sys_profile_mappings = sorted(
+            historical_sys_profile_mappings,
+            key=lambda hsp: dateparse(hsp["updated"]),
+            reverse=True,
+        )
 
     return {
         "facts": sorted_comparisons,
