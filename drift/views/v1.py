@@ -109,6 +109,9 @@ def _csvify(comparisons):
 PT_CR_API_REQUESTS = metrics.performance_timing.labels(
     method="comparison_report", method_part="api_requests"
 )
+PT_CR_BUILD_COMPARISON = metrics.performance_timing.labels(
+    method="comparison_report", method_part="build_comparison"
+)
 
 
 def comparison_report(
@@ -217,13 +220,14 @@ def comparison_report(
                 current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
                 raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
-        comparisons = info_parser.build_comparisons(
-            systems_with_profiles,
-            baseline_results,
-            hsp_results,
-            reference_id,
-            short_circuit,
-        )
+        with PT_CR_BUILD_COMPARISON.time():
+            comparisons = info_parser.build_comparisons(
+                systems_with_profiles,
+                baseline_results,
+                hsp_results,
+                reference_id,
+                short_circuit,
+            )
 
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
