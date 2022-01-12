@@ -22,6 +22,9 @@ PT_BC_SELECT_APPLICABLE_INFO = performance_timing.labels(
 PT_BC_GROUP_COMPARISONS = performance_timing.labels(
     method="build_comparisons", method_part="group_comparisons"
 )
+PT_BC_REMOVE_METADATA = performance_timing.labels(
+    method="build_comparisons", method_part="remove_metadata"
+)
 
 
 def build_comparisons(
@@ -54,15 +57,16 @@ def build_comparisons(
     drift_event_notify = False
 
     # remove system metadata that we put into to the comparison earlier
-    stripped_comparisons = []
-    metadata_fields = {"name", "id", "system_profile_exists", "is_baseline"}
-    for comparison in fact_comparisons:
-        if comparison["name"] not in metadata_fields:
-            stripped_comparisons.append(comparison)
-            # if the system has drifted from the baseline, notify
-            if short_circuit:
-                if comparison["drifted_from_baseline"]:
-                    drift_event_notify = True
+    with PT_BC_REMOVE_METADATA.time():
+        stripped_comparisons = []
+        metadata_fields = {"name", "id", "system_profile_exists", "is_baseline"}
+        for comparison in fact_comparisons:
+            if comparison["name"] not in metadata_fields:
+                stripped_comparisons.append(comparison)
+                # if the system has drifted from the baseline, notify
+                if short_circuit:
+                    if comparison["drifted_from_baseline"]:
+                        drift_event_notify = True
 
     with PT_BC_GROUP_COMPARISONS.time():
         grouped_comparisons = _group_comparisons(stripped_comparisons)
