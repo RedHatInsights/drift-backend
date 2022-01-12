@@ -13,6 +13,13 @@ from kerlescan.constants import (
     SYSTEM_ID_KEY,
 )
 
+from drift.metrics import performance_timing
+
+
+PT_BC_SELECT_APPLICABLE_INFO = performance_timing.labels(
+    method="build_comparisons", method_part="select_applicable_info"
+)
+
 
 def build_comparisons(
     systems_with_profiles,
@@ -31,13 +38,15 @@ def build_comparisons(
     The key 'drift_event_notify' will be true on the report if the system has drifted
     from the associated baseline, otherwise it will be false.
     """
-    fact_comparisons = _select_applicable_info(
-        systems_with_profiles,
-        baselines,
-        historical_sys_profiles,
-        reference_id,
-        short_circuit,
-    )
+
+    with PT_BC_SELECT_APPLICABLE_INFO.time():
+        fact_comparisons = _select_applicable_info(
+            systems_with_profiles,
+            baselines,
+            historical_sys_profiles,
+            reference_id,
+            short_circuit,
+        )
 
     drift_event_notify = False
 
