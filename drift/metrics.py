@@ -44,3 +44,7 @@ rbac_requests = Histogram("drift_rbac_service_requests", "rbac service call stat
 inventory_service_requests = Histogram(
     "drift_inventory_service_requests", "inventory service call stats"
 )
+
+performance_timing = Histogram(
+    "drift_performance_timing", "timing of code execution in drift app", ("method", "method_part")
+)
