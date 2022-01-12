@@ -106,6 +106,11 @@ def _csvify(comparisons):
     return result
 
 
+PT_CR_API_REQUESTS = metrics.performance_timing.labels(
+    method="comparison_report", method_part="api_requests"
+)
+
+
 def comparison_report(
     system_ids,
     baseline_ids,
@@ -178,36 +183,39 @@ def comparison_report(
         baseline_results = []
         hsp_results = []
 
-        try:
-            if system_ids:
-                # can raise RBACDenied exception
-                message = "reading systems with profiles"
-                current_app.logger.audit(message, request=request)
-                systems_with_profiles = fetch_systems_with_profiles(
-                    system_ids, auth_key, current_app.logger, get_event_counters()
-                )
+        with PT_CR_API_REQUESTS.time():
+            try:
+                if system_ids:
+                    # can raise RBACDenied exception
+                    message = "reading systems with profiles"
+                    current_app.logger.audit(message, request=request)
+                    systems_with_profiles = fetch_systems_with_profiles(
+                        system_ids, auth_key, current_app.logger, get_event_counters()
+                    )
 
-            if baseline_ids:
-                # can raise RBACDenied exception
-                message = "reading baselines"
-                current_app.logger.audit(message, request=request)
-                baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
-                ensure_correct_system_count(baseline_ids, baseline_results)
+                    if baseline_ids:
+                        # can raise RBACDenied exception
+                        message = "reading baselines"
+                        current_app.logger.audit(message, request=request)
+                        baseline_results = fetch_baselines(
+                            baseline_ids, auth_key, current_app.logger
+                        )
+                        ensure_correct_system_count(baseline_ids, baseline_results)
 
-            if historical_sys_profile_ids:
-                # can raise RBACDenied exception
-                message = "reading historical system profiles"
-                current_app.logger.audit(message, request=request)
-                hsp_results = fetch_historical_sys_profiles(
-                    historical_sys_profile_ids,
-                    auth_key,
-                    current_app.logger,
-                    get_event_counters(),
-                )
-        except RBACDenied as error:
-            message = error.message
-            current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
-            raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
+                        if historical_sys_profile_ids:
+                            # can raise RBACDenied exception
+                            message = "reading historical system profiles"
+                            current_app.logger.audit(message, request=request)
+                            hsp_results = fetch_historical_sys_profiles(
+                                historical_sys_profile_ids,
+                                auth_key,
+                                current_app.logger,
+                                get_event_counters(),
+                            )
+            except RBACDenied as error:
+                message = error.message
+                current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
+                raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         comparisons = info_parser.build_comparisons(
             systems_with_profiles,
@@ -216,6 +224,7 @@ def comparison_report(
             reference_id,
             short_circuit,
         )
+
         metrics.systems_compared.observe(len(system_ids))
         if data_format == "csv":
             output = make_response(_csvify(comparisons))
