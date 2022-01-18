@@ -5,7 +5,7 @@ python_version = "3.8"
 connexion = {extras = ["swagger-ui"],version = "~=2.7"}
 kerlescan = {editable = true, ref = "0.86", git = "https://github.com/RedHatInsights/kerlescan.git"}
 prometheus-client = "*"
-watchtower = "*"
+watchtower = "==1.0.6"
 flake8 = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"

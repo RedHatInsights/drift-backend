@@ -46,6 +46,6 @@ services-drift:historical_system_profiles/python:3.8=six:1.16.0
 services-drift:historical_system_profiles/python:3.8=sqlalchemy:1.4.27
 services-drift:historical_system_profiles/python:3.8=swagger-ui-bundle:0.0.9
 services-drift:historical_system_profiles/python:3.8=urllib3:1.26.7
-services-drift:historical_system_profiles/python:3.8=watchtower:2.0.0
+services-drift:historical_system_profiles/python:3.8=watchtower:1.0.6
 services-drift:historical_system_profiles/python:3.8=werkzeug:1.0.1
 services-drift:historical_system_profiles/python:3.8=zipp:3.6.0
