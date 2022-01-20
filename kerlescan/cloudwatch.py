@@ -13,7 +13,7 @@ def setup_cw_logging(logger):  # pragma: no cover
     from https://github.com/RedHatInsights/cloudwatch-test
     """
 
-    if isClowderEnabled:
+    if isClowderEnabled():
         cloudwatch_cfg = LoadedConfig.logging.cloudwatch
 
         key_id = cloudwatch_cfg.accessKeyId
