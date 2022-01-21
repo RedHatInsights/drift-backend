@@ -29,6 +29,10 @@ PT_BC_CREATE_METADATA = performance_timing.labels(
     method="build_comparisons", method_part="create_metadata"
 )
 
+PT_GC_BUILD_GROUP_NAMES = performance_timing.labels(
+    method="_group_comparisons", method_part="build_group_names"
+)
+
 
 def build_comparisons(
     systems_with_profiles,
@@ -125,10 +129,11 @@ def _group_comparisons(comparisons):
                 return group
 
     # build out group names
-    group_names = {_get_group_name(c["name"]) for c in comparisons if "." in c["name"]}
-    grouped_comparisons = []
-    for group_name in group_names:
-        grouped_comparisons.append({"name": group_name, "comparisons": []})
+    with PT_GC_BUILD_GROUP_NAMES.time():
+        group_names = {_get_group_name(c["name"]) for c in comparisons if "." in c["name"]}
+        grouped_comparisons = []
+        for group_name in group_names:
+            grouped_comparisons.append({"name": group_name, "comparisons": []})
 
     # populate groups
     for comparison in comparisons:
