@@ -37,6 +37,10 @@ PT_GC_POPULATE_GROUPS = performance_timing.labels(
     method="_group_comparisons", method_part="populate_groups"
 )
 
+PT_GC_SET_SUMMARY = performance_timing.labels(
+    method="_group_comparisons", method_part="set_summary"
+)
+
 
 def build_comparisons(
     systems_with_profiles,
@@ -153,20 +157,21 @@ def _group_comparisons(comparisons):
                 grouped_comparisons.append(comparison)
 
     # set summary state if grouped comparison contains groups
-    for grouped_comparison in grouped_comparisons:
-        if "comparisons" in grouped_comparison:
-            states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
-            if COMPARISON_DIFFERENT in states:
-                grouped_comparison["state"] = COMPARISON_DIFFERENT
-            elif COMPARISON_INCOMPLETE_DATA in states:
-                if COMPARISON_SAME in states:
+    with PT_GC_SET_SUMMARY.time():
+        for grouped_comparison in grouped_comparisons:
+            if "comparisons" in grouped_comparison:
+                states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
+                if COMPARISON_DIFFERENT in states:
                     grouped_comparison["state"] = COMPARISON_DIFFERENT
-                else:
+                elif COMPARISON_INCOMPLETE_DATA in states:
+                    if COMPARISON_SAME in states:
+                        grouped_comparison["state"] = COMPARISON_DIFFERENT
+                    else:
+                        grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
+                elif COMPARISON_SAME in states and len(states) == 1:
+                    grouped_comparison["state"] = COMPARISON_SAME
+                else:  # use 'incomplete data' as the fallback state if something goes wrong
                     grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
-            elif COMPARISON_SAME in states and len(states) == 1:
-                grouped_comparison["state"] = COMPARISON_SAME
-            else:  # use 'incomplete data' as the fallback state if something goes wrong
-                grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
 
     return grouped_comparisons
 
