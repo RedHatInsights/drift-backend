@@ -33,6 +33,10 @@ PT_GC_BUILD_GROUP_NAMES = performance_timing.labels(
     method="_group_comparisons", method_part="build_group_names"
 )
 
+PT_GC_POPULATE_GROUPS = performance_timing.labels(
+    method="_group_comparisons", method_part="populate_groups"
+)
+
 
 def build_comparisons(
     systems_with_profiles,
@@ -136,16 +140,17 @@ def _group_comparisons(comparisons):
             grouped_comparisons.append({"name": group_name, "comparisons": []})
 
     # populate groups
-    for comparison in comparisons:
-        if "." in comparison["name"]:
-            group = _find_group(_get_group_name(comparison["name"]))
-            comparison["name"] = _get_value_name(comparison["name"])
-            group["comparisons"].append(comparison)
-            group["comparisons"] = sorted(
-                group["comparisons"], key=lambda comparison: comparison["name"]
-            )
-        else:
-            grouped_comparisons.append(comparison)
+    with PT_GC_POPULATE_GROUPS.time():
+        for comparison in comparisons:
+            if "." in comparison["name"]:
+                group = _find_group(_get_group_name(comparison["name"]))
+                comparison["name"] = _get_value_name(comparison["name"])
+                group["comparisons"].append(comparison)
+                group["comparisons"] = sorted(
+                    group["comparisons"], key=lambda comparison: comparison["name"]
+                )
+            else:
+                grouped_comparisons.append(comparison)
 
     # set summary state if grouped comparison contains groups
     for grouped_comparison in grouped_comparisons:
