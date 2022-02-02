@@ -26,10 +26,6 @@ objects:
     database:
       name: system-baseline
       version: 12
-    cyndi:
-      enabled: true
-      appName: "system-baseline"
-      insightsOnly: true
 
     deployments:
     - name: backend-service
