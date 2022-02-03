@@ -87,7 +87,10 @@ def _archive_profile(data, ptc, logger, notification_service):
     # profiles in the app via captured_date.
 
     if captured_date and db_interface.is_profile_recorded(captured_date, host["id"], account):
-        logger.info("profile with date %s is already recorded for %s" % (captured_date, host["id"]))
+        logger.info(
+            "profile with date %s is already recorded for %s, using account id: %s"
+            % (captured_date, host["id"], account)
+        )
         _record_duplicate_message(host, request_id, ptc)
     else:
         hsp = db_interface.create_profile(
@@ -97,8 +100,8 @@ def _archive_profile(data, ptc, logger, notification_service):
         )
         _record_success_message(hsp.id, host, request_id, ptc)
         logger.info(
-            "wrote %s to historical database (inv id: %s, captured_on: %s)"
-            % (hsp.id, hsp.inventory_id, hsp.captured_on)
+            "wrote %s to historical database (inv id: %s, captured_on: %s, account id: %s)"
+            % (hsp.id, hsp.inventory_id, hsp.captured_on, account)
         )
         # After the new hsp is saved, we need to check for any reason to alert via
         # triggering a notification, i.e. if drift from any associated baselines has
@@ -156,13 +159,15 @@ def _check_and_send_notifications(
                     ]
                     event.add_drifted_baseline(baseline_id, baseline_name, comparison)
                     logger.info(
-                        "drift detected, baseline added to event baseline id: %s)" % (baseline_id)
+                        "drift detected, baseline added to event (baseline id: %s, account id: %s)"
+                        % (baseline_id, account_id)
                     )
         if drift_found:
             notification_service.send_notification(event)
             logger.info(
-                "drift detected, signal sent for Notifications to send alert inv id: %s)"
-                % (inventory_id)
+                """drift detected, signal sent for Notifications to send alert
+                (inv id: %s, account id %s)"""
+                % (inventory_id, account_id)
             )
 
 
