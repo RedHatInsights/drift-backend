@@ -126,6 +126,10 @@ def _group_comparisons(comparisons):
     [{'name': 'foo', comparisons: [{'name': 'x', ...}, {'name': 'y', ... }], {'name': 'z', ...}]
     """
 
+    # default values for method run
+    grouped_comparisons = []
+    processed_group_names = set()
+
     def _get_group_name(name):
         n, _, _ = name.partition(".")
         return n
@@ -134,47 +138,50 @@ def _group_comparisons(comparisons):
         _, _, n = name.partition(".")
         return n
 
-    def _find_group(name):
-        for group in grouped_comparisons:
+    def _find_group(name, grouped_comps):
+        for group in grouped_comps:
             if group["name"] == name:
                 return group
 
-    # build out group names
-    with PT_GC_BUILD_GROUP_NAMES.time():
-        group_names = {_get_group_name(c["name"]) for c in comparisons if "." in c["name"]}
-        grouped_comparisons = []
-        for group_name in group_names:
-            grouped_comparisons.append({"name": group_name, "comparisons": []})
+    # with PT_GC_BUILD_GROUP_NAMES.time(): # move to proper place or remove competely
+    # with PT_GC_POPULATE_GROUPS.time(): # move to proper place or remove competely
+    for comparison in comparisons:
+        if "." in comparison["name"]:
+            group_name = _get_group_name(comparison["name"])
+            built_group = {"name": group_name, "comparisons": []}
 
-    # populate groups
-    with PT_GC_POPULATE_GROUPS.time():
-        for comparison in comparisons:
-            if "." in comparison["name"]:
-                group = _find_group(_get_group_name(comparison["name"]))
-                comparison["name"] = _get_value_name(comparison["name"])
-                group["comparisons"].append(comparison)
-                group["comparisons"] = sorted(
-                    group["comparisons"], key=lambda comparison: comparison["name"]
-                )
-            else:
-                grouped_comparisons.append(comparison)
+            # build out group names
+            if group_name not in processed_group_names:
+                processed_group_names.add(group_name)
+                grouped_comparisons.append(built_group)
+
+            # populate groups
+            group = _find_group(group_name, grouped_comparisons)
+            # modify existing group
+            comparison["name"] = _get_value_name(comparison["name"])
+            group["comparisons"].append(comparison)
+            group["comparisons"] = sorted(
+                group["comparisons"], key=lambda comparison: comparison["name"]
+            )
+        else:
+            grouped_comparisons.append(comparison)
 
     # set summary state if grouped comparison contains groups
-    with PT_GC_SET_SUMMARY.time():
-        for grouped_comparison in grouped_comparisons:
-            if "comparisons" in grouped_comparison:
-                states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
-                if COMPARISON_DIFFERENT in states:
+    # with PT_GC_SET_SUMMARY.time():
+    for grouped_comparison in grouped_comparisons:
+        if "comparisons" in grouped_comparison:
+            states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
+            if COMPARISON_DIFFERENT in states:
+                grouped_comparison["state"] = COMPARISON_DIFFERENT
+            elif COMPARISON_INCOMPLETE_DATA in states:
+                if COMPARISON_SAME in states:
                     grouped_comparison["state"] = COMPARISON_DIFFERENT
-                elif COMPARISON_INCOMPLETE_DATA in states:
-                    if COMPARISON_SAME in states:
-                        grouped_comparison["state"] = COMPARISON_DIFFERENT
-                    else:
-                        grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
-                elif COMPARISON_SAME in states and len(states) == 1:
-                    grouped_comparison["state"] = COMPARISON_SAME
-                else:  # use 'incomplete data' as the fallback state if something goes wrong
+                else:
                     grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
+            elif COMPARISON_SAME in states and len(states) == 1:
+                grouped_comparison["state"] = COMPARISON_SAME
+            else:  # use 'incomplete data' as the fallback state if something goes wrong
+                grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
 
     return grouped_comparisons
 
