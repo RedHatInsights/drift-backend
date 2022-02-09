@@ -143,8 +143,23 @@ def _group_comparisons(comparisons):
             if group["name"] == name:
                 return group
 
+    def _set_summary_state(grouped_comparison):
+        states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
+        if COMPARISON_DIFFERENT in states:
+            grouped_comparison["state"] = COMPARISON_DIFFERENT
+        elif COMPARISON_INCOMPLETE_DATA in states:
+            if COMPARISON_SAME in states:
+                grouped_comparison["state"] = COMPARISON_DIFFERENT
+            else:
+                grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
+        elif COMPARISON_SAME in states and len(states) == 1:
+            grouped_comparison["state"] = COMPARISON_SAME
+        else:  # use 'incomplete data' as the fallback state if something goes wrong
+            grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
+
     # with PT_GC_BUILD_GROUP_NAMES.time(): # move to proper place or remove competely
     # with PT_GC_POPULATE_GROUPS.time(): # move to proper place or remove competely
+    # with PT_GC_SET_SUMMARY.time(): # move to proper place or remove competely
     for comparison in comparisons:
         if "." in comparison["name"]:
             group_name = _get_group_name(comparison["name"])
@@ -163,25 +178,13 @@ def _group_comparisons(comparisons):
             group["comparisons"] = sorted(
                 group["comparisons"], key=lambda comparison: comparison["name"]
             )
+            # trigger summary set action
+            # set summary state if grouped comparison contains groups
+            # as long as _set_summary_state doesn't rely on group["state"]
+            # we can trigger it more than once for every group
+            _set_summary_state(group)
         else:
             grouped_comparisons.append(comparison)
-
-    # set summary state if grouped comparison contains groups
-    # with PT_GC_SET_SUMMARY.time():
-    for grouped_comparison in grouped_comparisons:
-        if "comparisons" in grouped_comparison:
-            states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
-            if COMPARISON_DIFFERENT in states:
-                grouped_comparison["state"] = COMPARISON_DIFFERENT
-            elif COMPARISON_INCOMPLETE_DATA in states:
-                if COMPARISON_SAME in states:
-                    grouped_comparison["state"] = COMPARISON_DIFFERENT
-                else:
-                    grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
-            elif COMPARISON_SAME in states and len(states) == 1:
-                grouped_comparison["state"] = COMPARISON_SAME
-            else:  # use 'incomplete data' as the fallback state if something goes wrong
-                grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
 
     return grouped_comparisons
 
