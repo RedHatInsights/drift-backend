@@ -1,6 +1,9 @@
 import re
 
+from datetime import datetime
+
 from dateutil.parser import parse as dateparse
+from dateutil.tz import tzutc
 from flask import current_app
 from kerlescan import profile_parser
 from kerlescan.constants import (
@@ -550,6 +553,9 @@ def _system_mapping(system):
     create a header mapping for one system
     """
     system_profile_exists = system["system_profile"]["system_profile_exists"]
+    system_stale = _check_system_stale(system)
+    insights_installed = "insights-client" in system["system_profile"]["installed_packages"]
+    insights_enabled = "insights-client" in system["system_profile"]["enabled_services"]
     captured_or_updated = system.get("updated", None)
     if system_profile_exists:
         if "captured_date" in system["system_profile"]:
@@ -559,6 +565,9 @@ def _system_mapping(system):
         "display_name": profile_parser.get_name(system),
         "system_profile_exists": system_profile_exists,
         "last_updated": captured_or_updated,
+        "insights_installed": insights_installed,
+        "insights_enabled": insights_enabled,
+        "system_stale": system_stale,
     }
 
 
@@ -588,3 +597,10 @@ def _historical_sys_profile_mapping(historical_sys_profile):
         "updated": historical_sys_profile["captured_date"],
         "system_id": historical_sys_profile["inventory_id"],
     }
+
+
+def _check_system_stale(system):
+    system_stale_date = dateparse(system["system_profile"]["stale_warning_timestamp"])
+    current_date = datetime.now(tz=tzutc())
+
+    return current_date > system_stale_date

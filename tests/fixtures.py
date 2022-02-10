@@ -150,6 +150,8 @@ FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT = [
             "captured_date": "2020-03-30T18:42:23+00:00",
             "salutation": "hello",
             "fqdn": "hostname_two",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
             "installed_packages": [
                 "0:bash-4.4.23-6.fc29.x86_64",
                 "this isn't parsable",
@@ -192,6 +194,13 @@ FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT = [
             "fqdn": "hostname_one",
             "system_profile_exists": True,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
             "network_interfaces": [
                 {
                     "name": "eth99",
@@ -224,6 +233,13 @@ FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT = [
             "fqdn": "hostname_one",
             "system_profile_exists": False,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
             "network_interfaces": [
                 {
                     "name": "eth99",
@@ -272,8 +288,10 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
                 },
                 {"no_name": "foo"},
             ],
+            "enabled_services": ["insights_client"],
             "system_profile_exists": True,
             "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
         },
         "tags": [],
         "updated": "2019-01-31T14:00:00.500000Z",
@@ -296,6 +314,13 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
             "fqdn": "hostname_one",
             "system_profile_exists": True,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
             "network_interfaces": [
                 {
                     "name": "eth99",
@@ -327,6 +352,13 @@ FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
             "fqdn": "hostname_one",
             "system_profile_exists": False,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
             "network_interfaces": [
                 {
                     "name": "eth99",
@@ -421,6 +453,13 @@ FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT = [
             "salutation": "howdy",
             "system_profile_exists": True,
             "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
         },
         "fqdn": "fake_system_99.example.com",
         "id": "fc1e497a-28ae-11e9-afd9-c85b761454fa",
@@ -442,6 +481,13 @@ FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT = [
             "salutation": "howdy",
             "system_profile_exists": True,
             "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
+            "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
+            "enabled_services": ["insights_client"],
+            "installed_packages": [
+                "0:bash-4.4.23-6.fc29.x86_64",
+                "this isn't parsable",
+                "no_epoch-1.0-1.fc99.8088",
+            ],
         },
         "fqdn": "fake_system_99.example.com",
         "id": "bbbbbbbb-28ae-11e9-afd9-c85b761454fa",
@@ -497,7 +543,8 @@ FETCH_SYSTEMS_INV_SVC = """
       ],
       "subscription_manager_id": "1234FAKE1234",
       "tags": [],
-      "updated": "2018-12-31T12:00:00.000000Z"
+      "updated": "2018-12-31T12:00:00.000000Z",
+      "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z"
     },
     {
       "account": "1234567",
@@ -516,7 +563,8 @@ FETCH_SYSTEMS_INV_SVC = """
       ],
       "subscription_manager_id": "2222FAKE2222",
       "tags": [],
-      "updated": "2018-12-31T12:00:00.000000Z"
+      "updated": "2018-12-31T12:00:00.000000Z",
+      "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z"
     }
     ]}"""
 
