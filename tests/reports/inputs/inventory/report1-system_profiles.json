@@ -7480,6 +7480,7 @@
                     "ksmd"
                 ],
                 "satellite_managed": false,
+                "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
                 "installed_packages": [
                     "NetworkManager-1:1.18.0-5.el7.x86_64",
                     "NetworkManager-config-server-1:1.18.0-5.el7.noarch",
@@ -10476,6 +10477,7 @@
                     "qmgr"
                 ],
                 "satellite_managed": false,
+                "stale_warning_timestamp": "2018-12-31T12:00:00.000000Z",
                 "installed_packages": [
                     "GeoIP-0:1.5.0-11.el7.x86_64",
                     "NetworkManager-1:1.10.2-13.el7.x86_64",
