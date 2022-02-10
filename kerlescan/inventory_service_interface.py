@@ -63,6 +63,9 @@ def interleave_systems_and_profiles(systems_result, system_profiles_result, syst
         system_with_profile["system_profile"]["id"] = system["id"]
         system_with_profile["system_profile"]["fqdn"] = system["fqdn"]
         system_with_profile["system_profile"]["updated"] = system["updated"]
+        system_with_profile["system_profile"]["stale_warning_timestamp"] = system[
+            "stale_warning_timestamp"
+        ]
 
         # now add tags if any exist for the system.
         # system_tags_result is a dict keyed on uuid.
