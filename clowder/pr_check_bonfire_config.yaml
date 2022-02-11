@@ -23,7 +23,7 @@ apps:
     host: github
     repo: RedHatInsights/notifications-gw
     path: .rhcicd/clowdapp.yaml
-    ref: main
+    ref: 5fa31c8
     parameters:
       IMAGE: quay.io/cloudservices/notifications-gw
       IMAGE_TAG: latest
