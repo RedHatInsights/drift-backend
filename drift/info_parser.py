@@ -554,12 +554,16 @@ def _system_mapping(system):
     """
     system_profile_exists = system["system_profile"]["system_profile_exists"]
     system_stale = _check_system_stale(system)
-    insights_installed = "insights-client" in system["system_profile"]["installed_packages"]
-    insights_enabled = "insights-client" in system["system_profile"]["enabled_services"]
+    insights_installed = False
+    insights_enabled = False
     captured_or_updated = system.get("updated", None)
     if system_profile_exists:
         if "captured_date" in system["system_profile"]:
             captured_or_updated = system["system_profile"]["captured_date"]
+        if "installed_packages" in system["system_profile"]:
+            insights_installed = "insights-client" in system["system_profile"]["installed_packages"]
+        if "enabled_services" in system["system_profile"]:
+            insights_enabled = "insights-client" in system["system_profile"]["enabled_services"]
     return {
         "id": system[SYSTEM_ID_KEY],
         "display_name": profile_parser.get_name(system),
