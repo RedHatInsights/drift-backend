@@ -3,6 +3,9 @@
 #fetch our shared bonfire config
 #curl -o config.yaml https://raw.githubusercontent.com/RedHatInsights/drift-dev-setup/master/clowder/pr_check_bonfire_config.yaml
 
+#delete the file
+rm /var/lib/jenkins/.config/bonfire/config.yaml
+
 #show bonfire config
 cat /var/lib/jenkins/.config/bonfire/config.yaml
 
