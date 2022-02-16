@@ -2,6 +2,7 @@ import time
 
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
+from historical_system_profiles import probes
 from historical_system_profiles.baseline_service_interface import (
     fetch_baselines,
     fetch_system_baseline_associations,
@@ -203,9 +204,11 @@ def _emit_archiver_error(data, ptc, logger):
 def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
     with flask_app.app_context():
         notification_service = NotificationServiceInterface(logger)
+        probes._update_readiness_state()
         while True:
             time.sleep(delay_seconds)
             logger.debug("Event loop running")
+            probes._update_liveness_state()
             for data in consumer:
                 logger.debug("Data found, processing kafka message")
                 try:

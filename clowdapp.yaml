@@ -101,6 +101,22 @@ objects:
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_cleaner_liveness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 1200
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_readiness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 10
         resources:
           limits:
             cpu: 250m
@@ -142,11 +158,33 @@ objects:
                 name: drift-interpod-comms
           - name: LOG_LEVEL
             value: ${LOG_LEVEL}
+          - name: LIVENESS_PROBE_FILE
+            value: ${LIVENESS_PROBE_FILE}
+          - name: READINESS_PROBE_FILE
+            value: ${READINESS_PROBE_FILE}
+          - name: EXPIRED_CLEANER_SLEEP_MINUTES
+            value: ${EXPIRED_CLEANER_SLEEP_MINUTES}
 
     - name: archiver-service
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_liveness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_readiness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 10
         resources:
           limits:
             cpu: 250m
@@ -196,11 +234,31 @@ objects:
             value: ${ENABLE_KAFKA_SSL}
           - name: LOG_LEVEL
             value: ${LOG_LEVEL}
+          - name: LIVENESS_PROBE_FILE
+            value: ${LIVENESS_PROBE_FILE}
+          - name: READINESS_PROBE_FILE
+            value: ${READINESS_PROBE_FILE}
 
     - name: deleter-service
       minReplicas: ${{MIN_REPLICAS}}
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_liveness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/env
+            - sh
+            - check_readiness_probe.sh
+          initialDelaySeconds: 10
+          periodSeconds: 10
         resources:
           limits:
             cpu: 250m
@@ -250,6 +308,10 @@ objects:
             value: ${ENABLE_KAFKA_SSL}
           - name: LOG_LEVEL
             value: ${LOG_LEVEL}
+          - name: LIVENESS_PROBE_FILE
+            value: ${LIVENESS_PROBE_FILE}
+          - name: READINESS_PROBE_FILE
+            value: ${READINESS_PROBE_FILE}
 
 - apiVersion: autoscaling/v1
   kind: HorizontalPodAutoscaler
@@ -300,3 +362,12 @@ parameters:
     value: 'PLAIN'
   - name: LOG_LEVEL
     value: INFO
+  - name: LIVENESS_PROBE_FILE
+    describes: File used as liveness probe
+    value: 'liveness_probe'
+  - name: READINESS_PROBE_FILE
+    describes: File used as readiness probe
+    value: 'readiness_probe'
+  - name: EXPIRED_CLEANER_SLEEP_MINUTES
+    describes: How often are old data cleaned
+    value: "20"

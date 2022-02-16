@@ -5,6 +5,7 @@ from base64 import b64encode
 
 from historical_system_profiles import db_interface
 from historical_system_profiles import listener_metrics as metrics
+from historical_system_profiles import probes
 from historical_system_profiles.baseline_service_interface import (
     delete_system_baseline_associations,
 )
@@ -78,8 +79,10 @@ def _emit_delete_error(data, ptc):
 
 def event_loop(flask_app, consumer, ptc, logger, delay_seconds):
     with flask_app.app_context():
+        probes._update_readiness_state()
         while True:
             time.sleep(delay_seconds)
+            probes._update_liveness_state()
             for data in consumer:
                 try:
                     logger.debug(("kafka message recieved: '%s'", str(data)))
