@@ -570,8 +570,18 @@ def _system_mapping(system):
     if system_profile_exists:
         if "captured_date" in system["system_profile"]:
             captured_or_updated = system["system_profile"]["captured_date"]
+
         if "installed_packages" in system["system_profile"]:
-            insights_installed = "insights-client" in system["system_profile"]["installed_packages"]
+            try:
+                insights_installed_string = next(
+                    s
+                    for s in system["system_profile"]["installed_packages"]
+                    if "insights-client" in s
+                )
+            except StopIteration:
+                insights_installed_string = ""
+            insights_installed = "insights-client" in insights_installed_string
+
         if "enabled_services" in system["system_profile"]:
             insights_enabled = "insights-client" in system["system_profile"]["enabled_services"]
     return {
