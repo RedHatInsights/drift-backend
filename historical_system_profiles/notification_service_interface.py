@@ -4,8 +4,6 @@ from datetime import datetime, timezone
 
 from kafka import KafkaProducer
 
-from kerlescan import config as kerlescan_config
-from kerlescan.constants import DRIFT_SVC_ENDPOINT
 from historical_system_profiles import config
 
 
@@ -99,15 +97,8 @@ class EventDriftBaselineDetected(_NotificationEventBase):
         )
 
     def add_drifted_baseline(self, baseline_id, baseline_name, facts):
-        url = (
-            f"{kerlescan_config.drift_svc_hostname}"
-            f"{DRIFT_SVC_ENDPOINT}"
-            f"?system_ids[]={self.inventory_id}&baseline_ids[]={baseline_id}"
-        )
         payload = {
             "baseline_id": baseline_id,
             "baseline_name": baseline_name,
-            "description": f"System {self.display_name} has drifted from baseline {baseline_name}",
-            "url": url,
         }
         super(EventDriftBaselineDetected, self)._add_event(payload)
