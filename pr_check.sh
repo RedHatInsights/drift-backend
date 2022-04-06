@@ -24,3 +24,4 @@ source $CICD_ROOT/build.sh
 #docker run ${IMAGE}:${IMAGE_TAG} /bin/bash -c "pipenv install --dev && ./run_unit_tests.sh"
 source $APP_ROOT/drift_deploy_ephemeral_env.sh
 source $CICD_ROOT/cji_smoke_test.sh
+source $APP_ROOT/post_test_results.sh
