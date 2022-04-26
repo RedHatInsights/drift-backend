@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/python-38:1-74
+FROM registry.access.redhat.com/ubi8/python-38
 
 # Install dependencies and clean cache to make the image cleaner
 
