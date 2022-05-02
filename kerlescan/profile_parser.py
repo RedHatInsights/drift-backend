@@ -112,8 +112,16 @@ def parse_profile(system_profile, display_name, logger):
         tag_dict = {}
         for tag in tags:
             tag_name = "{}.{}".format(tag["namespace"], tag["key"])
+            """
+            Creates a default key in the dictionary and returns a list
+            This list has a pointer to the list inside the tag_dict dictionary
+            Every interation with the value_list, will reflect on tag_dict.
+            e.g. tag_dict["tag_name"] == value_list returns True
+            """
             value_list = tag_dict.setdefault(tag_name, [])
-            if tag["value"]:
+            if not tag["value"]:
+                value_list.append("(no value)")
+            else:
                 value_list.append(tag["value"])
         for tag_name in sorted(tag_dict):
             if len(tag_dict[tag_name]) > 1:
