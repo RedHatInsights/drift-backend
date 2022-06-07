@@ -23,7 +23,7 @@ pytest-mock = "*"
 toml = "*"
 
 [packages]
-connexion = {extras = ["swagger-ui"],version = "~=2.6"}
+connexion = {extras = ["swagger-ui"],version = "==2.5.1"} # 2.6.0 is stricter, need to fix openapi spec to upgrade
 Flask = "==1.1.4"
 gunicorn = "*"
 prometheus_client = "*"
@@ -41,6 +41,8 @@ kerlescan = {editable = true, ref = "0.93", git = "https://github.com/RedHatInsi
 app-common-python = "*"
 unleashclient = "*"
 "backports.zoneinfo" = "*"
+jsonschema = "==3.2.0"
+markupsafe = "==2.0.1"
 
 [requires]
 python_version = "3.8"
