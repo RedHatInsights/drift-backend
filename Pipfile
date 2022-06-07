@@ -2,7 +2,7 @@
 python_version = "3.8"
 
 [packages]
-connexion = {extras = ["swagger-ui"],version = "~=2.7"}
+connexion = {extras = ["swagger-ui"],version = "==2.5.1"} # 2.6.0 is stricter, need to fix openapi spec to upgrade
 kerlescan = {editable = true, ref = "0.93", git = "https://github.com/RedHatInsights/kerlescan.git"}
 prometheus-client = "*"
 watchtower = "==1.0.6"
@@ -18,6 +18,9 @@ logstash-formatter = "*"
 python-dateutil = "*"
 pytz = "*"
 app-common-python = "*"
+jsonschema = "==3.2.0"
+markupsafe = "==2.0.1"
+click = "==8.0.3"
 
 [dev-packages]
 black = "==21.6b0"
