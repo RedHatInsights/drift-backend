@@ -371,3 +371,11 @@ parameters:
   - name: EXPIRED_CLEANER_SLEEP_MINUTES
     describes: How often are old data cleaned
     value: "20"
+  - description: Host for the EAN to OrgId translator.
+    name: TENANT_TRANSLATOR_HOST
+    required: true
+    value: 'apicast.3scale-dev.svc.cluster.local'
+  - description: Port for the EAN to OrgId translator.
+    name: TENANT_TRANSLATOR_PORT
+    required: true
+    value: '8892'
