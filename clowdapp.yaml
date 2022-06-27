@@ -60,8 +60,8 @@ objects:
             value: ${TENANT_TRANSLATOR_HOST}
           - name: TENANT_TRANSLATOR_PORT
             value: ${TENANT_TRANSLATOR_PORT}
-          - name: LOG_FORMAT
-            value: ${LOG_FORMAT}
+          - name: POPULATOR_LOG_FORMAT
+            value: ${POPULATOR_LOG_FORMAT}
           - name: LOG_BATCH_FREQUENCY
             value: '1'
         resources:
@@ -412,3 +412,7 @@ parameters:
     name: TENANT_TRANSLATOR_PORT
     required: true
     value: '8892'
+  - name: POPULATOR_LOG_FORMAT
+    value: cloudwatch
+  - name: POPULATOR_RUN_NUMBER # in case the populator needs to be run more than once increment this parameter to get a new job
+    value: '1'
