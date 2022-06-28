@@ -58,7 +58,7 @@ class NotificationServiceInterface:
 class _NotificationEventBase:
     """Base event on which all notification events are built"""
 
-    def __init__(self, event_type, account_id, context={}):
+    def __init__(self, event_type, account_id, org_id, context={}):
         self.notification_bundle = config.notification_bundle
         self.notification_app = config.notification_app
         self.message = {
@@ -67,6 +67,7 @@ class _NotificationEventBase:
             "event_type": event_type,
             "timestamp": datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
             "account_id": account_id,
+            "org_id": org_id,
             "events": [],
             "context": json.dumps(context),
         }
@@ -81,6 +82,7 @@ class EventDriftBaselineDetected(_NotificationEventBase):
     def __init__(
         self,
         account_id,
+        org_id,
         inventory_id,
         system_check_in,
         display_name,
@@ -93,7 +95,7 @@ class EventDriftBaselineDetected(_NotificationEventBase):
             "tags": tags,
         }
         super(EventDriftBaselineDetected, self).__init__(
-            EVENT_DRIFT_BASELINE_DETECTED, account_id, context
+            EVENT_DRIFT_BASELINE_DETECTED, account_id, org_id, context
         )
 
     def add_drifted_baseline(self, baseline_id, baseline_name, facts):
