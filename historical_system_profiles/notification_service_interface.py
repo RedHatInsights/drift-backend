@@ -22,7 +22,7 @@ class NotificationServiceInterface:
         self.notification_app = config.notification_app
         if self.notification_service_topic:
             self.logger.info(
-                f"Initializing NotificationServiceInterface - with "
+                "Initializing NotificationServiceInterface - with "
                 f"{'secure' if config.enable_kafka_ssl else 'normal'} producer "
                 f"on topic '{self.notification_service_topic}' using "
                 f"bundle '{self.notification_bundle}' and "
