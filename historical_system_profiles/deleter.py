@@ -18,8 +18,9 @@ def _delete_profiles(data, ptc, logger):
     inventory_id = data.value["id"]
     request_id = data.value["request_id"]
     account = data.value["account"]
+    org_id = data.value["org_id"]
 
-    _record_recv_message(request_id, inventory_id, account, ptc)
+    _record_recv_message(request_id, inventory_id, account, org_id, ptc)
     db_interface.delete_hsps_by_inventory_id(inventory_id)
 
     # we don't have identity information in kafka message about deleting the system
@@ -30,6 +31,7 @@ def _delete_profiles(data, ptc, logger):
             "type": "System",
             "user": {"username": "HSPs deleter"},
             "account_number": account,
+            "org_id": org_id,
         }
     }
     service_auth_key = b64encode(json.dumps(identity).encode("utf-8"))
@@ -37,25 +39,27 @@ def _delete_profiles(data, ptc, logger):
     delete_system_baseline_associations(inventory_id, service_auth_key, logger)
 
     logger.info("deleted profiles for inventory_id %s" % inventory_id)
-    _record_success_message(request_id, inventory_id, account, ptc)
+    _record_success_message(request_id, inventory_id, account, org_id, ptc)
 
 
-def _record_recv_message(request_id, inventory_id, account, ptc):
+def _record_recv_message(request_id, inventory_id, account, org_id, ptc):
     metrics.delete_messages_consumed.inc()
     ptc.emit_received_message(
         "received inventory delete event",
         request_id=request_id,
         account=account,
+        org_id=org_id,
         inventory_id=inventory_id,
     )
 
 
-def _record_success_message(request_id, inventory_id, account, ptc):
+def _record_success_message(request_id, inventory_id, account, org_id, ptc):
     metrics.delete_messages_processed.inc()
     ptc.emit_success_message(
         "deleted profiles for inventory record",
         request_id=request_id,
         account=account,
+        org_id=org_id,
         inventory_id=inventory_id,
     )
 
@@ -69,10 +73,12 @@ def _emit_delete_error(data, ptc):
     inventory_id = data.value["id"]
     request_id = data.value["request_id"]
     account = data.value["account"]
+    org_id = data.value["org_id"]
     ptc.emit_error_message(
         "error when deleting profiles for inventory record",
         request_id=request_id,
         account=account,
+        org_id=org_id,
         inventory_id=inventory_id,
     )
 
