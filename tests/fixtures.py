@@ -28,18 +28,20 @@ decoded AUTH_HEADER (newlines added for readability):
 """
 
 AUTH_HEADER = {
-    "X-RH-IDENTITY": "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6"
-    "IjEyMzQiLCJvcmdfaWQiOiI1Njc4IiwiaW50ZXJu"
-    "YWwiOnsib3JnX2lkIjoiNTY3OCJ9LCJ0eXBlIjoi"
-    "VXNlciIsInVzZXIiOnsiZW1haWwiOiJ0ZXN0QGV4"
-    "YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6IkZpcnN0"
-    "bmFtZSIsImlzX2FjdGl2ZSI6dHJ1ZSwiaXNfaW50"
-    "ZXJuYWwiOnRydWUsImlzX29yZ19hZG1pbiI6ZmFs"
-    "c2UsImxhc3RfbmFtZSI6Ikxhc3RuYW1lIiwibG9j"
-    "YWxlIjoiZW5fVVMiLCJ1c2VybmFtZSI6InRlc3Rf"
-    "dXNlcm5hbWUifX0sImVudGl0bGVtZW50cyI6eyJz"
-    "bWFydF9tYW5hZ2VtZW50Ijp7ImlzX2VudGl0bGVk"
-    "Ijp0cnVlfX19Cg=="
+    "X-RH-IDENTITY": (
+        "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6"
+        "IjEyMzQiLCJvcmdfaWQiOiI1Njc4IiwiaW50ZXJu"
+        "YWwiOnsib3JnX2lkIjoiNTY3OCJ9LCJ0eXBlIjoi"
+        "VXNlciIsInVzZXIiOnsiZW1haWwiOiJ0ZXN0QGV4"
+        "YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6IkZpcnN0"
+        "bmFtZSIsImlzX2FjdGl2ZSI6dHJ1ZSwiaXNfaW50"
+        "ZXJuYWwiOnRydWUsImlzX29yZ19hZG1pbiI6ZmFs"
+        "c2UsImxhc3RfbmFtZSI6Ikxhc3RuYW1lIiwibG9j"
+        "YWxlIjoiZW5fVVMiLCJ1c2VybmFtZSI6InRlc3Rf"
+        "dXNlcm5hbWUifX0sImVudGl0bGVtZW50cyI6eyJz"
+        "bWFydF9tYW5hZ2VtZW50Ijp7ImlzX2VudGl0bGVk"
+        "Ijp0cnVlfX19Cg=="
+    )
 }
 
 
