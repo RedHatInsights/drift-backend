@@ -20,6 +20,7 @@ def _record_recv_message(host, request_id, ptc):
         "received inventory update event",
         request_id=request_id,
         account=host["account"],
+        org_id=host["org_id"],
         inventory_id=host["id"],
     )
 
@@ -30,6 +31,7 @@ def _record_success_message(hsp_id, host, request_id, ptc):
         "stored historical profile %s" % hsp_id,
         request_id=request_id,
         account=host["account"],
+        org_id=host["org_id"],
         inventory_id=host["id"],
     )
 
@@ -40,6 +42,7 @@ def _record_duplicate_message(host, request_id, ptc):
         "profile not saved to db (timestamp already exists)",
         request_id=request_id,
         account=host["account"],
+        org_id=host["org_id"],
         inventory_id=host["id"],
     )
 
@@ -78,6 +81,7 @@ def _archive_profile(data, ptc, logger, notification_service):
 
     captured_date = profile.get("captured_date")
     account = host["account"]
+    org_id = host["org_id"]
 
     # Historical profiles have a "captured_date" which is when the data was
     # taken from the system by insights-client. However, some reporters to
@@ -87,10 +91,12 @@ def _archive_profile(data, ptc, logger, notification_service):
     # question.  This works for our purposes since users differentiate between
     # profiles in the app via captured_date.
 
-    if captured_date and db_interface.is_profile_recorded(captured_date, host["id"], account):
+    if captured_date and db_interface.is_profile_recorded(
+        captured_date, host["id"], account, org_id
+    ):
         logger.info(
-            "profile with date %s is already recorded for %s, using account id: %s"
-            % (captured_date, host["id"], account)
+            "profile with date %s is already recorded for %s, using account id: %s, org_id: %s"
+            % (captured_date, host["id"], account, org_id)
         )
         _record_duplicate_message(host, request_id, ptc)
     else:
@@ -98,11 +104,12 @@ def _archive_profile(data, ptc, logger, notification_service):
             inventory_id=host["id"],
             profile=profile,
             account_number=host["account"],
+            org_id=org_id,
         )
         _record_success_message(hsp.id, host, request_id, ptc)
         logger.info(
-            "wrote %s to historical database (inv id: %s, captured_on: %s, account id: %s)"
-            % (hsp.id, hsp.inventory_id, hsp.captured_on, account)
+            "wrote %s to historical database (inv id: %s, captured_on: %s, account id: %s,"
+            " org_id: %s)" % (hsp.id, hsp.inventory_id, hsp.captured_on, account, org_id)
         )
         # After the new hsp is saved, we need to check for any reason to alert via
         # triggering a notification, i.e. if drift from any associated baselines has
@@ -110,6 +117,7 @@ def _archive_profile(data, ptc, logger, notification_service):
         _check_and_send_notifications(
             host["id"],
             host["account"],
+            host["org_id"],
             host["updated"],
             host["display_name"],
             host["tags"],
@@ -126,6 +134,7 @@ def _check_if_notification_enabled(baseline_id, service_auth_key, logger):
 def _check_and_send_notifications(
     inventory_id,
     account_id,
+    org_id,
     system_check_in,
     display_name,
     tags,
@@ -145,7 +154,7 @@ def _check_and_send_notifications(
     if baseline_ids:
         drift_found = False
         event = EventDriftBaselineDetected(
-            account_id, inventory_id, system_check_in, display_name, tags
+            account_id, org_id, inventory_id, system_check_in, display_name, tags
         )
         for baseline_id in baseline_ids:
             if _check_if_notification_enabled(baseline_id, service_auth_key, logger):
@@ -160,15 +169,15 @@ def _check_and_send_notifications(
                     ]
                     event.add_drifted_baseline(baseline_id, baseline_name, comparison)
                     logger.info(
-                        "drift detected, baseline added to event (baseline id: %s, account id: %s)"
-                        % (baseline_id, account_id)
+                        "drift detected, baseline added to event (baseline id: %s, account id: %s,"
+                        " org_id: %s)" % (baseline_id, account_id, org_id)
                     )
         if drift_found:
             notification_service.send_notification(event)
             logger.info(
                 """drift detected, signal sent for Notifications to send alert
-                (inv id: %s, account id %s)"""
-                % (inventory_id, account_id)
+                (inv id: %s, account id %s, org_id %s)"""
+                % (inventory_id, account_id, org_id)
             )
 
 
@@ -196,6 +205,7 @@ def _emit_archiver_error(data, ptc, logger):
         "error when storing historical profile",
         request_id=request_id,
         account=host["account"],
+        org_id=host["org_id"],
         inventory_id=host["id"],
     )
     logger.exception("An error occurred during message processing")

@@ -21,7 +21,7 @@ class ArchiverTests(utils.ApiTest):
         hsps = []
         with self.test_flask_app.app_context():
             hsps = db_interface.get_hsps_by_inventory_id(
-                "6388350e-b18d-11ea-ad7f-98fa9b07d419", "5432", "10", "0"
+                "6388350e-b18d-11ea-ad7f-98fa9b07d419", "5432", "5678", "10", "0"
             )
 
         # ensure we didnt save the duplicate
