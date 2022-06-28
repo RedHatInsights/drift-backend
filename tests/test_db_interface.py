@@ -19,7 +19,7 @@ class DBInterfaceTests(utils.ApiTest):
         # add one record, confirm count
         with self.test_flask_app.app_context():
             # NB: this is an INVENTORY id, not HSP id! HSP ids are generated at creation time.
-            db_interface.create_profile("29dbe6ce-897f-11ea-8f75-98fa9b07d419", {}, "1234")
+            db_interface.create_profile("29dbe6ce-897f-11ea-8f75-98fa9b07d419", {}, "1234", "5678")
 
         response = self.client.get(
             "/api/historical-system-profiles/v1/systems/29dbe6ce-897f-11ea-8f75-98fa9b07d419",
