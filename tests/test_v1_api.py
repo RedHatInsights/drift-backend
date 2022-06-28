@@ -41,7 +41,7 @@ class HSPApiTests(utils.ApiTest):
 
         # add one record, confirm count
         with self.test_flask_app.app_context():
-            db_interface.create_profile("6887d404-ab27-11ea-b3ae-98fa9b07d419", {}, "1234")
+            db_interface.create_profile("6887d404-ab27-11ea-b3ae-98fa9b07d419", {}, "1234", "5678")
 
         response = self.client.get(
             "/api/historical-system-profiles/v1/systems/6887d404-ab27-11ea-b3ae-98fa9b07d419",
@@ -72,7 +72,7 @@ class HSPApiTests(utils.ApiTest):
     def test_missing_hsp_in_list(self):
         # get a 404 if one out of two records is missing
         with self.test_flask_app.app_context():
-            db_interface.create_profile("eca1c5c4-ab27-11ea-958a-98fa9b07d419", {}, "1234")
+            db_interface.create_profile("eca1c5c4-ab27-11ea-958a-98fa9b07d419", {}, "1234", "5678")
 
         self.addInventoryRecord("eca1c5c4-ab27-11ea-958a-98fa9b07d419", "test_name")
         response = self.client.get(
@@ -108,13 +108,15 @@ class HSPApiTests(utils.ApiTest):
         )
 
         # create four profiles, iterating "some_fact" to simulate check-ins for this host
-        # 1234 is the account number.
+        # 1234 is the account number
+        # 5678 is the org id
         with self.test_flask_app.app_context():
             for i in range(4):
                 db_interface.create_profile(
                     "16c1b34a-bf78-494e-ba3d-fe7dc1b18459",
                     {"some_fact": f"some_value_{i}"},
                     "1234",
+                    "5678",
                 )
 
         # fetch the system profiles providing limit and offset

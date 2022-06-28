@@ -121,11 +121,12 @@ def get_hsps_by_ids(profile_ids):
     _check_for_duplicates(profile_ids)
 
     account_number = view_helpers.get_account_number(request)
+    org_id = view_helpers.get_org_id(request)
 
     message = "read historical system profiles"
     current_app.logger.audit(message, request=request)
 
-    result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number)
+    result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number, org_id)
 
     # TODO: rely on captured_date and filter in SQL above
     filtered_result = _filter_old_hsps(result)
@@ -143,12 +144,13 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     """
     validate_uuids([inventory_id])
     account_number = view_helpers.get_account_number(request)
+    org_id = view_helpers.get_org_id(request)
 
     message = "read historical system profiles"
     current_app.logger.audit(message, request=request)
 
     query_results = db_interface.get_hsps_by_inventory_id(
-        inventory_id, account_number, limit, offset
+        inventory_id, account_number, org_id, limit, offset
     )
     valid_profiles = _filter_old_hsps(query_results)
 
@@ -183,6 +185,11 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
 @section.before_app_request
 def ensure_account_number():
     return view_helpers.ensure_account_number(request, current_app.logger)
+
+
+@section.before_app_request
+def ensure_org_id():
+    return view_helpers.ensure_org_id(request, current_app.logger)
 
 
 @section.before_app_request
