@@ -25,6 +25,17 @@ def get_account_number(request):
     return identity["account_number"]
 
 
+def get_org_id(request):
+    """
+    This is different than ensure_org_id. This will return the number
+    whereas the other method raises an exception if the number does not exist
+    on the request.
+    """
+    auth_key = get_key_from_headers(request.headers)
+    identity = json.loads(base64.b64decode(auth_key))["identity"]
+    return identity["org_id"]
+
+
 def _is_mgmt_url(path):
     """
     small helper to test if URL is for management API.
@@ -76,7 +87,7 @@ def check_request_from_turnpike(**kwargs):
     identity_type = auth.get("identity", {}).get("type", None)
 
     if identity_type == "Associate":
-        kwargs["logger"].audit("Associate account found, auth/entitlement authorized")
+        kwargs["logger"].audit("Associate account/org found, auth/entitlement authorized")
         return True
 
     return False
@@ -96,6 +107,25 @@ def ensure_account_number(request, logger):
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST,
                 message="account number not found on identity token",
+            )
+    else:
+        raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
+
+
+def ensure_org_id(request, logger):
+    if _is_mgmt_url(request.path) or check_request_from_turnpike(
+        request=request, logger=logger
+    ):  # TODO: pass in app_name for openapi url check
+        return  # allow request
+
+    auth_key = get_key_from_headers(request.headers)
+    if auth_key:
+        identity = json.loads(base64.b64decode(auth_key))["identity"]
+        if "org_id" not in identity:
+            logger.debug("org id not found on identity token %s" % auth_key)
+            raise HTTPError(
+                HTTPStatus.BAD_REQUEST,
+                message="org id not found on identity token",
             )
     else:
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
@@ -122,7 +152,7 @@ def ensure_has_permission(**kwargs):
         return
 
     if not auth_key:
-        logger.debug("entitlement not found for account.")
+        logger.debug("entitlement not found for account/org.")
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
     try:
@@ -188,7 +218,7 @@ def ensure_entitled(request, app_name, logger):
     auth_key = get_key_from_headers(request.headers)
 
     if not auth_key:
-        logger.debug("entitlement not found for account.")
+        logger.debug("entitlement not found for account/org.")
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
     entitlements = json.loads(base64.b64decode(auth_key)).get("entitlements", {})
@@ -197,7 +227,7 @@ def ensure_entitled(request, app_name, logger):
             logger.debug("enabled entitlement found on header")
             return  # allow request
 
-    raise HTTPError(HTTPStatus.BAD_REQUEST, message="Entitlement not found for account.")
+    raise HTTPError(HTTPStatus.BAD_REQUEST, message="Entitlement not found for account/org.")
 
 
 def log_username(logger, request):
