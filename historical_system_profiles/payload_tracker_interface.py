@@ -53,12 +53,15 @@ class PayloadTrackerClient:
                 "unable to send update on %s to tracker topic" % message["request_id"]
             )
 
-    def _create_message(self, status, message, request_id=-1, account=-1, inventory_id=-1):
+    def _create_message(
+        self, status, message, request_id=-1, account=-1, org_id=-1, inventory_id=-1
+    ):
         # date format supplied by payload-tracker team
         now = str(datetime.now().isoformat())
         message = {
             "request_id": request_id,
             "account": account,
+            "org_id": org_id,
             "inventory_id": inventory_id,
             "service": "hsp-%s" % config.listener_type.lower(),
             "status": status,
