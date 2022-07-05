@@ -1,7 +1,6 @@
 FROM registry.access.redhat.com/ubi8/python-38
 
 # Install dependencies and clean cache to make the image cleaner
-
 USER 0
 RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
     yum remove -y npm vim-minimal && \
