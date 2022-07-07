@@ -411,7 +411,7 @@ parameters:
   - description: Port for the EAN to OrgId translator.
     name: TENANT_TRANSLATOR_PORT
     required: true
-    value: '8892'
+    value: '8891'
   - name: POPULATOR_LOG_FORMAT
     value: cloudwatch
   - name: POPULATOR_RUN_NUMBER # in case the populator needs to be run more than once increment this parameter to get a new job
