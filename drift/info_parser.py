@@ -31,6 +31,13 @@ PT_BC_REMOVE_METADATA = performance_timing.labels(
 PT_BC_CREATE_METADATA = performance_timing.labels(
     method="build_comparisons", method_part="create_metadata"
 )
+PT_BC_SORT_COMPARISONS = performance_timing.labels(
+    method="build_comparisons", method_part="sort_comparisons"
+)
+PT_BC_SORT_SYSTEM_MAPPINGS = performance_timing.labels(
+    method="build_comparisons", method_part="sort_system_mappings"
+)
+PT_BC_SORT_HSP = performance_timing.labels(method="build_comparisons", method_part="sort_hsp")
 
 PT_GC_BUILD_GROUP_NAMES = performance_timing.labels(
     method="_group_comparisons", method_part="build_group_names"
@@ -78,6 +85,8 @@ def build_comparisons(
     with PT_BC_REMOVE_METADATA.time():
         stripped_comparisons = []
         metadata_fields = {"name", "id", "system_profile_exists", "is_baseline"}
+        # debug info (attempt to reduce response time)  please do not remove it.
+        current_app.logger.debug(">> fact_comparisons size: " + str(len(fact_comparisons)))
         for comparison in fact_comparisons:
             if comparison["name"] not in metadata_fields:
                 stripped_comparisons.append(comparison)
@@ -89,7 +98,8 @@ def build_comparisons(
     with PT_BC_GROUP_COMPARISONS.time():
         grouped_comparisons = _group_comparisons(stripped_comparisons)
 
-    sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
+    with PT_BC_SORT_COMPARISONS.time():
+        sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
 
     with PT_BC_CREATE_METADATA.time():
         # create metadata
@@ -101,12 +111,17 @@ def build_comparisons(
         system_mappings = [
             _system_mapping(system_with_profile) for system_with_profile in systems_with_profiles
         ]
-        sorted_system_mappings = sorted(system_mappings, key=lambda system: system["display_name"])
-        sorted_historical_sys_profile_mappings = sorted(
-            historical_sys_profile_mappings,
-            key=lambda hsp: dateparse(hsp["updated"]),
-            reverse=True,
-        )
+        with PT_BC_SORT_SYSTEM_MAPPINGS.time():
+            sorted_system_mappings = sorted(
+                system_mappings, key=lambda system: system["display_name"]
+            )
+
+        with PT_BC_SORT_HSP.time():
+            sorted_historical_sys_profile_mappings = sorted(
+                historical_sys_profile_mappings,
+                key=lambda hsp: dateparse(hsp["updated"]),
+                reverse=True,
+            )
 
     return {
         "facts": sorted_comparisons,

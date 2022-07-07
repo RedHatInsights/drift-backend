@@ -109,8 +109,20 @@ def _csvify(comparisons):
 PT_CR_API_REQUESTS = metrics.performance_timing.labels(
     method="comparison_report", method_part="api_requests"
 )
+PT_CR_API_SYSTEM_PROFILE_REQUESTS = metrics.performance_timing.labels(
+    method="comparison_report", method_part="api_system_profile_requests"
+)
+PT_CR_API_BASELINE_REQUESTS = metrics.performance_timing.labels(
+    method="comparison_report", method_part="api_baseline_requests"
+)
+PT_CR_API_HSP_REQUESTS = metrics.performance_timing.labels(
+    method="comparison_report", method_part="api_hsp_requests"
+)
 PT_CR_BUILD_COMPARISON = metrics.performance_timing.labels(
     method="comparison_report", method_part="build_comparison"
+)
+PT_CR_VALIDATE_UUID = metrics.performance_timing.labels(
+    method="comparison_report", method_part="validate_uuid"
 )
 
 
@@ -161,25 +173,26 @@ def comparison_report(
             message=message,
         )
 
-    if system_ids:
-        validate_uuids(system_ids)
-    if baseline_ids:
-        validate_uuids(baseline_ids)
-    if historical_sys_profile_ids:
-        validate_uuids(historical_sys_profile_ids)
-    if reference_id:
-        validate_uuids([reference_id])
-        if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
-            message = "reference id %s does not match any ids from query" % reference_id
-            current_app.logger.audit(
-                str(HTTPStatus.BAD_REQUEST) + " " + message,
-                request=request,
-                success=False,
-            )
-            raise HTTPError(
-                HTTPStatus.BAD_REQUEST,
-                message=message,
-            )
+    with PT_CR_VALIDATE_UUID.time():
+        if system_ids:
+            validate_uuids(system_ids)
+        if baseline_ids:
+            validate_uuids(baseline_ids)
+        if historical_sys_profile_ids:
+            validate_uuids(historical_sys_profile_ids)
+        if reference_id:
+            validate_uuids([reference_id])
+            if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
+                message = "reference id %s does not match any ids from query" % reference_id
+                current_app.logger.audit(
+                    str(HTTPStatus.BAD_REQUEST) + " " + message,
+                    request=request,
+                    success=False,
+                )
+                raise HTTPError(
+                    HTTPStatus.BAD_REQUEST,
+                    message=message,
+                )
 
     try:
         systems_with_profiles = []
@@ -188,31 +201,36 @@ def comparison_report(
 
         with PT_CR_API_REQUESTS.time():
             try:
-                if system_ids:
-                    # can raise RBACDenied exception
-                    message = "reading systems with profiles"
-                    current_app.logger.audit(message, request=request)
-                    systems_with_profiles = fetch_systems_with_profiles(
-                        system_ids, auth_key, current_app.logger, get_event_counters()
-                    )
+                with PT_CR_API_SYSTEM_PROFILE_REQUESTS.time():
+                    if system_ids:
+                        # can raise RBACDenied exception
+                        message = "reading systems with profiles"
+                        current_app.logger.audit(message, request=request)
+                        systems_with_profiles = fetch_systems_with_profiles(
+                            system_ids, auth_key, current_app.logger, get_event_counters()
+                        )
 
-                if baseline_ids:
-                    # can raise RBACDenied exception
-                    message = "reading baselines"
-                    current_app.logger.audit(message, request=request)
-                    baseline_results = fetch_baselines(baseline_ids, auth_key, current_app.logger)
-                    ensure_correct_system_count(baseline_ids, baseline_results)
+                with PT_CR_API_BASELINE_REQUESTS.time():
+                    if baseline_ids:
+                        # can raise RBACDenied exception
+                        message = "reading baselines"
+                        current_app.logger.audit(message, request=request)
+                        baseline_results = fetch_baselines(
+                            baseline_ids, auth_key, current_app.logger
+                        )
+                        ensure_correct_system_count(baseline_ids, baseline_results)
 
-                if historical_sys_profile_ids:
-                    # can raise RBACDenied exception
-                    message = "reading historical system profiles"
-                    current_app.logger.audit(message, request=request)
-                    hsp_results = fetch_historical_sys_profiles(
-                        historical_sys_profile_ids,
-                        auth_key,
-                        current_app.logger,
-                        get_event_counters(),
-                    )
+                with PT_CR_API_HSP_REQUESTS.time():
+                    if historical_sys_profile_ids:
+                        # can raise RBACDenied exception
+                        message = "reading historical system profiles"
+                        current_app.logger.audit(message, request=request)
+                        hsp_results = fetch_historical_sys_profiles(
+                            historical_sys_profile_ids,
+                            auth_key,
+                            current_app.logger,
+                            get_event_counters(),
+                        )
             except RBACDenied as error:
                 message = error.message
                 current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
