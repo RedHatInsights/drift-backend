@@ -25,6 +25,11 @@ def ensure_account_number():
 
 
 @global_helpers_bp.before_app_request
+def ensure_org_id():
+    return view_helpers.ensure_org_id(request, current_app.logger)
+
+
+@global_helpers_bp.before_app_request
 def ensure_rbac_baselines_read():
     # permissions consist of a list of "or" permissions where any will work,
     # and each sublist is a set of "and" permissions that all must be true.
