@@ -3,6 +3,7 @@ decoded AUTH_HEADER (newlines added for readability):
 {
     "identity": {
         "account_number": "1234",
+        "org_id": "5678",
         "internal": {
             "org_id": "5678"
         },
@@ -17,7 +18,7 @@ decoded AUTH_HEADER (newlines added for readability):
             "locale": "en_US",
             "username": "test_username"
         }
-    }
+    },
     "entitlements": {
         "insights": {
             "is_entitled": true
@@ -28,13 +29,13 @@ decoded AUTH_HEADER (newlines added for readability):
 
 AUTH_HEADER = {
     "X-RH-IDENTITY": "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6I"
-    "jEyMzQiLCJpbnRlcm5hbCI6eyJvcmdfaWQiOiI1Njc4In0sInR5cGUiOiJ"
-    "Vc2VyIiwidXNlciI6eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJma"
-    "XJzdF9uYW1lIjoiRmlyc3RuYW1lIiwiaXNfYWN0aXZlIjp0cnVlLCJpc19"
-    "pbnRlcm5hbCI6dHJ1ZSwiaXNfb3JnX2FkbWluIjpmYWxzZSwibGFzdF9uY"
-    "W1lIjoiTGFzdG5hbWUiLCJsb2NhbGUiOiJlbl9VUyIsInVzZXJuYW1lIjo"
-    "idGVzdF91c2VybmFtZSJ9fSwiZW50aXRsZW1lbnRzIjp7Imluc2lnaHRzI"
-    "jp7ImlzX2VudGl0bGVkIjp0cnVlfX19Cg=="
+    "jEyMzQiLCJvcmdfaWQiOiI1Njc4IiwiaW50ZXJuYWwiOnsib3JnX2lkIjo"
+    "iNTY3OCJ9LCJ0eXBlIjoiVXNlciIsInVzZXIiOnsiZW1haWwiOiJ0ZXN0Q"
+    "GV4YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6IkZpcnN0bmFtZSIsImlzX2F"
+    "jdGl2ZSI6dHJ1ZSwiaXNfaW50ZXJuYWwiOnRydWUsImlzX29yZ19hZG1pb"
+    "iI6ZmFsc2UsImxhc3RfbmFtZSI6Ikxhc3RuYW1lIiwibG9jYWxlIjoiZW5"
+    "fVVMiLCJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUifX0sImVudGl0bGVtZ"
+    "W50cyI6eyJpbnNpZ2h0cyI6eyJpc19lbnRpdGxlZCI6dHJ1ZX19fQo="
 }
 
 
@@ -322,6 +323,7 @@ CREATE_FROM_INVENTORY_MALFORMED_UUID = {
 
 SYSTEM_WITH_PROFILE = {
     "account": "9876543",
+    "org_id": "5678",
     "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fb",
     "created": "2018-01-31T13:00:00.100010Z",
     "display_name": None,
