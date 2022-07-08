@@ -23,16 +23,23 @@ def get_version():
 @metrics.api_exceptions.count_exceptions()
 def get_baselines_by_system_id(system_id=None):
     account_number = view_helpers.get_account_number(request)
+    org_id = view_helpers.get_org_id(request)
+
+    tenant_filter = (
+        SystemBaselineMappedSystem.org_id == org_id
+        if org_id
+        else SystemBaselineMappedSystem.account == account_number
+    )
 
     if system_id:
         validate_uuids([system_id])
         query = SystemBaselineMappedSystem.query.filter(
-            SystemBaselineMappedSystem.account == account_number,
+            tenant_filter,
             SystemBaselineMappedSystem.system_id == system_id,
         )
     else:
         query = SystemBaselineMappedSystem.query.filter(
-            SystemBaselineMappedSystem.account == account_number
+            tenant_filter,
         )
 
     try:
@@ -56,8 +63,9 @@ def delete_systems_by_ids(system_ids):
     """
     validate_uuids(system_ids)
     account_number = view_helpers.get_account_number(request)
+    org_id = view_helpers.get_org_id(request)
     try:
-        SystemBaselineMappedSystem.delete_by_system_ids(system_ids, account_number)
+        SystemBaselineMappedSystem.delete_by_system_ids(system_ids, account_number, org_id)
     except Exception:
         message = "Unknown error when deleting systems by ids"
         current_app.logger.audit(message, request=request, success=False)

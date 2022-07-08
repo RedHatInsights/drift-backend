@@ -382,6 +382,7 @@ components:
       type: object
       required:
         - account
+        - org_id
         - created
         - display_name
         - id
@@ -389,6 +390,8 @@ components:
         - notifications_enabled
       properties:
         account:
+          type: string
+        org_id:
           type: string
         baseline_facts:
           type: array
