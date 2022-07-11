@@ -4,7 +4,6 @@ import logging
 import re
 
 from http import HTTPStatus
-from uuid import UUID
 
 from requests.exceptions import Timeout
 
@@ -250,18 +249,11 @@ def validate_uuids(system_ids):
     exception if the format is wrong.
     """
     malformed_ids = []
+    compiled_regex = re.compile(r"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$")
     for system_id in system_ids:
-        # the UUID() check was missing some characters, so adding regex first
-        if not re.match(
-            r"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
-            system_id.lower(),
-        ):
+        if not compiled_regex.match(system_id.lower()):
             malformed_ids.append(system_id)
-        else:
-            try:
-                UUID(system_id)
-            except ValueError:
-                malformed_ids.append(system_id)
+
     if malformed_ids:
         raise HTTPError(
             HTTPStatus.BAD_REQUEST,
