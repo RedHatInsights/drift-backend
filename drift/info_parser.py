@@ -99,7 +99,7 @@ def build_comparisons(
         grouped_comparisons = _group_comparisons(stripped_comparisons)
 
     with PT_BC_SORT_COMPARISONS.time():
-        sorted_comparisons = sorted(grouped_comparisons, key=lambda comparison: comparison["name"])
+        grouped_comparisons.sort(key=lambda comparison: comparison["name"])
 
     with PT_BC_CREATE_METADATA.time():
         # create metadata
@@ -112,22 +112,19 @@ def build_comparisons(
             _system_mapping(system_with_profile) for system_with_profile in systems_with_profiles
         ]
         with PT_BC_SORT_SYSTEM_MAPPINGS.time():
-            sorted_system_mappings = sorted(
-                system_mappings, key=lambda system: system["display_name"]
-            )
+            system_mappings.sort(key=lambda system: system["display_name"])
 
         with PT_BC_SORT_HSP.time():
-            sorted_historical_sys_profile_mappings = sorted(
-                historical_sys_profile_mappings,
+            historical_sys_profile_mappings.sort(
                 key=lambda hsp: dateparse(hsp["updated"]),
                 reverse=True,
             )
 
     return {
-        "facts": sorted_comparisons,
-        "systems": sorted_system_mappings,
+        "facts": grouped_comparisons,
+        "systems": system_mappings,
         "baselines": baseline_mappings,
-        "historical_system_profiles": sorted_historical_sys_profile_mappings,
+        "historical_system_profiles": historical_sys_profile_mappings,
         "drift_event_notify": drift_event_notify,
     }
 
