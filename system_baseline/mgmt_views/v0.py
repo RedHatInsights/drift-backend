@@ -9,7 +9,7 @@ from system_baseline.models import SystemBaseline, db
 
 RANGES = text(
     "select count(*) from"
-    " (select count(account) from system_baselines group by account) x"
+    " (select count(org_id) from system_baselines group by org_id) x"
     " where count between :low and :high"
 )
 
@@ -21,7 +21,7 @@ def _update_baseline_counts():
     The baseline counts are updated when metrics are fetched via SQL
     """
     total_baselines = SystemBaseline.query.count()
-    total_accounts = SystemBaseline.query.distinct(SystemBaseline.account.name).count()
+    total_accounts = SystemBaseline.query.distinct(SystemBaseline.org_id).count()
 
     message = "counted baselines"
     current_app.logger.audit(message, request=request, success=True)

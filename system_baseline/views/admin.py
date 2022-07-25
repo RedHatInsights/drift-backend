@@ -15,7 +15,7 @@ def status():
     dt = date.today()
 
     total_baselines = SystemBaseline.query.with_entities(SystemBaseline.id).distinct().count()
-    customer_count = SystemBaseline.query.with_entities(SystemBaseline.account).distinct().count()
+    customer_count = SystemBaseline.query.with_entities(SystemBaseline.org_id).distinct().count()
 
     created_baselines_today = SystemBaseline.query.filter(
         func.date(SystemBaseline.created_on) == dt
@@ -35,21 +35,21 @@ def status():
 
     for i in range(1, 5):
         baseline_bucket_counts[i] = (
-            SystemBaseline.query.with_entities(SystemBaseline.account)
-            .group_by(SystemBaseline.account)
+            SystemBaseline.query.with_entities(SystemBaseline.org_id)
+            .group_by(SystemBaseline.org_id)
             .having(func.count() == i)
         ).count()
 
     baseline_bucket_counts[5] = (
-        SystemBaseline.query.with_entities(SystemBaseline.account)
-        .group_by(SystemBaseline.account)
+        SystemBaseline.query.with_entities(SystemBaseline.org_id)
+        .group_by(SystemBaseline.org_id)
         .having(func.count() >= 5)
         .having(func.count() <= 10)
     ).count()
 
     baseline_bucket_counts[11] = (
-        SystemBaseline.query.with_entities(SystemBaseline.account)
-        .group_by(SystemBaseline.account)
+        SystemBaseline.query.with_entities(SystemBaseline.org_id)
+        .group_by(SystemBaseline.org_id)
         .having(func.count() > 10)
     ).count()
 
