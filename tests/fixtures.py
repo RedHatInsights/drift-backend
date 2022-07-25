@@ -3,6 +3,7 @@ decoded AUTH_HEADER (newlines added for readability):
 {
     "identity": {
         "account_number": "1234",
+        "org_id": "5678",
         "internal": {
             "org_id": "5678"
         },
@@ -28,13 +29,13 @@ decoded AUTH_HEADER (newlines added for readability):
 
 AUTH_HEADER = {
     "X-RH-IDENTITY": "eyJpZGVudGl0eSI6eyJhY2NvdW50X251bWJlciI6Ij"
-    "EyMzQiLCJpbnRlcm5hbCI6eyJvcmdfaWQiOiI1Njc4In0sInR5cGUiOiJVc"
-    "2VyIiwidXNlciI6eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJmaXJz"
-    "dF9uYW1lIjoiRmlyc3RuYW1lIiwiaXNfYWN0aXZlIjp0cnVlLCJpc19pbnR"
-    "lcm5hbCI6dHJ1ZSwiaXNfb3JnX2FkbWluIjpmYWxzZSwibGFzdF9uYW1lIj"
-    "oiTGFzdG5hbWUiLCJsb2NhbGUiOiJlbl9VUyIsInVzZXJuYW1lIjoidGVzd"
-    "F91c2VybmFtZSJ9fSwiZW50aXRsZW1lbnRzIjp7Imluc2lnaHRzIjp7Imlz"
-    "X2VudGl0bGVkIjp0cnVlfX19Cg=="
+    "EyMzQiLCJvcmdfaWQiOiI1Njc4IiwiaW50ZXJuYWwiOnsib3JnX2lkIjoiN"
+    "TY3OCJ9LCJ0eXBlIjoiVXNlciIsInVzZXIiOnsiZW1haWwiOiJ0ZXN0QGV4"
+    "YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6IkZpcnN0bmFtZSIsImlzX2FjdGl"
+    "2ZSI6dHJ1ZSwiaXNfaW50ZXJuYWwiOnRydWUsImlzX29yZ19hZG1pbiI6Zm"
+    "Fsc2UsImxhc3RfbmFtZSI6Ikxhc3RuYW1lIiwibG9jYWxlIjoiZW5fVVMiL"
+    "CJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUifX0sImVudGl0bGVtZW50cyI6"
+    "eyJpbnNpZ2h0cyI6eyJpc19lbnRpdGxlZCI6dHJ1ZX19fQo="
 }
 
 AUTH_HEADER_NO_ENTITLEMENTS = {
@@ -257,6 +258,7 @@ FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT = [
 FETCH_SYSTEMS_WITH_PROFILES_RESULT = [
     {
         "account": "9876543",
+        "org_id": "5678",
         "bios_uuid": "e380fd4a-28ae-11e9-974c-c85b761454fa",
         "created": "2019-01-31T13:00:00.100010Z",
         "display_name": None,
