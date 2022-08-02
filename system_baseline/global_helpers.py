@@ -20,11 +20,6 @@ def ensure_entitled():
 
 
 @global_helpers_bp.before_app_request
-def ensure_account_number():
-    return view_helpers.ensure_account_number(request, current_app.logger)
-
-
-@global_helpers_bp.before_app_request
 def ensure_org_id():
     return view_helpers.ensure_org_id(request, current_app.logger)
 
