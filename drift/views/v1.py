@@ -359,13 +359,6 @@ def ensure_rbac_comparisons_read():
 
 
 @section.before_app_request
-def ensure_account_number():
-    message = "Validating account number"
-    current_app.logger.audit(message, request=request)
-    return view_helpers.ensure_account_number(request, current_app.logger)
-
-
-@section.before_app_request
 def ensure_org_id():
     message = "Validating org_id"
     current_app.logger.audit(message, request=request)
