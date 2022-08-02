@@ -183,11 +183,6 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
 
 
 @section.before_app_request
-def ensure_account_number():
-    return view_helpers.ensure_account_number(request, current_app.logger)
-
-
-@section.before_app_request
 def ensure_org_id():
     return view_helpers.ensure_org_id(request, current_app.logger)
 
