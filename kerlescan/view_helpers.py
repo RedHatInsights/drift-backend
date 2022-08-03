@@ -21,7 +21,7 @@ def get_account_number(request):
     """
     auth_key = get_key_from_headers(request.headers)
     identity = json.loads(base64.b64decode(auth_key))["identity"]
-    return identity["account_number"]
+    return identity.get("account_number")
 
 
 def get_org_id(request):
@@ -32,7 +32,7 @@ def get_org_id(request):
     """
     auth_key = get_key_from_headers(request.headers)
     identity = json.loads(base64.b64decode(auth_key))["identity"]
-    return identity["org_id"]
+    return identity.get("org_id")
 
 
 def _is_mgmt_url(path):
