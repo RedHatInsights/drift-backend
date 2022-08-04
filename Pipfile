@@ -19,7 +19,7 @@ python-dateutil = "*"
 pytz = "*"
 app-common-python = "*"
 jsonschema = "==3.2.0"
-markupsafe = "==2.0.1"
+markupsafe = "*"
 click = "==8.0.3"
 
 [dev-packages]
