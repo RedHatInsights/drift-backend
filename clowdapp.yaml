@@ -55,6 +55,10 @@ objects:
           - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
           - --ean-translator-timeout
           - "60"
+          - --batch-size
+          - "50"
+          - --db-operation-timeout
+          - "100"
         env:
           - name: TENANT_TRANSLATOR_HOST
             value: ${TENANT_TRANSLATOR_HOST}
