@@ -80,7 +80,7 @@ objects:
             memory: "${MEMORY_REQUEST_FLOO}"
     - name: baselines-org-id-populator
       podSpec:
-        image: quay.io/cloudservices/tenant-utils:latest
+        image: quay.io/cloudservices/tenant-utils:7336069
         command:
           - ./org-id-column-populator
           - -C
@@ -112,7 +112,7 @@ objects:
             memory: 512Mi
     - name: mapped-systems-org-id-populator
       podSpec:
-        image: quay.io/cloudservices/tenant-utils:latest
+        image: quay.io/cloudservices/tenant-utils:7336069
         command:
           - ./org-id-column-populator
           - -C
