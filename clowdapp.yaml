@@ -41,7 +41,7 @@ objects:
     jobs:
     - name: org-id-populator
       podSpec:
-        image: quay.io/cloudservices/tenant-utils:latest
+        image: quay.io/cloudservices/tenant-utils:7336069
         command:
           - ./org-id-column-populator
           - -C
