@@ -43,14 +43,14 @@ def create_profile(inventory_id, profile, account_number, org_id):
 
 
 def get_hsps_by_inventory_id(inventory_id, account_number, org_id, limit, offset):
-    if account_number:
+    if org_id:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.account == account_number,
+            HistoricalSystemProfile.org_id == org_id,
             HistoricalSystemProfile.inventory_id == inventory_id,
         )
     else:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.org_id == org_id,
+            HistoricalSystemProfile.account == account_number,
             HistoricalSystemProfile.inventory_id == inventory_id,
         )
 
@@ -73,15 +73,15 @@ def is_profile_recorded(captured_date, inventory_id, account_number, org_id):
     This could possibly be enforced in the DB schema. I'm doing it here for now
     so we have more flexbility if we want to change the rules on this later.
     """
-    if account_number:
+    if org_id:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.account == account_number,
+            HistoricalSystemProfile.org_id == org_id,
             HistoricalSystemProfile.inventory_id == inventory_id,
             HistoricalSystemProfile.captured_on == captured_date,
         )
     else:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.org_id == org_id,
+            HistoricalSystemProfile.account == account_number,
             HistoricalSystemProfile.inventory_id == inventory_id,
             HistoricalSystemProfile.captured_on == captured_date,
         )
@@ -106,14 +106,14 @@ def delete_hsps_by_inventory_id(inventory_id):
 
 
 def get_hsps_by_profile_ids(profile_ids, account_number, org_id):
-    if account_number:
+    if org_id:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.account == account_number,
+            HistoricalSystemProfile.org_id == org_id,
             HistoricalSystemProfile.id.in_(profile_ids),
         )
     else:
         query = HistoricalSystemProfile.query.filter(
-            HistoricalSystemProfile.org_id == org_id,
+            HistoricalSystemProfile.account == account_number,
             HistoricalSystemProfile.id.in_(profile_ids),
         )
 
