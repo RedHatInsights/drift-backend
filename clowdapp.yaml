@@ -56,7 +56,7 @@ objects:
           - --ean-translator-timeout
           - "60"
           - --batch-size
-          - "50"
+          - "20"
           - --db-operation-timeout
           - "100"
         env:
