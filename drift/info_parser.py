@@ -170,9 +170,6 @@ def _group_comparisons(comparisons):
             if group["name"] == name:
                 return group
 
-    # with PT_GC_BUILD_GROUP_NAMES.time(): # move to proper place or remove competely
-    # with PT_GC_POPULATE_GROUPS.time(): # move to proper place or remove competely
-    # with PT_GC_SET_SUMMARY.time(): # move to proper place or remove competely
     for comparison in comparisons:
         if "." in comparison["name"]:
             group_name = _get_group_name(comparison["name"])
