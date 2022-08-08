@@ -155,7 +155,7 @@ def _group_comparisons(comparisons):
 
     # default values for method run
     grouped_comparisons = []
-    processed_group_names = set()
+    grouped_comparisons_with_dotnotation = {}
 
     def _get_group_name(name):
         n, _, _ = name.partition(".")
@@ -165,29 +165,25 @@ def _group_comparisons(comparisons):
         _, _, n = name.partition(".")
         return n
 
-    def _find_group(name, grouped_comps):
-        for group in grouped_comps:
-            if group["name"] == name:
-                return group
-
     for comparison in comparisons:
         if "." in comparison["name"]:
-            group_name = _get_group_name(comparison["name"])
-            built_group = {"name": group_name, "comparisons": []}
+            group_name, _, comparison_value_name = comparison["name"].partition(".")
 
             # build out group names
-            if group_name not in processed_group_names:
-                processed_group_names.add(group_name)
-                grouped_comparisons.append(built_group)
+            if group_name not in grouped_comparisons_with_dotnotation:
+                built_group = {"name": group_name, "comparisons": []}
+                grouped_comparisons_with_dotnotation[group_name] = built_group
 
             # populate groups
-            group = _find_group(group_name, grouped_comparisons)
+            group = grouped_comparisons_with_dotnotation.get(group_name)
+
             # modify existing group
-            comparison["name"] = _get_value_name(comparison["name"])
+            comparison["name"] = comparison_value_name
             group["comparisons"].append(comparison)
             group["comparisons"] = sorted(
                 group["comparisons"], key=lambda comparison: comparison["name"]
             )
+
             # trigger summary set action
             # set summary state if grouped comparison contains groups
             # as long as _set_summary_state doesn't rely on group["state"]
@@ -195,6 +191,10 @@ def _group_comparisons(comparisons):
             _set_summary_state(group)
         else:
             grouped_comparisons.append(comparison)
+
+    # Need to add all dot notation comparisons into the output grouped_comparisons list
+    for comparison in grouped_comparisons_with_dotnotation:
+        grouped_comparisons.append(grouped_comparisons_with_dotnotation.get(comparison))
 
     return grouped_comparisons
 
