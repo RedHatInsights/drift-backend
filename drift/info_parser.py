@@ -172,9 +172,6 @@ def _group_comparisons(comparisons):
             # modify existing group
             comparison["name"] = comparison_value_name
             group["comparisons"].append(comparison)
-            group["comparisons"] = sorted(
-                group["comparisons"], key=lambda comparison: comparison["name"]
-            )
 
             # trigger summary set action
             # set summary state if grouped comparison contains groups
@@ -184,9 +181,13 @@ def _group_comparisons(comparisons):
         else:
             grouped_comparisons.append(comparison)
 
+    # sorting comparisons if exists
+    for group in grouped_comparisons_with_dotnotation.values():
+        # sorting comparisons if exists
+        group["comparisons"].sort(key=lambda comparison: comparison["name"])
+
     # Need to add all dot notation comparisons into the output grouped_comparisons list
-    for comparison in grouped_comparisons_with_dotnotation:
-        grouped_comparisons.append(grouped_comparisons_with_dotnotation.get(comparison))
+    grouped_comparisons = grouped_comparisons + list(grouped_comparisons_with_dotnotation.values())
 
     return grouped_comparisons
 
