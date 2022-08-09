@@ -157,14 +157,6 @@ def _group_comparisons(comparisons):
     grouped_comparisons = []
     grouped_comparisons_with_dotnotation = {}
 
-    def _get_group_name(name):
-        n, _, _ = name.partition(".")
-        return n
-
-    def _get_value_name(name):
-        _, _, n = name.partition(".")
-        return n
-
     for comparison in comparisons:
         if "." in comparison["name"]:
             group_name, _, comparison_value_name = comparison["name"].partition(".")
