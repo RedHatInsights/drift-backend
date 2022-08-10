@@ -129,19 +129,18 @@ def build_comparisons(
     }
 
 
-def _set_summary_state(grouped_comparison):
-    states = {comparison["state"] for comparison in grouped_comparison["comparisons"]}
-    if COMPARISON_DIFFERENT in states:
-        grouped_comparison["state"] = COMPARISON_DIFFERENT
-    elif COMPARISON_INCOMPLETE_DATA in states:
-        if COMPARISON_SAME in states:
-            grouped_comparison["state"] = COMPARISON_DIFFERENT
+def summary_state(state_list):
+    if COMPARISON_DIFFERENT in state_list:
+        return COMPARISON_DIFFERENT
+    elif COMPARISON_INCOMPLETE_DATA in state_list:
+        if COMPARISON_SAME in state_list:
+            return COMPARISON_DIFFERENT
         else:
-            grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
-    elif COMPARISON_SAME in states and len(states) == 1:
-        grouped_comparison["state"] = COMPARISON_SAME
-    else:  # use 'incomplete data' as the fallback state if something goes wrong
-        grouped_comparison["state"] = COMPARISON_INCOMPLETE_DATA
+            return COMPARISON_INCOMPLETE_DATA
+    elif COMPARISON_SAME in state_list and len(state_list) == 1:
+        return COMPARISON_SAME
+    # use 'incomplete data' as the fallback state if something goes wrong
+    return COMPARISON_INCOMPLETE_DATA
 
 
 def _group_comparisons(comparisons):
@@ -172,12 +171,6 @@ def _group_comparisons(comparisons):
             # modify existing group
             comparison["name"] = comparison_value_name
             group["comparisons"].append(comparison)
-
-            # trigger summary set action
-            # set summary state if grouped comparison contains groups
-            # as long as _set_summary_state doesn't rely on group["state"]
-            # we can trigger it more than once for every group
-            _set_summary_state(group)
         else:
             grouped_comparisons.append(comparison)
 
@@ -186,7 +179,9 @@ def _group_comparisons(comparisons):
         # sorting comparisons if exists
         group["comparisons"].sort(key=lambda comparison: comparison["name"])
 
-    # Need to add all dot notation comparisons into the output grouped_comparisons list
+        states = {comparison["state"] for comparison in group["comparisons"]}
+        group["state"] = summary_state(state_list=states)
+
     grouped_comparisons = grouped_comparisons + list(grouped_comparisons_with_dotnotation.values())
 
     return grouped_comparisons
