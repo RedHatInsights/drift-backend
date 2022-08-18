@@ -1,6 +1,8 @@
 import csv
 import io
 
+import concurrent.futures
+
 from http import HTTPStatus
 
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -235,11 +237,13 @@ def comparison_report(
         api_results = {}
 
         with PT_CR_API_REQUESTS.time():
-            try:
+            futures = {}
+            with concurrent.futures.ThreadPoolExecutor() as executor:
                 app = current_app._get_current_object()
                 if system_ids:
                     # can raise RBACDenied exception
-                    api_results["systems_with_profiles"] = get_systems_with_profiles(
+                    future = executor.submit(
+                        get_systems_with_profiles,
                         app,
                         PT_CR_API_SYSTEM_PROFILE_REQUESTS,
                         system_ids,
@@ -247,20 +251,22 @@ def comparison_report(
                         current_app.logger,
                         get_event_counters(),
                     )
-
+                    futures[future] = "systems_with_profiles"
                 if baseline_ids:
                     # can raise RBACDenied exception
-                    api_results["baseline_results"] = get_baselines(
+                    future = executor.submit(
+                        get_baselines,
                         app,
                         PT_CR_API_BASELINE_REQUESTS,
                         baseline_ids,
                         auth_key,
                         current_app.logger,
                     )
-
+                    futures[future] = "baseline_results"
                 if historical_sys_profile_ids:
                     # can raise RBACDenied exception
-                    api_results["hsp_results"] = get_historical_sys_profiles(
+                    future = executor.submit(
+                        get_historical_sys_profiles,
                         app,
                         PT_CR_API_HSP_REQUESTS,
                         historical_sys_profile_ids,
@@ -268,11 +274,17 @@ def comparison_report(
                         current_app.logger,
                         get_event_counters(),
                     )
+                    futures[future] = "hsp_results"
 
-            except RBACDenied as error:
-                message = error.message
-                current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
-                raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
+                for future in concurrent.futures.as_completed(futures):
+                    try:
+                        api_results[futures[future]] = future.result()
+                    except RBACDenied as error:
+                        message = error.message
+                        current_app.logger.audit(
+                            str(HTTPStatus.FORBIDDEN) + " " + message, request=request
+                        )
+                        raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
 
         systems_with_profiles = api_results.get("systems_with_profiles", [])
         baseline_results = api_results.get("baseline_results", [])
