@@ -194,47 +194,89 @@ def comparison_report(
                     message=message,
                 )
 
+    def get_systems_with_profiles(app, timer, system_ids, auth_key, logger, counters):
+        with timer.time():
+            with app.app_context():
+                # can raise RBACDenied exception
+                message = "reading systems with profiles"
+                current_app.logger.audit(message, request=request)
+                systems_with_profiles = fetch_systems_with_profiles(
+                    system_ids, auth_key, current_app.logger, counters
+                )
+        return systems_with_profiles
+
+    def get_baselines(app, timer, baseline_ids, auth_key, logger):
+        with timer.time():
+            with app.app_context():
+                # can raise RBACDenied exception
+                message = "reading baselines"
+                current_app.logger.audit(message, request=request)
+                baseline_results = fetch_baselines(baseline_ids, auth_key, logger)
+                ensure_correct_system_count(baseline_ids, baseline_results)
+        return baseline_results
+
+    def get_historical_sys_profiles(
+        app, timer, historical_sys_profile_ids, auth_key, logger, counters
+    ):
+        with timer.time():
+            with app.app_context():
+                # can raise RBACDenied exception
+                message = "reading historical system profiles"
+                current_app.logger.audit(message, request=request)
+                hsp_results = fetch_historical_sys_profiles(
+                    historical_sys_profile_ids,
+                    auth_key,
+                    logger,
+                    counters,
+                )
+        return hsp_results
+
     try:
-        systems_with_profiles = []
-        baseline_results = []
-        hsp_results = []
+        api_results = {}
 
         with PT_CR_API_REQUESTS.time():
             try:
-                with PT_CR_API_SYSTEM_PROFILE_REQUESTS.time():
-                    if system_ids:
-                        # can raise RBACDenied exception
-                        message = "reading systems with profiles"
-                        current_app.logger.audit(message, request=request)
-                        systems_with_profiles = fetch_systems_with_profiles(
-                            system_ids, auth_key, current_app.logger, get_event_counters()
-                        )
+                app = current_app._get_current_object()
+                if system_ids:
+                    # can raise RBACDenied exception
+                    api_results["systems_with_profiles"] = get_systems_with_profiles(
+                        app,
+                        PT_CR_API_SYSTEM_PROFILE_REQUESTS,
+                        system_ids,
+                        auth_key,
+                        current_app.logger,
+                        get_event_counters(),
+                    )
 
-                with PT_CR_API_BASELINE_REQUESTS.time():
-                    if baseline_ids:
-                        # can raise RBACDenied exception
-                        message = "reading baselines"
-                        current_app.logger.audit(message, request=request)
-                        baseline_results = fetch_baselines(
-                            baseline_ids, auth_key, current_app.logger
-                        )
-                        ensure_correct_system_count(baseline_ids, baseline_results)
+                if baseline_ids:
+                    # can raise RBACDenied exception
+                    api_results["baseline_results"] = get_baselines(
+                        app,
+                        PT_CR_API_BASELINE_REQUESTS,
+                        baseline_ids,
+                        auth_key,
+                        current_app.logger,
+                    )
 
-                with PT_CR_API_HSP_REQUESTS.time():
-                    if historical_sys_profile_ids:
-                        # can raise RBACDenied exception
-                        message = "reading historical system profiles"
-                        current_app.logger.audit(message, request=request)
-                        hsp_results = fetch_historical_sys_profiles(
-                            historical_sys_profile_ids,
-                            auth_key,
-                            current_app.logger,
-                            get_event_counters(),
-                        )
+                if historical_sys_profile_ids:
+                    # can raise RBACDenied exception
+                    api_results["hsp_results"] = get_historical_sys_profiles(
+                        app,
+                        PT_CR_API_HSP_REQUESTS,
+                        historical_sys_profile_ids,
+                        auth_key,
+                        current_app.logger,
+                        get_event_counters(),
+                    )
+
             except RBACDenied as error:
                 message = error.message
                 current_app.logger.audit(str(HTTPStatus.FORBIDDEN) + " " + message, request=request)
                 raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
+
+        systems_with_profiles = api_results.get("systems_with_profiles", [])
+        baseline_results = api_results.get("baseline_results", [])
+        hsp_results = api_results.get("hsp_results", [])
 
         with PT_CR_BUILD_COMPARISON.time():
             comparisons = info_parser.build_comparisons(
