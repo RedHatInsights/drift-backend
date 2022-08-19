@@ -13,7 +13,7 @@ script:
 
 install:
   - pip install pipenv
-  - pipenv install --dev
+  - SETUPTOOLS_ENABLE_FEATURES="legacy-editable" pipenv install --dev --verbose
   - pip install codecov
 
 after_success:
