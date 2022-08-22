@@ -7,7 +7,7 @@ from http import HTTPStatus
 
 from flask import Blueprint, current_app, jsonify, make_response, request
 from kerlescan import view_helpers
-from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
+from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied, ServiceError
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
 from kerlescan.inventory_service_interface import (
     ensure_correct_system_count,
@@ -128,6 +128,29 @@ PT_CR_VALIDATE_UUID = metrics.performance_timing.labels(
 )
 
 
+def handle_errors(http_errors=None, other_errors=None):
+    # raises merged errors
+    if http_errors or other_errors:
+        if any(isinstance(other_error, ServiceError) for other_error in other_errors) or any(
+            http_error.code >= 500 for http_error in http_errors
+        ):
+            http_code = HTTPStatus.INTERNAL_SERVER_ERROR
+        elif any(http_error.code == HTTPStatus.BAD_REQUEST for http_error in http_errors):
+            http_code = HTTPStatus.BAD_REQUEST
+        elif any(isinstance(other_error, ItemNotReturned) for other_error in other_errors) or any(
+            http_error.code == HTTPStatus.NOT_FOUND for http_error in http_errors
+        ):
+            http_code = HTTPStatus.NOT_FOUND
+        else:
+            http_code = HTTPStatus.INTERNAL_SERVER_ERROR
+
+        message = ", ".join(
+            [str(http_error.reason) for http_error in http_errors]
+            + [str(other_error.message) for other_error in other_errors]
+        )
+        raise HTTPError(http_code, message=message)
+
+
 def comparison_report(
     system_ids,
     baseline_ids,
@@ -235,6 +258,8 @@ def comparison_report(
 
     try:
         api_results = {}
+        http_errors = []
+        other_errors = []
 
         with PT_CR_API_REQUESTS.time():
             futures = {}
@@ -285,6 +310,12 @@ def comparison_report(
                             str(HTTPStatus.FORBIDDEN) + " " + message, request=request
                         )
                         raise HTTPError(HTTPStatus.FORBIDDEN, message=message)
+                    except HTTPError as error:
+                        http_errors.append(error)
+                    except (ItemNotReturned, ServiceError) as error:
+                        other_errors.append(error)
+
+            handle_errors(http_errors=http_errors, other_errors=other_errors)  # raises merged error
 
         systems_with_profiles = api_results.get("systems_with_profiles", [])
         baseline_results = api_results.get("baseline_results", [])
