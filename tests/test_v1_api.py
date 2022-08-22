@@ -242,6 +242,22 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    @mock.patch("drift.views.v1.fetch_baselines")
+    @mock.patch("drift.views.v1.fetch_systems_with_profiles")
+    def test_comparison_report_api_missing_baseline_uuid(
+        self, mock_fetch_systems, mock_fetch_baselines
+    ):
+        mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
+        mock_fetch_baselines.side_effect = ItemNotReturned("oops")
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+            "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 404)
+
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_500_backend(self, mock_fetch_systems):
         mock_fetch_systems.side_effect = ServiceError("oops")
@@ -249,6 +265,22 @@ class ApiTests(unittest.TestCase):
             "api/drift/v1/comparison_report?"
             "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
             "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 500)
+
+    @mock.patch("drift.views.v1.fetch_baselines")
+    @mock.patch("drift.views.v1.fetch_systems_with_profiles")
+    def test_comparison_report_api_500_errors_preference(
+        self, mock_fetch_systems, mock_fetch_baselines
+    ):
+        mock_fetch_systems.side_effect = ItemNotReturned("oops")
+        mock_fetch_baselines.side_effect = ServiceError("oops")
+        response = self.client.get(
+            "api/drift/v1/comparison_report?"
+            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+            "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 500)
