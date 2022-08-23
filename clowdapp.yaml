@@ -36,14 +36,14 @@ objects:
           httpGet:
             path: /mgmt/v0/status
             port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /mgmt/v0/status
             port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 10
         resources:
           limits:
             cpu: ${CPU_LIMIT}
