@@ -1,6 +1,5 @@
 import logging
 import os
-import tempfile
 
 from app_common_python import KafkaTopics, LoadedConfig, isClowderEnabled
 from kerlescan.config import str_to_bool
@@ -41,15 +40,7 @@ def load_kafka_ssl_creds(env_name, attribute, default):
 
 def load_kafka_ssl_cert(env_name, default):
     if isClowderEnabled():
-        cfg = LoadedConfig
-        broker_cfg = cfg.kafka.brokers[0]
-
-        cacert_filename = None
-        if broker_cfg.cacert:
-            with tempfile.NamedTemporaryFile(delete=False) as tf:
-                cacert_filename = tf.name
-                tf.write(broker_cfg.cacert.encode("utf-8"))
-        return cacert_filename
+        return LoadedConfig.kafka_ca()
 
     return os.getenv(env_name, default)
 
