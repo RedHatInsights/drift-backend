@@ -24,6 +24,20 @@ def load_kafka_setting(env_name, default):
     return os.getenv(env_name, default).split(",")
 
 
+def load_kafka_ssl(env_name, default):
+    if isClowderEnabled():
+        cfg = LoadedConfig
+
+        broker_cfg = cfg.kafka.brokers[0]
+
+        try:
+            return broker_cfg.authtype.value == "sasl"
+        except AttributeError:
+            return False
+
+    return str_to_bool(os.getenv(env_name, default))
+
+
 def load_kafka_ssl_creds(env_name, attribute, default):
     if isClowderEnabled():
         cfg = LoadedConfig
@@ -91,7 +105,7 @@ notification_service_topic = topic(
 notification_bundle = os.getenv("NOTIFICATION_BUNDLE", "rhel")
 notification_app = os.getenv("NOTIFICATION_APP", "drift")
 
-enable_kafka_ssl = str_to_bool(os.getenv("ENABLE_KAFKA_SSL", "False"))
+enable_kafka_ssl = load_kafka_ssl("ENABLE_KAFKA_SSL", "False")
 kafka_ssl_cert = load_kafka_ssl_cert("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
 kafka_sasl_username = load_kafka_ssl_creds("KAFKA_SASL_USERNAME", "username", None)
 kafka_sasl_password = load_kafka_ssl_creds("KAFKA_SASL_PASSWORD", "password", None)
