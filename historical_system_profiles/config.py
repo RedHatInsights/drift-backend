@@ -61,7 +61,13 @@ def load_kafka_ssl_creds(env_name, attribute, default):
 
 def load_kafka_ssl_cert(env_name, default):
     if isClowderEnabled():
-        return LoadedConfig.kafka_ca()
+        cfg = LoadedConfig
+
+        broker_cfg = cfg.kafka.brokers[0]
+        if broker_cfg.cacert:
+            return cfg.kafka_ca()
+        else:
+            return None
 
     return os.getenv(env_name, default)
 
