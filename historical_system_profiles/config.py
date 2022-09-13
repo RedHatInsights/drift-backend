@@ -45,7 +45,14 @@ def load_kafka_ssl_creds(env_name, attribute, default):
         broker_cfg = cfg.kafka.brokers[0]
 
         try:
-            return broker_cfg.sasl.username if attribute == "username" else broker_cfg.sasl.password
+            if attribute == "username":
+                return broker_cfg.sasl.username
+            elif attribute == "password":
+                return broker_cfg.sasl.password
+            elif attribute == "security_protocol":
+                return broker_cfg.sasl.securityProtocol
+            elif attribute == "sasl_mechanism":
+                return broker_cfg.sasl.saslMechanism
         except AttributeError:
             return None
 
@@ -109,8 +116,10 @@ enable_kafka_ssl = load_kafka_ssl("ENABLE_KAFKA_SSL", "False")
 kafka_ssl_cert = load_kafka_ssl_cert("KAFKA_SSL_CERT", "/opt/certs/kafka-cacert")
 kafka_sasl_username = load_kafka_ssl_creds("KAFKA_SASL_USERNAME", "username", None)
 kafka_sasl_password = load_kafka_ssl_creds("KAFKA_SASL_PASSWORD", "password", None)
-kafka_security_protocol = os.getenv("KAFKA_SECURITY_PROTOCOL", "PLAINTEXT")
-kafka_sasl_mechanism = os.getenv("KAFKA_SASL_MECHANISM", "PLAIN")
+kafka_security_protocol = load_kafka_ssl_creds(
+    "KAFKA_SECURITY_PROTOCOL", "security_protocol", "PLAINTEXT"
+)
+kafka_sasl_mechanism = load_kafka_ssl_creds("KAFKA_SASL_MECHANISM", "sasl_mechanism", "PLAIN")
 
 # logging params used outside of flask
 aws_access_key_id = os.getenv("CW_AWS_ACCESS_KEY_ID", None)
