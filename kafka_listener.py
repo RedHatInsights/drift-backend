@@ -22,7 +22,7 @@ def main():
     app = create_app()
     ptc = payload_tracker_interface.PayloadTrackerClient(logger)
 
-    consumer = init_consumer("platform.inventory.events", logger)
+    consumer = init_consumer(config.consume_topic, logger)
 
     if config.listener_type == "ARCHIVER":
         archiver.event_loop(app.app, consumer, ptc, logger, config.listener_delay)
