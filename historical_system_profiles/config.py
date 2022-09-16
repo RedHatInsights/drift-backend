@@ -109,7 +109,7 @@ db_pool_timeout = int(os.getenv("HSP_DB_POOL_TIMEOUT", "5"))
 db_pool_size = int(os.getenv("HSP_DB_POOL_SIZE", "5"))
 
 bootstrap_servers = load_kafka_setting("BOOTSTRAP_SERVERS", "kafka:29092")
-consume_topic = os.getenv("CONSUME_TOPIC", None)
+consume_topic = topic(os.getenv("CONSUME_TOPIC", "platform.inventory.events"))
 listener_type = os.getenv("LISTENER_TYPE", "ARCHIVER")
 kafka_group_id = os.getenv("KAFKA_GROUP_ID", "hsp-%s" % listener_type.lower())
 notification_service_topic = topic(
