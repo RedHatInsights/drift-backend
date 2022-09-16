@@ -29,10 +29,11 @@ def load_kafka_ssl(env_name, default):
         cfg = LoadedConfig
 
         broker_cfg = cfg.kafka.brokers[0]
+        authtype = broker_cfg.authtype
 
-        try:
-            return broker_cfg.authtype.value == "sasl"
-        except AttributeError:
+        if authtype:
+            return authtype.value == "sasl"
+        else:
             return False
 
     return str_to_bool(os.getenv(env_name, default))
