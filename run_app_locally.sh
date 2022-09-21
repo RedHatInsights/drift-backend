@@ -26,7 +26,11 @@ if [ -z "$ACG_CONFIG" ]; then
     then PORT=8080
   fi
 
-  prometheus_multiproc_dir=$TEMPDIR gunicorn wsgi -w $NUM_WORKERS --threads $THREADS -b 0.0.0.0:$PORT --log-level=$LOG_LEVEL --access-logfile=- --config ./gunicorn.conf.py
+  if [ -z "$GUNICORN_REQUEST_FIELD_LIMIT" ];
+    then GUNICORN_REQUEST_FIELD_LIMIT=16380
+  fi
+
+  prometheus_multiproc_dir=$TEMPDIR gunicorn wsgi -w $NUM_WORKERS --threads $THREADS -b 0.0.0.0:$PORT --log-level=$LOG_LEVEL --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config ./gunicorn.conf.py
 
   rm -rf $TEMPDIR
 else
@@ -35,7 +39,8 @@ else
   export LOG_LEVEL='debug'
   PORT=8001
   METRICS_PORT=9001
+  GUNICORN_REQUEST_FIELD_LIMIT=16380
   APP_CONFIG='gunicorn.conf.py'
-  exec gunicorn wsgi --reload --bind=0.0.0.0:"$PORT" --bind=0.0.0.0:"$METRICS_PORT" --log-level="$LOG_LEVEL" --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --reload --bind=0.0.0.0:"$PORT" --bind=0.0.0.0:"$METRICS_PORT" --log-level="$LOG_LEVEL" --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config "$APP_CONFIG"
 fi
 rm -rf $TEMPDIR
