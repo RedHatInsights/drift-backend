@@ -313,26 +313,32 @@ def check_dirty_baselines(baselines):
     account_number = view_helpers.get_account_number(request)
     org_id = view_helpers.get_org_id(request)
     for baseline in baselines:
-        for system_id in baseline.mapped_system_ids():
-            try:
-                # fetch system from inventory
-                message = "read system with profiles"
-                current_app.logger.audit(message, request=request)
-                fetch_systems_with_profiles(
-                    [system_id], auth_key, current_app.logger, get_event_counters()
-                )
-            except ItemNotReturned:
-                # not in inventory => delete in our db
+        if baseline.dirty_systems:
+            for system_id in baseline.mapped_system_ids():
                 try:
-                    SystemBaselineMappedSystem.delete_by_system_ids(
-                        [system_id], account_number, org_id
+                    # fetch system from inventory
+                    message = "read system with profiles"
+                    current_app.logger.audit(message, request=request)
+                    fetch_systems_with_profiles(
+                        [system_id], auth_key, current_app.logger, get_event_counters()
                     )
-                except ValueError as error:
-                    message = str(error)
-                    current_app.logger.audit(message, request=request, success=False)
-                except Exception:
-                    message = "Unknown error when deleting system with baseline"
-                    current_app.logger.audit(message, request=request, success=False)
+                except ItemNotReturned:
+                    # not in inventory => delete in our db
+                    try:
+                        SystemBaselineMappedSystem.delete_by_system_ids(
+                            [system_id], account_number, org_id
+                        )
+                    except ValueError as error:
+                        message = str(error)
+                        current_app.logger.audit(message, request=request, success=False)
+                    except Exception:
+                        message = "Unknown error when deleting system with baseline"
+                        current_app.logger.audit(message, request=request, success=False)
+
+            baseline.dirty_systems = False
+            db.session.add(baseline)
+
+    db.session.commit()
 
 
 def group_baselines(baseline):
