@@ -743,6 +743,11 @@ def list_systems_with_baseline(baseline_id):
         )
     baseline = query.first_or_404()
 
+    # DRFT-830
+    # temporarily check
+    # is systems are being present in inventory
+    check_dirty_baselines([baseline])
+
     message = "read baseline"
     current_app.logger.audit(message, request=request, success=True)
 
