@@ -86,6 +86,11 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
 
     full_results = query.all()
 
+    # DRFT-830
+    # temporarily check
+    # is systems are being present in inventory
+    check_dirty_baselines(full_results)
+
     message = "read baselines"
     current_app.logger.audit(message, request=request)
 
