@@ -76,6 +76,7 @@ objects:
           webServices:
             public:
               enabled: true
+              apiPath: historical-system-profiles
           podSpec:
             imagePullPolicy: Always
             image: ${IMAGE}:${IMAGE_TAG}
