@@ -143,6 +143,7 @@ objects:
           webServices:
             public:
               enabled: true
+              apiPath: system-baseline
           podSpec:
             imagePullPolicy: Always
             image: ${IMAGE}:${IMAGE_TAG}
