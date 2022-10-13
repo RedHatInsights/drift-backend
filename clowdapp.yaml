@@ -1,235 +1,225 @@
 ---
-
 apiVersion: v1
 kind: Template
 metadata:
   name: system-baseline
 objects:
-
-- apiVersion: cloud.redhat.com/v1alpha1
-  kind: ClowdApp
-  metadata:
-    name: system-baseline
-    labels:
-      app: system-baseline
-  spec:
-    envName: ${ENV_NAME}
-    dependencies:
-    - host-inventory
-    - rbac
-
-    optionalDependencies:
-    - historical-system-profiles
-
-    testing:
-      iqePlugin: drift
-    database:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: ClowdApp
+    metadata:
       name: system-baseline
-      version: 12
-
-    jobs:
-    - name: floorist
-      schedule: ${FLOORIST_SCHEDULE}
-      suspend: ${{FLOORIST_SUSPEND}}
-      concurrencyPolicy: Forbid
-      podSpec:
-        image: ${FLOORIST_IMAGE}:${FLOORIST_IMAGE_TAG}
-        env:
-        - name: AWS_BUCKET
-          valueFrom:
-            secretKeyRef:
-              name: ${FLOORIST_BUCKET_SECRET_NAME}
-              key: bucket
-        - name: AWS_REGION
-          valueFrom:
-            secretKeyRef:
-              name: ${FLOORIST_BUCKET_SECRET_NAME}
-              key: aws_region
-        - name: AWS_ENDPOINT
-          valueFrom:
-            secretKeyRef:
-              name: ${FLOORIST_BUCKET_SECRET_NAME}
-              key: endpoint
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: ${FLOORIST_BUCKET_SECRET_NAME}
-              key: aws_access_key_id
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ${FLOORIST_BUCKET_SECRET_NAME}
-              key: aws_secret_access_key
-        - name: FLOORPLAN_FILE
-          value: "/tmp/floorplan/floorplan.yaml"
-        - name: LOGLEVEL
-          value: ${FLOORIST_LOGLEVEL}
-        volumeMounts:
-        - name: floorplan-volume
-          mountPath: "/tmp/floorplan"
-        volumes:
-          - name: floorplan-volume
-            configMap:
-              name: floorplan
-      resources:
-          limits:
-            cpu: "${CPU_LIMIT_FLOO}"
-            memory: "${MEMORY_LIMIT_FLOO}"
-          requests:
-            cpu: "${CPU_REQUEST_FLOO}"
-            memory: "${MEMORY_REQUEST_FLOO}"
-    - name: baselines-org-id-populator
-      podSpec:
-        image: quay.io/cloudservices/tenant-utils:7336069
-        command:
-          - ./org-id-column-populator
-          - -C
-          - -a
-          - account
-          - -o
-          - org_id
-          - -t
-          - system_baselines
-          - --ean-translator-addr
-          - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
-          - --ean-translator-timeout
-          - "60"
-        env:
-          - name: TENANT_TRANSLATOR_HOST
-            value: ${TENANT_TRANSLATOR_HOST}
-          - name: TENANT_TRANSLATOR_PORT
-            value: ${TENANT_TRANSLATOR_PORT}
-          - name: POPULATOR_LOG_FORMAT
-            value: ${POPULATOR_LOG_FORMAT}
-          - name: LOG_BATCH_FREQUENCY
-            value: '1'
-        resources:
-          limits:
-            cpu: 300m
-            memory: 1Gi
-          requests:
-            cpu: 50m
-            memory: 512Mi
-    - name: mapped-systems-org-id-populator
-      podSpec:
-        image: quay.io/cloudservices/tenant-utils:7336069
-        command:
-          - ./org-id-column-populator
-          - -C
-          - -a
-          - account
-          - -o
-          - org_id
-          - -t
-          - system_baseline_mapped_systems
-          - --ean-translator-addr
-          - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
-          - --ean-translator-timeout
-          - "60"
-        env:
-          - name: TENANT_TRANSLATOR_HOST
-            value: ${TENANT_TRANSLATOR_HOST}
-          - name: TENANT_TRANSLATOR_PORT
-            value: ${TENANT_TRANSLATOR_PORT}
-          - name: POPULATOR_LOG_FORMAT
-            value: ${POPULATOR_LOG_FORMAT}
-          - name: LOG_BATCH_FREQUENCY
-            value: '1'
-        resources:
-          limits:
-            cpu: 300m
-            memory: 1Gi
-          requests:
-            cpu: 50m
-            memory: 512Mi
-
-    deployments:
-    - name: backend-service
+      labels:
+        app: system-baseline
+    spec:
+      envName: ${ENV_NAME}
+      dependencies:
+        - host-inventory
+        - rbac
+      optionalDependencies:
+        - historical-system-profiles
+      testing:
+        iqePlugin: drift
+      database:
+        name: system-baseline
+        version: 12
+      jobs:
+        - name: floorist
+          schedule: ${FLOORIST_SCHEDULE}
+          suspend: ${{FLOORIST_SUSPEND}}
+          concurrencyPolicy: Forbid
+          podSpec:
+            image: ${FLOORIST_IMAGE}:${FLOORIST_IMAGE_TAG}
+            env:
+              - name: AWS_BUCKET
+                valueFrom:
+                  secretKeyRef:
+                    name: ${FLOORIST_BUCKET_SECRET_NAME}
+                    key: bucket
+              - name: AWS_REGION
+                valueFrom:
+                  secretKeyRef:
+                    name: ${FLOORIST_BUCKET_SECRET_NAME}
+                    key: aws_region
+              - name: AWS_ENDPOINT
+                valueFrom:
+                  secretKeyRef:
+                    name: ${FLOORIST_BUCKET_SECRET_NAME}
+                    key: endpoint
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: ${FLOORIST_BUCKET_SECRET_NAME}
+                    key: aws_access_key_id
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: ${FLOORIST_BUCKET_SECRET_NAME}
+                    key: aws_secret_access_key
+              - name: FLOORPLAN_FILE
+                value: "/tmp/floorplan/floorplan.yaml"
+              - name: LOGLEVEL
+                value: ${FLOORIST_LOGLEVEL}
+            volumeMounts:
+              - name: floorplan-volume
+                mountPath: "/tmp/floorplan"
+            volumes:
+              - name: floorplan-volume
+                configMap:
+                  name: floorplan
+          resources:
+            limits:
+              cpu: "${CPU_LIMIT_FLOO}"
+              memory: "${MEMORY_LIMIT_FLOO}"
+            requests:
+              cpu: "${CPU_REQUEST_FLOO}"
+              memory: "${MEMORY_REQUEST_FLOO}"
+        - name: baselines-org-id-populator
+          podSpec:
+            image: quay.io/cloudservices/tenant-utils:7336069
+            command:
+              - ./org-id-column-populator
+              - -C
+              - -a
+              - account
+              - -o
+              - org_id
+              - -t
+              - system_baselines
+              - --ean-translator-addr
+              - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
+              - --ean-translator-timeout
+              - "60"
+            env:
+              - name: TENANT_TRANSLATOR_HOST
+                value: ${TENANT_TRANSLATOR_HOST}
+              - name: TENANT_TRANSLATOR_PORT
+                value: ${TENANT_TRANSLATOR_PORT}
+              - name: POPULATOR_LOG_FORMAT
+                value: ${POPULATOR_LOG_FORMAT}
+              - name: LOG_BATCH_FREQUENCY
+                value: '1'
+            resources:
+              limits:
+                cpu: 300m
+                memory: 1Gi
+              requests:
+                cpu: 50m
+                memory: 512Mi
+        - name: mapped-systems-org-id-populator
+          podSpec:
+            image: quay.io/cloudservices/tenant-utils:7336069
+            command:
+              - ./org-id-column-populator
+              - -C
+              - -a
+              - account
+              - -o
+              - org_id
+              - -t
+              - system_baseline_mapped_systems
+              - --ean-translator-addr
+              - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
+              - --ean-translator-timeout
+              - "60"
+            env:
+              - name: TENANT_TRANSLATOR_HOST
+                value: ${TENANT_TRANSLATOR_HOST}
+              - name: TENANT_TRANSLATOR_PORT
+                value: ${TENANT_TRANSLATOR_PORT}
+              - name: POPULATOR_LOG_FORMAT
+                value: ${POPULATOR_LOG_FORMAT}
+              - name: LOG_BATCH_FREQUENCY
+                value: '1'
+            resources:
+              limits:
+                cpu: 300m
+                memory: 1Gi
+              requests:
+                cpu: 50m
+                memory: 512Mi
+      deployments:
+        - name: backend-service
+          minReplicas: ${{MIN_REPLICAS}}
+          webServices:
+            public:
+              enabled: true
+          podSpec:
+            imagePullPolicy: Always
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            readinessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}
+            volumes:
+              - emptyDir: {}
+                name: system-baseline-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: system-baseline-prometheus-data
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: system-baseline
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: system-baseline
+      labels:
+        app: system-baseline
+    spec:
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: system-baseline
       minReplicas: ${{MIN_REPLICAS}}
-      webServices:
-        public:
-          enabled: true
-      podSpec:
-        imagePullPolicy: Always
-        image: ${IMAGE}:${IMAGE_TAG}
-        livenessProbe:
-          httpGet:
-            path: /mgmt/v0/status
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /mgmt/v0/status
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        resources:
-          limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
-          requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
-        volumes:
-          - emptyDir: {}
-            name: system-baseline-prometheus-data
-        volumeMounts:
-          - mountPath: /prometheus-data
-            name: system-baseline-prometheus-data
-        env:
-          - name: APP_CONFIG
-            value: gunicorn.conf.py
-          - name: ENABLE_RBAC
-            value: "${DRIFT_ENABLE_RBAC}"
-          - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
-            value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
-          - name: WEB_CONCURRENCY
-            value: "4"
-          - name: PATH_PREFIX
-            value: /api/
-          - name: APP_NAME
-            value: system-baseline
-          - name: ENABLE_PIPENV
-            value: 'true'
-          - name: prometheus_multiproc_dir
-            value: /prometheus-data
-          - name: DRIFT_SHARED_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: shared-secret
-                name: drift-interpod-comms
-
-
-- apiVersion: autoscaling/v1
-  kind: HorizontalPodAutoscaler
-  metadata:
-    name: system-baseline
-    labels:
-      app: system-baseline
-  spec:
-    scaleTargetRef:
-      apiVersion: v1
-      kind: DeploymentConfig
-      name: system-baseline
-    minReplicas: ${{MIN_REPLICAS}}
-    maxReplicas: ${{MAX_REPLICAS}}
-    targetCPUUtilizationPercentage: 50
-
-- apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: floorplan
-  data:
-    floorplan.yaml: |
-      - prefix: insights/system-baseline/baselines
-        query: >-
-          SELECT
-            SB.ACCOUNT AS ACCOUNT_ID,
-            SB.ID as BASELINE_ID,
-            SBMS.SYSTEM_ID::TEXT AS ASSOCIATED_SYSTEM_ID FROM SYSTEM_BASELINES SB
-            LEFT OUTER JOIN SYSTEM_BASELINE_MAPPED_SYSTEMS SBMS ON SBMS.SYSTEM_BASELINE_ID  = SB.ID;
-
+      maxReplicas: ${{MAX_REPLICAS}}
+      targetCPUUtilizationPercentage: 50
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: floorplan
+    data:
+      floorplan.yaml: |
+        - prefix: insights/system-baseline/baselines
+          query: >-
+            SELECT
+              SB.ACCOUNT AS ACCOUNT_ID,
+              SB.ID as BASELINE_ID,
+              SBMS.SYSTEM_ID::TEXT AS ASSOCIATED_SYSTEM_ID FROM SYSTEM_BASELINES SB
+              LEFT OUTER JOIN SYSTEM_BASELINE_MAPPED_SYSTEMS SBMS ON SBMS.SYSTEM_BASELINE_ID  = SB.ID;
 parameters:
   - name: DRIFT_ENABLE_RBAC
     description: enable rbac. needs to be "True" or "False".
