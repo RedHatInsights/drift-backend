@@ -21,7 +21,7 @@ objects:
         iqePlugin: drift
       database:
         name: system-baseline
-        version: 12
+        version: 13
       jobs:
         - name: floorist
           schedule: ${FLOORIST_SCHEDULE}
