@@ -244,7 +244,7 @@ parameters:
   - name: MEMORY_LIMIT
     value: 1Gi
   - name: CPU_REQUEST
-    value: 500m
+    value: 200m
   - name: MEMORY_REQUEST
     value: 512Mi
   - description: ClowdEnv Name
