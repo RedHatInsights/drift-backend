@@ -1,3 +1,5 @@
+import concurrent.futures
+
 from urllib.parse import urljoin
 
 from kerlescan import config
@@ -94,30 +96,49 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
         config.inventory_svc_hostname, INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT
     )
 
-    systems_result = fetch_data(
-        system_location,
-        auth_header,
-        system_ids,
-        logger,
-        counters["inventory_service_requests"],
-        counters["inventory_service_exceptions"],
-    )
-    system_profiles_result = fetch_data(
-        system_profile_location,
-        auth_header,
-        system_ids,
-        logger,
-        counters["inventory_service_requests"],
-        counters["inventory_service_exceptions"],
-    )
-    system_tags_result = fetch_data(
-        system_tags_location,
-        auth_header,
-        system_ids,
-        logger,
-        counters["inventory_service_requests"],
-        counters["inventory_service_exceptions"],
-    )
+    futures = {}
+    api_results = {}
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        systems_result_future = executor.submit(
+            fetch_data,
+            system_location,
+            auth_header,
+            system_ids,
+            logger,
+            counters["inventory_service_requests"],
+            counters["inventory_service_exceptions"],
+        )
+        futures[systems_result_future] = "systems_result"
+
+        system_profiles_future = executor.submit(
+            fetch_data,
+            system_profile_location,
+            auth_header,
+            system_ids,
+            logger,
+            counters["inventory_service_requests"],
+            counters["inventory_service_exceptions"],
+        )
+        futures[system_profiles_future] = "system_profiles_result"
+
+        system_tags_future = executor.submit(
+            fetch_data,
+            system_tags_location,
+            auth_header,
+            system_ids,
+            logger,
+            counters["inventory_service_requests"],
+            counters["inventory_service_exceptions"],
+        )
+        futures[system_tags_future] = "system_tags_result"
+
+        for future in concurrent.futures.as_completed(futures):
+            api_results[futures[future]] = future.result()
+
+    systems_result = api_results.get("systems_result", [])
+    system_profiles_result = api_results.get("system_profiles_result", [])
+    system_tags_result = api_results.get("system_tags_result", [])
+
     ensure_correct_system_count(system_ids, systems_result)
 
     return interleave_systems_and_profiles(
