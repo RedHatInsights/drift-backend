@@ -9,6 +9,7 @@ def initUnleash():
     configs = dict(
         UNLEASH_URL=os.getenv("UNLEASH_URL"),
         UNLEASH_TOKEN=os.getenv("UNLEASH_TOKEN"),
+        UNLEASH_CACHE_DIR=os.getenv("UNLEASH_CACHE_DIR"),
     )
     UNLEASH_URL = "http://unleash_svc_url_is_not_set"
     UNLEASH_TOKEN = None
@@ -28,6 +29,7 @@ def initUnleash():
     client = UnleashClient(
         url=configs["UNLEASH_URL"],
         app_name="drift",
+        cache_directory=configs["UNLEASH_CACHE_DIR"],
         custom_headers={"Authorization": f'Bearer {configs["UNLEASH_TOKEN"]}'},
     )
     client.initialize_client()
