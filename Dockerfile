@@ -1,25 +1,32 @@
-FROM registry.access.redhat.com/ubi8/python-38
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-# Install dependencies and clean cache to make the image cleaner
+RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
+    git-core python38 python38-pip tzdata && \
+    microdnf clean all
 
-USER 0
-RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-    yum remove -y npm vim-minimal && \
-    yum install -y hostname shared-mime-info && \
-    yum upgrade -y --security --allowerasing && \
-    yum clean all -y
+RUN adduser --gid 0 -d /opt/app-root --no-create-home insights
 
-COPY . /tmp/src
-RUN chown -R 1001:0 /tmp/src
+ENV LC_ALL=C.utf8
+ENV LANG=C.utf8
 
-USER 1001
+ENV APP_ROOT=/opt/app-root
+ENV PIPENV_VENV_IN_PROJECT=1
 
-ENV ENABLE_PIPENV=true
-ENV APP_SCRIPT=run_app.sh
-ENV PIN_PIPENV_VERSION=2021.11.23
+ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
 
-# Install the dependencies
-RUN /usr/libexec/s2i/assemble
+COPY . ${APP_ROOT}/src
 
-# Set the default command for the resulting image
-CMD /usr/libexec/s2i/run
+WORKDIR ${APP_ROOT}/src
+
+RUN pip3 install --upgrade pip && \
+    pip3 install --upgrade pipenv
+
+RUN pipenv install --deploy
+
+RUN chown -R insights:0 /opt/app-root  && \
+    chgrp -R 0 /opt/app-root && \
+    chmod -R g=u /opt/app-root
+
+USER insights
+
+CMD pipenv run ./run_app.sh
