@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [ "$ACG_CONFIG" ]
 then
   echo "Found ACG_CONFIG - RUNNING WITH CLOWDER"
