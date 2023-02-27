@@ -21,7 +21,7 @@ WORKDIR ${APP_ROOT}/src
 RUN pip3 install --upgrade pip && \
     pip3 install --upgrade pipenv
 
-RUN pipenv install --deploy
+RUN pipenv sync
 
 RUN chown -R insights:0 /opt/app-root  && \
     chgrp -R 0 /opt/app-root && \
