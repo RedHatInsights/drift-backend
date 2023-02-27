@@ -10,4 +10,4 @@ script:
 
 install:
   - pip install pipenv
-  - pipenv install --dev
+  - pipenv sync --dev --verbose
