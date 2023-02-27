@@ -37,7 +37,8 @@ git commit --no-verify
 ### To set up pipenv:
 ```bash
 yum install -y pipenv
-pipenv install # will pull in deps and create virtualenv, and will print next steps to run
+pipenv sync # will pull in deps and create virtualenv, and will print next steps to run
+pipenv sync --dev # or this one to install also development dependencies
 ```
 ### To run unit tests
 
