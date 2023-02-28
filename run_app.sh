@@ -7,6 +7,9 @@ then
   if [ -z "$SERVICE_MODE" ];
     then SERVICE_MODE=REST_API
   fi
+  if [ -z "$LOG_LEVEL" ];
+    then LOG_LEVEL='info'
+  fi
   if [ "$SERVICE_MODE" == "REST_API" ]
   then
     echo "RUNNING BACKEND SERVICE"
@@ -16,7 +19,7 @@ then
     APP_CONFIG='gunicorn.conf.py'
     FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade;
     if [[ "$?" != "0" ]]; then exit 1; fi
-    exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config "$APP_CONFIG"
+    exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --log-level=$LOG_LEVEL --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config "$APP_CONFIG"
   elif [ "$SERVICE_MODE" == "CLEAN_EXPIRED_RECORDS" ];
     then
     echo "RUNNING CLEAN_EXPIRED_RECORDS"
