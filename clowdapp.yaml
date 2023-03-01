@@ -151,7 +151,7 @@ objects:
               httpGet:
                 path: /mgmt/v0/status
                 port: 8000
-              initialDelaySeconds: 10
+              initialDelaySeconds: 120
               periodSeconds: 10
             readinessProbe:
               httpGet:
