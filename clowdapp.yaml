@@ -392,10 +392,10 @@ parameters:
     value: INFO
   - name: LIVENESS_PROBE_FILE
     describes: File used as liveness probe
-    value: 'liveness_probe'
+    value: '/tmp/liveness_probe'
   - name: READINESS_PROBE_FILE
     describes: File used as readiness probe
-    value: 'readiness_probe'
+    value: '/tmp/readiness_probe'
   - name: EXPIRED_CLEANER_SLEEP_MINUTES
     describes: How often are old data cleaned
     value: "20"

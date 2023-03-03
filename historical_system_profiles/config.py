@@ -144,5 +144,7 @@ listener_delay = int(os.getenv("LISTENER_DELAY", 5))
 kafka_max_poll_interval_ms = int(os.getenv("KAFKA_MAX_POLL_INTERVAL_MS", 300000))
 kafka_max_poll_records = int(os.getenv("KAFKA_MAX_POLL_RECORDS", 500))
 
-liveness_probe_filepath = os.path.abspath(os.getenv("LIVENESS_PROBE_FILE", "liveness_probe"))
-readiness_probe_filepath = os.path.abspath(os.getenv("READINESS_PROBE_FILE", "readiness_probe"))
+liveness_probe_filepath = os.path.abspath(os.getenv("LIVENESS_PROBE_FILE", "/tmp/liveness_probe"))
+readiness_probe_filepath = os.path.abspath(
+    os.getenv("READINESS_PROBE_FILE", "/tmp/readiness_probe")
+)

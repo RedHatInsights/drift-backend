@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-PROBE_FILE="${LIVENESS_PROBE_FILE:-liveness_probe}"
+PROBE_FILE="${LIVENESS_PROBE_FILE:-/tmp/liveness_probe}"
 PROBE_STALE_MINUTES=$((3*"${EXPIRED_CLEANER_SLEEP_MINUTES:-20}"))
 
 if [ -e "$PROBE_FILE" ]; then
@@ -15,4 +15,3 @@ fi
 # file doesn't exist
 # echo 'no file'
 exit 1
-
