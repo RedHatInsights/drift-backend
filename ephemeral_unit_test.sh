@@ -5,8 +5,8 @@ cd $APP_ROOT
 #Start Python venv
 python3.8 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip setuptools wheel pipenv
-pipenv install --dev
+pip install --upgrade pip setuptools poetry
+poetry install --with dev --sync
 
 #Run unit test
 TEMPDIR=`mktemp -d`
