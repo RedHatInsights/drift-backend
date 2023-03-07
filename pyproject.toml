@@ -36,3 +36,51 @@ filterwarnings = [
     "ignore::PendingDeprecationWarning",
     'ignore:function ham\(\) is deprecated:DeprecationWarning'
     ]
+
+[tool.poetry]
+name = "drift-backend"
+version = "0.1.0"
+description = ""
+authors = []
+license = "Apache-2.0 license"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+connexion = {extras = ["swagger-ui"], version = "==2.5.1"}
+Flask = "==1.1.4"
+gunicorn = "*"
+prometheus_client = "*"
+bitmath = "*"
+boto3 = "*"
+watchtower = "==1.0.6"
+insights-core = "*"
+python-dateutil = "*"
+app-common-python = "*"
+unleashclient = "*"
+"backports.zoneinfo" = "*"
+jsonschema = "==3.2.0"
+markupsafe = "==2.0.1"
+setuptools = "==60.5.0"
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.99", develop = true}
+
+
+[tool.poetry.group.dev.dependencies]
+coverage = {extras = ["toml"], version = "*"}
+flake8 = "*"
+mock = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+responses = "*"
+yamllint = "*"
+black = "==21.6b0"
+ipython = "*"
+openapi-spec-validator = "*"
+ipdb = "*"
+toml = "*"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
