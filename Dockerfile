@@ -12,6 +12,10 @@ ENV LANG=C.utf8
 ENV APP_ROOT=/opt/app-root
 ENV PIPENV_VENV_IN_PROJECT=1
 
+ENV POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config
+ENV POETRY_DATA_DIR=/opt/app-root/.pypoetry/data
+ENV POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
+
 ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
 
 COPY . ${APP_ROOT}/src
@@ -19,9 +23,7 @@ COPY . ${APP_ROOT}/src
 WORKDIR ${APP_ROOT}/src
 
 RUN pip3 install --upgrade pip && \
-    pip3 install --upgrade pipenv
-
-RUN pipenv sync
+    pip3 install --upgrade poetry
 
 RUN chown -R insights:0 /opt/app-root  && \
     chgrp -R 0 /opt/app-root && \
@@ -29,4 +31,6 @@ RUN chown -R insights:0 /opt/app-root  && \
 
 USER insights
 
-CMD pipenv run ./run_app.sh
+RUN poetry install --without dev --sync
+
+CMD poetry run ./run_app.sh
