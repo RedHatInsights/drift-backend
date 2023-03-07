@@ -12,8 +12,8 @@ script:
   - ./run_unit_tests.sh
 
 install:
-  - pip install pipenv
-  - pipenv sync --dev --verbose
+  - pip install poetry
+  - poetry install --with dev --verbose --verbose
   - pip install codecov
 
 after_success:
