@@ -62,7 +62,7 @@ unleashclient = "*"
 jsonschema = "*"
 markupsafe = "*"
 setuptools = "*"
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.99", develop = true}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.100", develop = true}
 
 
 [tool.poetry.group.dev.dependencies]
