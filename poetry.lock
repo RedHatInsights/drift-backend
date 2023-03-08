@@ -919,19 +919,27 @@ typing-extensions = ">=4.3.0,<5.0.0"
 
 [[package]]
 name = "kerlescan"
-version = "0.1"
+version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = "^3.8"
 files = []
 develop = true
+
+[package.dependencies]
+app-common-python = "*"
+bitmath = "*"
+boto3 = "*"
+insights-core = "*"
+unleashclient = "*"
+watchtower = "*"
 
 [package.source]
 type = "git"
 url = "https://github.com/RedHatInsights/kerlescan.git"
-reference = "0.99"
-resolved_reference = "9c757aeb45389f69edee1b5950632ca370966b29"
+reference = "0.100"
+resolved_reference = "8ce9f189552214354d3c918267b7fcf4928e2ef0"
 
 [[package]]
 name = "lazy-object-proxy"
@@ -2087,4 +2095,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "fa732b48980db0eb647f6597ecc218722b3ed6cd2f98806939e1fd42c1b833d3"
+content-hash = "71a5fa274a5622c5ac4a1d1353af8cba70a9e50982da4ff99351ec30d14b0424"
