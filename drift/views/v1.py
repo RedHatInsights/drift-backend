@@ -51,6 +51,7 @@ def _csvify(comparisons):
     """
     given a set of comparisons, return a CSV
     """
+
     # helper methods to generate CSV rows
     def _get_value_for_id(record_id, systems):
         for system in systems:
