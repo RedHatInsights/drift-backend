@@ -9,5 +9,5 @@ script:
   - pytest
 
 install:
-  - pip install pipenv
-  - pipenv sync --dev --verbose
+  - pip install poetry
+  - poetry install --with dev --verbose --verbose
