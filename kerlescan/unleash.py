@@ -5,7 +5,6 @@ from UnleashClient import UnleashClient
 
 
 def initUnleash():
-
     configs = dict(
         UNLEASH_URL=os.getenv("UNLEASH_URL"),
         UNLEASH_TOKEN=os.getenv("UNLEASH_TOKEN"),
