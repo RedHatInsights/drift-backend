@@ -2,7 +2,7 @@
 shared service lib
 
 ## Required dependencies:
-- pipenv
+- poetry
 - pre-commit
 
 ## Work with pre-commit hooks
@@ -25,9 +25,8 @@ git commit --no-verify
 ```
 
 ## To run tests
-1. `pipenv install --dev`
-2. `pipenv shell`
-3. `pytest`
+1. `poetry install --with dev sync`
+2. `poetry run pytest`
 
 ## To run SonarQube:
 1. Make sure that you have SonarQube scanner installed.
