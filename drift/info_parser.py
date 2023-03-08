@@ -254,7 +254,6 @@ def _select_applicable_info(
 
     info_comparisons = []
     for key in all_keys:
-
         # obfuscated information type - key
         for obfuscated_key in obfuscated_regexes.keys():
             if obfuscated_key in key:
