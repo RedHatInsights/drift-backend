@@ -5,9 +5,9 @@ TAG=$(git ls-remote --sort='version:refname' --tags https://github.com/RedHatIns
 echo "Latest kerlescan tag is $TAG"
 
 echo "Installing kerlescan $TAG"
-pipenv install --selective-upgrade -e git+https://github.com/RedHatInsights/kerlescan.git@$TAG#egg=kerlescan
+poetry add git+https://github.com/RedHatInsights/kerlescan.git#$TAG --editable
 echo "Kerlescan $TAG installed"
 
 echo "Creating manifest"
-pipenv run scripts/create-manifest.py
+poetry run scripts/create-manifest.py
 echo "Manifest created."

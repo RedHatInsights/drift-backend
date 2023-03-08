@@ -10,7 +10,7 @@ echo '===================================='
 #Start Python venv
 python3.8 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip setuptools wheel pipenv
+pip install --upgrade pip setuptools poetry
 pip install pre-commit
 set +e
 pre-commit run --all-files
@@ -83,7 +83,7 @@ echo '===================================='
 echo '=== Installing Pip Dependencies ===='
 echo '===================================='
 set +e
-docker exec $TEST_CONTAINER_ID /bin/bash -c 'pipenv install --system --dev'
+docker exec $TEST_CONTAINER_ID /bin/bash -c 'poetry install --with dev'
 TEST_RESULT=$?
 set -e
 
@@ -118,4 +118,3 @@ echo '====   ✔ SUCCESS: PASSED TESTS   ===='
 echo '====================================='
 
 teardown_docker
-
