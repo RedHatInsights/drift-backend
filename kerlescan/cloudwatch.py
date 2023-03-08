@@ -1,9 +1,9 @@
 import os
 
+import boto3
 import watchtower
 
 from app_common_python import LoadedConfig, isClowderEnabled
-from boto3.session import Session
 
 
 def setup_cw_logging(logger):  # pragma: no cover
@@ -31,7 +31,9 @@ def setup_cw_logging(logger):  # pragma: no cover
         logger.info("CloudWatch logging disabled due to missing access key")
         return
 
-    session = Session(aws_access_key_id=key_id, aws_secret_access_key=secret, region_name=region)
+    boto3_logs_client = boto3.client(
+        "logs", aws_access_key_id=key_id, aws_secret_access_key=secret, region_name=region
+    )
 
     try:
         with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
@@ -40,8 +42,8 @@ def setup_cw_logging(logger):  # pragma: no cover
         namespace = "unknown"
 
     handler = watchtower.CloudWatchLogHandler(
-        boto3_session=session,
-        log_group=log_group,
+        boto3_client=boto3_logs_client,
+        log_group_name=log_group,
         stream_name=namespace,
         create_log_group=False,
     )
