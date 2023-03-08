@@ -61,7 +61,7 @@ unleashclient = "*"
 "backports.zoneinfo" = "*"
 jsonschema = "==3.2.0"
 markupsafe = "==2.0.1"
-setuptools = "==60.5.0"
+setuptools = "==65.5.1"
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.99", develop = true}
 
 
