@@ -25,7 +25,7 @@ RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
     rpm -qa | sort > packages-after-devel-install.txt
 
 RUN pip3 install --upgrade pip setuptools wheel && \
-    pip3 install --upgrade poetry && \
+    pip3 install --force-reinstall poetry~=1.3.0 && \
     poetry install --sync
 
 # allows unit tests to run successfully within the container if image is built in "test" environment
