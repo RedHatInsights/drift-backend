@@ -36,3 +36,57 @@ filterwarnings = [
     "ignore::PendingDeprecationWarning",
     'ignore:function ham\(\) is deprecated:DeprecationWarning'
     ]
+
+[tool.poetry]
+name = "system-baseline-backend"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.8"
+connexion = {extras = ["swagger-ui"], version = "==2.5.1"}
+Flask = "==1.1.4"
+gunicorn = "*"
+prometheus_client = "*"
+boto3 = "*"
+watchtower = "==1.0.6"
+flask-sqlalchemy = "*"
+sqlalchemy = "<2"
+alembic = "*"
+flask-script = "*"
+flask-migrate = "*"
+bitmath = "*"
+jsonpatch = "*"
+insights-core = "*"
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", develop = true, rev = "0.99"}
+app-common-python = "*"
+unleashclient = "*"
+"backports.zoneinfo" = "*"
+jsonschema = "==3.2.0"
+markupsafe = "==2.0.1"
+psycopg2 = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+openapi-spec-validator = "*"
+coverage = "*"
+flake8 = "*"
+mock = "*"
+responses = "*"
+yamllint = "==1.26.0"
+black = "==21.6b0"
+ipdb = "*"
+podman-compose = "*"
+python-semantic-release = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+toml = "*"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
