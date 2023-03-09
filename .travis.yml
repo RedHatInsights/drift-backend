@@ -12,7 +12,7 @@ script:
   - ./run_unit_tests.sh
 
 install:
-  - pip install poetry
+  - pip install --force-reinstall poetry~=1.3.0
   - poetry install --with dev --verbose --verbose
   - pip install codecov
 
