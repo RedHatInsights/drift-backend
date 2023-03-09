@@ -46,10 +46,10 @@ packages = []
 
 [tool.poetry.dependencies]
 python = "^3.8"
-connexion = {extras = ["swagger-ui"], version = "==2.5.1"}
+connexion = {extras = ["swagger-ui"], version = "*"}
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", develop = true, rev = "0.99"}
 prometheus-client = "*"
-watchtower = "==1.0.6"
+watchtower = "*"
 flake8 = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
@@ -57,18 +57,18 @@ alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
 psycopg2 = "*"
-kafka-python = "==2.0.2"
+kafka-python = "*"
 logstash-formatter = "*"
 python-dateutil = "*"
 pytz = "*"
 app-common-python = "*"
-jsonschema = "==3.2.0"
+jsonschema = "*"
 markupsafe = "*"
-click = "==8.0.3"
+click = "*"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "==21.6b0"
+black = "*"
 flake8 = "*"
 pytest = "*"
 pytest-cov = "*"
