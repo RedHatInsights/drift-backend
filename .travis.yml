@@ -25,8 +25,8 @@ script:
   - java -jar openapi-generator-cli-4.1.1.jar validate -i historical_system_profiles/openapi/api.spec.yaml
 
 install:
-  - pip install pipenv
-  - pipenv sync --dev --verbose
+  - pip install poetry
+  - poetry install --with dev --verbose
   - pip install codecov
 
 after_success:
