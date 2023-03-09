@@ -7,8 +7,10 @@ ENV LANG=C.utf8
 
 ENV APP_ROOT=/opt/app-root
 ENV PIP_NO_CACHE_DIR=1
-ENV PIPENV_CLEAR=1
-ENV PIPENV_VENV_IN_PROJECT=1
+
+ENV POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config
+ENV POETRY_DATA_DIR=/opt/app-root/.pypoetry/data
+ENV POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
 
 ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
 
@@ -20,11 +22,11 @@ RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
     git-core python38 python38-pip tzdata libpq-devel && \
     rpm -qa | sort > packages-before-devel-install.txt && \
     microdnf install --setopt=tsflags=nodocs -y python38-devel gcc && \
-    rpm -qa | sort > packages-after-devel-install.txt 
+    rpm -qa | sort > packages-after-devel-install.txt
 
 RUN pip3 install --upgrade pip && \
-    pip3 install --upgrade pipenv && \
-    pipenv sync
+    pip3 install --upgrade poetry && \
+    poetry install --sync
 
 # allows unit tests to run successfully within the container if image is built in "test" environment
 RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
@@ -33,5 +35,4 @@ RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $AP
 #    rm packages-before-devel-install.txt packages-after-devel-install.txt && \
 #    microdnf clean all
 
-CMD pipenv run ./run_app.sh
-
+CMD poetry run ./run_app.sh
