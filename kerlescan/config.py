@@ -21,7 +21,9 @@ def load_hosts_setting(env_name, clowder_endpoint, default):
         final_endpoint = ""
         for endpoint in cfg.endpoints:
             if endpoint.app == clowder_endpoint:
-                final_endpoint = f"http://{endpoint.hostname}:{endpoint.port}"
+                scheme = "http"
+                port = endpoint.port
+                final_endpoint = f"{scheme}://{endpoint.hostname}:{port}"
                 return final_endpoint
 
         if final_endpoint == "":
