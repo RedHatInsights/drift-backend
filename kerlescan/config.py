@@ -32,6 +32,15 @@ def load_hosts_setting(env_name, clowder_endpoint, default):
     return os.getenv(env_name, default)
 
 
+def load_setting(env_name, clowder_key, default):
+    if isClowderEnabled():
+        return getattr(LoadedConfig, clowder_key, None)
+
+    return os.getenv(env_name, default)
+
+
+tls_ca_path = load_setting("TLS_CA_PATH", "tlsCAPath", None)
+
 inventory_svc_hostname = load_hosts_setting(
     "INVENTORY_SVC_URL", "host-inventory", "http://inventory_svc_url_is_not_set"
 )
