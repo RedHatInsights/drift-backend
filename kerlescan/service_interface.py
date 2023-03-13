@@ -1,6 +1,6 @@
 import requests
 
-from kerlescan.config import drift_shared_secret
+from kerlescan.config import drift_shared_secret, tls_ca_path
 from kerlescan.constants import AUTH_HEADER_NAME, VALID_HTTP_VERBS
 from kerlescan.exceptions import IllegalHttpMethodError, ItemNotReturned, RBACDenied, ServiceError
 
@@ -53,7 +53,7 @@ def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="g
     logger.debug("fetching %s" % url)
     with time_metric.time():
         with exception_metric.count_exceptions():
-            response = requests.request(method, url, headers=auth_header)
+            response = requests.request(method, url, headers=auth_header, verify=tls_ca_path)
     logger.debug("fetched %s" % url)
     _validate_service_response(response, logger, auth_header)
     return response.json()
