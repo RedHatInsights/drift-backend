@@ -13,6 +13,7 @@ bonfire deploy \
     --set-image-tag ${IMAGE}=${IMAGE_TAG} \
     --namespace ${NAMESPACE} \
     --timeout 600 \
+    --no-remove-resources drift \
     --no-remove-resources system-baseline \
     --no-remove-resources historical-system-profiles \
     ${COMPONENTS_ARG} \
