@@ -2835,18 +2835,21 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "watchtower"
-version = "1.0.6"
+version = "3.0.1"
 description = "Python CloudWatch Logging"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "watchtower-1.0.6-py3-none-any.whl", hash = "sha256:2859275df4ad71b005b983613dd64cabbda61f9fdd3db7600753fc465090119d"},
-    {file = "watchtower-1.0.6.tar.gz", hash = "sha256:5eb5d78e730e1016e166b14a79a02d1b939cf1a58f2d559ff4f7c6f953284ebf"},
+    {file = "watchtower-3.0.1-py3-none-any.whl", hash = "sha256:566874a9dee34b90517b9a9b7c2d5e6b15fb9fd00dacb03bff8a7bf4c6295fe0"},
+    {file = "watchtower-3.0.1.tar.gz", hash = "sha256:e60b828e9c368d54044a631466322e8c6f5f9d57da0b69fbaf32ec134697367e"},
 ]
 
 [package.dependencies]
 boto3 = ">=1.9.253,<2"
+
+[package.extras]
+tests = ["build", "coverage", "flake8", "mypy", "pyyaml", "wheel"]
 
 [[package]]
 name = "wcwidth"
@@ -2939,4 +2942,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "c4278e5b412811ed965a7d09d1752d55c22f8dc4e30955e222bc5b31af75ad12"
+content-hash = "66e8aba3867c35051b1b81dc7f81d19bfa0dda2fc0e15b13c3984f1ecd13c628"
