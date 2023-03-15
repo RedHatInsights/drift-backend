@@ -1,6 +1,6 @@
 [tool.black]
 line-length=100
-target-version=["py38"]
+target-version=["py39"]
 
 [tool.isort]
 profile = "black"
@@ -45,7 +45,7 @@ readme = "README.md"
 packages = []
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 connexion = {extras = ["swagger-ui"], version = "*"}
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.101", develop = true}
 prometheus-client = "*"
