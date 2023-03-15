@@ -4,7 +4,7 @@ services:
   - postgresql
 
 python:
- - "3.8"
+ - "3.9"
 
 before_install:
   - psql -c "CREATE USER insights WITH PASSWORD 'insights';"
