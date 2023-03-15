@@ -1,8 +1,10 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
-    git-core python38 python38-pip tzdata && \
-    microdnf clean all
+    git-core python39 python39-pip tzdata libpq-devel && \
+    rpm -qa | sort > packages-before-devel-install.txt && \
+    microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
+    rpm -qa | sort > packages-after-devel-install.txt
 
 RUN adduser --gid 0 -d /opt/app-root --no-create-home insights
 
