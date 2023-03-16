@@ -3019,32 +3019,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "comparison_report::api_baseline_requests"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 16,
@@ -3479,7 +3454,7 @@ data:
       "timezone": "",
       "title": "Drift",
       "uid": "ZommNF-Wk",
-      "version": 3,
+      "version": 6,
       "weekStart": ""
     }
 kind: ConfigMap
