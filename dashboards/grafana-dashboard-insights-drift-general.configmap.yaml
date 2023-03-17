@@ -27,7 +27,6 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "iteration": 1678891494333,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -121,7 +120,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -201,7 +200,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -281,7 +280,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -361,7 +360,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -441,7 +440,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -521,7 +520,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -601,7 +600,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -681,7 +680,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -760,7 +759,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -840,7 +839,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -920,7 +919,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -1000,7 +999,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -1080,7 +1079,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -1160,7 +1159,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -1240,7 +1239,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -1329,7 +1328,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1454,7 +1453,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1581,7 +1580,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1673,7 +1672,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1765,7 +1764,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1858,7 +1857,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1956,7 +1955,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2087,7 +2086,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2185,7 +2184,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2288,7 +2287,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2377,6 +2376,21 @@ data:
           "datasource": {
             "uid": "$datasource"
           },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
           "gridPos": {
             "h": 6,
             "w": 12,
@@ -2391,6 +2405,44 @@ data:
             "show": true
           },
           "links": [],
+          "options": {
+            "calculate": false,
+            "calculation": {},
+            "cellGap": 2,
+            "cellValues": {},
+            "color": {
+              "exponent": 0.5,
+              "fill": "#b4ff00",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 128
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1e-9
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "showValue": "never",
+            "tooltip": {
+              "show": true,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "none"
+            }
+          },
+          "pluginVersion": "9.4.3",
           "reverseYBuckets": false,
           "targets": [
             {
@@ -2461,7 +2513,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2559,7 +2611,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2657,7 +2709,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2755,7 +2807,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2883,7 +2935,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2977,6 +3029,8 @@ data:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -3032,7 +3086,8 @@ data:
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "single",
@@ -3091,8 +3146,9 @@ data:
               "exponent": 0.5,
               "fill": "dark-orange",
               "mode": "scheme",
+              "reverse": false,
               "scale": "exponential",
-              "scheme": "Oranges",
+              "scheme": "RdYlGn",
               "steps": 128
             },
             "exemplars": {
@@ -3102,7 +3158,8 @@ data:
               "le": 1e-9
             },
             "legend": {
-              "show": false
+              "show": false,
+              "showLegend": true
             },
             "rowsFrame": {
               "layout": "auto"
@@ -3118,7 +3175,7 @@ data:
               "unit": "s"
             }
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -3136,7 +3193,7 @@ data:
             }
           ],
           "title": "System Profile Requests",
-          "type": "heatmap-new"
+          "type": "heatmap"
         },
         {
           "datasource": {
@@ -3174,6 +3231,7 @@ data:
               "exponent": 0.5,
               "fill": "dark-orange",
               "mode": "scheme",
+              "reverse": false,
               "scale": "exponential",
               "scheme": "Oranges",
               "steps": 128
@@ -3185,7 +3243,8 @@ data:
               "le": 1e-9
             },
             "legend": {
-              "show": false
+              "show": false,
+              "showLegend": true
             },
             "rowsFrame": {
               "layout": "auto"
@@ -3201,7 +3260,7 @@ data:
               "unit": "s"
             }
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -3219,7 +3278,88 @@ data:
             }
           ],
           "title": "Baseline Requests",
-          "type": "heatmap-new"
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 74
+          },
+          "id": 88,
+          "options": {
+            "calculate": false,
+            "cellGap": 1,
+            "cellValues": {
+              "unit": "s"
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "RdYlBu",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1e-9
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "show": true,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false
+            }
+          },
+          "pluginVersion": "9.4.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(api_3scale_gateway_api_time_bucket{exported_service=\"drift\"}[5m])) by (le)",
+              "format": "heatmap",
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "3scale API Time taken",
+          "type": "heatmap"
         },
         {
           "datasource": {
@@ -3257,6 +3397,7 @@ data:
               "exponent": 0.5,
               "fill": "dark-orange",
               "mode": "scheme",
+              "reverse": false,
               "scale": "exponential",
               "scheme": "Oranges",
               "steps": 128
@@ -3268,7 +3409,8 @@ data:
               "le": 1e-9
             },
             "legend": {
-              "show": false
+              "show": false,
+              "showLegend": true
             },
             "rowsFrame": {
               "layout": "auto"
@@ -3284,7 +3426,7 @@ data:
               "unit": "s"
             }
           },
-          "pluginVersion": "9.0.3",
+          "pluginVersion": "9.4.3",
           "targets": [
             {
               "datasource": {
@@ -3302,11 +3444,12 @@ data:
             }
           ],
           "title": "HSP Requests",
-          "type": "heatmap-new"
+          "type": "heatmap"
         }
       ],
       "refresh": false,
-      "schemaVersion": 36,
+      "revision": 1,
+      "schemaVersion": 38,
       "style": "dark",
       "tags": [],
       "templating": {
@@ -3423,7 +3566,7 @@ data:
         ]
       },
       "time": {
-        "from": "now-7d",
+        "from": "now-2d",
         "to": "now"
       },
       "timepicker": {
@@ -3451,10 +3594,10 @@ data:
           "30d"
         ]
       },
-      "timezone": "",
+      "timezone": "utc",
       "title": "Drift",
       "uid": "ZommNF-Wk",
-      "version": 6,
+      "version": 2,
       "weekStart": ""
     }
 kind: ConfigMap
