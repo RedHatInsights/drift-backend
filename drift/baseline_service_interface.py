@@ -21,7 +21,7 @@ def fetch_baselines(baseline_ids, service_auth_key, logger):
 
     baseline_location = urljoin(config.baseline_svc_hostname, BASELINE_SVC_ENDPOINT)
 
-    message = "reading baselines"
+    message = f"reading baselines {baseline_ids}"
     current_app.logger.audit(message, request=request)
     baseline_result = fetch_data(
         baseline_location,
@@ -42,9 +42,7 @@ def call_baseline_admin_svc(endpoint, service_auth_key, logger):
     auth_header = {**{AUTH_HEADER_NAME: service_auth_key}}
     baseline_location = urljoin(config.baseline_svc_hostname, SYSTEM_BASELINE_ADMIN_ENDPOINT)
 
-    current_app.logger.audit(
-        "calling system-baseline endpoint {}".format(endpoint), request=request
-    )
+    current_app.logger.audit(f"calling system-baseline endpoint {endpoint}", request=request)
 
     baseline_result = fetch_url(
         url=baseline_location % endpoint,
