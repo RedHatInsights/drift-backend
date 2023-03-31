@@ -22,7 +22,7 @@ def fetch_baselines(baseline_ids, service_auth_key, logger):
 
     baseline_location = urljoin(config.baseline_svc_hostname, BASELINE_SVC_ENDPOINT)
 
-    message = f"reading baselines {baseline_ids}"
+    message = "reading baselines"
     current_app.logger.audit(message, request=request)
     baseline_result = fetch_data(
         baseline_location,

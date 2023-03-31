@@ -36,7 +36,7 @@ def create_profile(inventory_id, profile, account_number, org_id):
     db.session.add(profile)
     db.session.commit()
 
-    message = f"account number: {account_number} - created historical system profiles"
+    message = "created historical system profiles"
     current_app.logger.audit(message, request=request, success=True)
 
     return profile
@@ -58,7 +58,7 @@ def get_hsps_by_inventory_id(inventory_id, account_number, org_id, limit, offset
     query = query.limit(limit).offset(offset)
     query_results = query.all()
 
-    message = f"account number: {account_number} - read historical system profiles"
+    message = "read historical system profiles"
     current_app.logger.audit(message, request=request, success=True)
 
     return query_results
@@ -86,7 +86,7 @@ def is_profile_recorded(captured_date, inventory_id, account_number, org_id):
             HistoricalSystemProfile.captured_on == captured_date,
         )
 
-    message = f"account number: {account_number} - read historical system profiles"
+    message = "read historical system profiles"
     current_app.logger.audit(message, request=request)
     if query.first():
         return True
@@ -101,7 +101,7 @@ def delete_hsps_by_inventory_id(inventory_id):
     query.delete(synchronize_session="fetch")
     db.session.commit()
 
-    message = f"inv id: {inventory_id} - deleted historical system profiles"
+    message = "deleted historical system profiles"
     current_app.logger.audit(message, request=request, success=True)
 
 
@@ -119,7 +119,7 @@ def get_hsps_by_profile_ids(profile_ids, account_number, org_id):
 
     query_results = query.all()
 
-    message = f"account number: {account_number} - read historical system profiles"
+    message = "read historical system profiles"
     current_app.logger.audit(message, request=request, success=True)
 
     return query_results
@@ -135,7 +135,7 @@ def clean_expired_records(days_til_expired):
 
     db.session.commit()
 
-    message = f"cleaned {count} expired historical system profiles"
+    message = "cleaned expired historical system profiles"
     current_app.logger.audit(message, request=request, success=True)
 
     return count

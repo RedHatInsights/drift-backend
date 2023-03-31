@@ -37,7 +37,7 @@ def _get_current_names_for_profiles(hsps):
             current_app.logger,
             _get_event_counters(),
         )
-        message = f"read systems - inv ids: {inventory_ids}"
+        message = "read systems"
         current_app.logger.audit(message, request=request, success=True)
     except RBACDenied as error:
         message = error.message
@@ -123,7 +123,7 @@ def get_hsps_by_ids(profile_ids):
     account_number = view_helpers.get_account_number(request)
     org_id = view_helpers.get_org_id(request)
 
-    message = f"account number: {account_number} - read historical system profiles"
+    message = "read historical system profiles"
     current_app.logger.audit(message, request=request)
 
     result = db_interface.get_hsps_by_profile_ids(profile_ids, account_number, org_id)
@@ -146,7 +146,7 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     account_number = view_helpers.get_account_number(request)
     org_id = view_helpers.get_org_id(request)
 
-    message = f"inv id: {inventory_id} - read historical system profiles"
+    message = "read historical system profiles"
     current_app.logger.audit(message, request=request)
 
     query_results = db_interface.get_hsps_by_inventory_id(
