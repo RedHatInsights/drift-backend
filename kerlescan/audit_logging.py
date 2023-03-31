@@ -3,6 +3,7 @@ import json
 import logging
 
 from kerlescan.service_interface import get_key_from_headers
+from kerlescan.view_helpers import get_org_id
 
 
 AUDIT_LEVEL_NAME = "AUDIT"
@@ -26,22 +27,28 @@ def audit(self, message, *args, **kws):
         request = kws.pop("request", None)
         success = kws.pop("success", None)
         audit_message = ""
+        identificator = ""
 
         if request:
             auth_key = get_key_from_headers(request.headers)
+            try:
+                identificator = f"org id: {get_org_id(request)} - "
+            except BaseException:
+                pass
+
             if auth_key:
                 identity = json.loads(base64.b64decode(auth_key)).get("identity", {})
                 username = identity.get("user", {}).get("username", None)
                 if username:
-                    audit_message = "user: " + username + " - "
+                    audit_message = f"user: {username} - "
 
         if success is not None:
             if success:
-                audit_message = audit_message + "success" + " - "
+                audit_message = f"{audit_message}success - "
             else:
-                audit_message = audit_message + "failure" + " - "
+                audit_message = f"{audit_message}failure - "
 
-        audit_message = audit_message + str(message)
+        audit_message = audit_message + identificator + str(message)
 
         self._log(AUDIT_LEVEL_NUM, audit_message, args, **kws)
 
