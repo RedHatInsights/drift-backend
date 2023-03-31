@@ -5,20 +5,20 @@ repos:
     hooks:
       - id: "black"
         name: "Format code (black)"
-        language_version: "python3.8"
+        language_version: "python3.9"
 
   - repo: "https://github.com/timothycrosley/isort"
     rev: 5.12.0
     hooks:
       - id: isort
-        language_version: "python3.8"
+        language_version: "python3.9"
         additional_dependencies: [toml]
 
   - repo: "https://github.com/pycqa/flake8"
     rev: 6.0.0
     hooks:
       - id: flake8
-        language_version: "python3.8"
+        language_version: "python3.9"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.4.0"
