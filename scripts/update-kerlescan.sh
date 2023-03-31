@@ -6,6 +6,7 @@ echo "Latest kerlescan tag is $TAG"
 
 echo "Installing kerlescan $TAG"
 poetry add git+https://github.com/RedHatInsights/kerlescan.git#$TAG --editable
+poetry lock --no-update
 echo "Kerlescan $TAG installed"
 
 echo "Creating manifest"
