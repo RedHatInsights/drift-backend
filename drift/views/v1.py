@@ -1,6 +1,7 @@
-import concurrent.futures
 import csv
 import io
+
+import concurrent.futures
 
 from http import HTTPStatus
 
@@ -14,7 +15,7 @@ from kerlescan.inventory_service_interface import (
 )
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.unleash import UNLEASH
-from kerlescan.view_helpers import get_account_number, validate_uuids
+from kerlescan.view_helpers import validate_uuids
 
 from drift import app_config, info_parser, metrics
 from drift.baseline_service_interface import fetch_baselines
@@ -101,9 +102,8 @@ def _csvify(comparisons):
                 row = _populate_row(comparison, indent=True)
                 csvwriter.writerow(row)
 
-    acc_number = get_account_number(request)
     result = output.getvalue()
-    message = f"acc number: {acc_number} - CSV written out"
+    message = "CSV written out"
     current_app.logger.audit(message, request=request, success=True)
     output.close()
     return result
@@ -198,7 +198,6 @@ def comparison_report(
             HTTPStatus.BAD_REQUEST,
             message=message,
         )
-    acc_number = get_account_number(request)
 
     with PT_CR_VALIDATE_UUID.time():
         if system_ids:
@@ -210,7 +209,7 @@ def comparison_report(
         if reference_id:
             validate_uuids([reference_id])
             if reference_id not in (system_ids + baseline_ids + historical_sys_profile_ids):
-                message = f"acc number: {acc_number} - ref id {reference_id} does not match any ids from query"  # noqa: E501
+                message = "reference id %s does not match any ids from query" % reference_id
                 current_app.logger.audit(
                     str(HTTPStatus.BAD_REQUEST) + " " + message,
                     request=request,
@@ -225,7 +224,7 @@ def comparison_report(
         with timer.time():
             with app.app_context():
                 # can raise RBACDenied exception
-                message = f"acc number: {acc_number} - reading systems with profiles {system_ids}"
+                message = "reading systems with profiles"
                 current_app.logger.audit(message, request=request)
                 systems_with_profiles = fetch_systems_with_profiles(
                     system_ids, auth_key, current_app.logger, counters
@@ -236,7 +235,7 @@ def comparison_report(
         with timer.time():
             with app.app_context():
                 # can raise RBACDenied exception
-                message = f"acc number: {acc_number} - reading baselines {baseline_ids}"
+                message = "reading baselines"
                 current_app.logger.audit(message, request=request)
                 baseline_results = fetch_baselines(baseline_ids, auth_key, logger)
                 ensure_correct_system_count(baseline_ids, baseline_results)
@@ -248,7 +247,7 @@ def comparison_report(
         with timer.time():
             with app.app_context():
                 # can raise RBACDenied exception
-                message = f"acc number: {acc_number} - reading historical system profiles {historical_sys_profile_ids}"  # noqa: E501
+                message = "reading historical system profiles"
                 current_app.logger.audit(message, request=request)
                 hsp_results = fetch_historical_sys_profiles(
                     historical_sys_profile_ids,
@@ -361,13 +360,12 @@ def comparison_report_get():
     reference_id = request.args.get("reference_id", None)
     auth_key = get_key_from_headers(request.headers)
     short_circuit = request.args.get("short_circuit", False)
-    acc_number = get_account_number(request)
 
     data_format = "json"
     if "text/csv" in request.headers.get("accept", []):
         data_format = "csv"
 
-    message = f"acc number: {acc_number} - reading comparison report"
+    message = "reading comparison report"
     current_app.logger.audit(message, request=request)
     return comparison_report(
         system_ids=system_ids,
@@ -393,13 +391,12 @@ def comparison_report_post():
     short_circuit = request.args.get("short_circuit", False)
 
     auth_key = get_key_from_headers(request.headers)
-    acc_number = get_account_number(request)
 
     data_format = "json"
     if "text/csv" in request.headers["accept"]:
         data_format = "csv"
 
-    message = f"acc number: {acc_number} - reading comparison report"
+    message = "reading comparison report"
     current_app.logger.audit(message, request=request)
     return comparison_report(
         system_ids=system_ids,
