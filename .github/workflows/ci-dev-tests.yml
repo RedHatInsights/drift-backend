@@ -1,0 +1,41 @@
+name: CI Dev Tests
+on:
+  push:
+    branches: [ 'master' ]
+  pull_request:
+    branches: [ 'master' ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Check manifest
+        run: ./scripts/check-manifest.sh
+      - name: Install poetry
+        run: pipx install poetry~=1.4.0
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --with dev --verbose
+      - name: Lint with flake8
+        run: poetry run flake8
+      - name: Lint with black
+        run: poetry run black . --check -t py39
+      - name: Lint OpenAPI mgmt_api Spec
+        run: poetry run yamllint drift/openapi/mgmt_api.spec.yaml
+      - name: Lint OpenAPI mgmt_api Spec
+        run: poetry run yamllint drift/openapi/api.spec.yaml
+      - name: Run unit tests
+        run: poetry run ./run_unit_tests.sh
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
