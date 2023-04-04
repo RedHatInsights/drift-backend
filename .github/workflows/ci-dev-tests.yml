@@ -57,6 +57,15 @@ jobs:
         run: poetry run openapi-spec-validator system_baseline/openapi/internal_api.spec.yaml
       - name: Run unit tests
         run: poetry run ./run_unit_tests.sh
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Downloads openapi-generator-cli
+        run: wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
+      - name: Validate OpenAPI api spec using openapi-generator-cli
+        run:  java -jar openapi-generator-cli-4.1.1.jar validate -i system_baseline/openapi/api.spec.yaml
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v3
         with:
