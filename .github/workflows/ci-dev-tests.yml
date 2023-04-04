@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Check manifest
-        run: ./scripts/check-manifest.sh
       - name: Install poetry
         run: pipx install poetry~=1.4.0
       - name: Set up Python 3.9
@@ -25,6 +23,8 @@ jobs:
           cache: 'poetry'
       - name: Install dependencies
         run: poetry install --with dev --verbose
+      - name: Check manifest
+        run: poetry run ./scripts/check-manifest.sh
       - name: Lint with flake8
         run: poetry run flake8
       - name: Lint with black
