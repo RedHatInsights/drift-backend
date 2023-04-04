@@ -1,0 +1,63 @@
+name: CI Dev Tests
+on:
+  push:
+    branches: [ 'master' ]
+  pull_request:
+    branches: [ 'master' ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: insights
+          POSTGRES_USER: insights
+          POSTGRES_DB: baselinedb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry~=1.4.0
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --with dev --verbose
+      - name: Check manifest
+        run: poetry run ./scripts/check-manifest.sh
+      - name: Lint with flake8
+        run: poetry run flake8
+      - name: Lint with black
+        run: poetry run black . --check -t py39
+      - name: Lint OpenAPI mgmt_api Spec
+        run: poetry run yamllint system_baseline/openapi/mgmt_api.spec.yaml
+      - name: Lint OpenAPI api Spec
+        run: poetry run yamllint system_baseline/openapi/api.spec.yaml
+      - name: Lint OpenAPI internal_api Spec
+        run: poetry run yamllint system_baseline/openapi/internal_api.spec.yaml
+      - name: Validate OpenAPI mgmt_api Spec
+        run: poetry run openapi-spec-validator system_baseline/openapi/mgmt_api.spec.yaml
+      - name: Validate OpenAPI api Spec
+        run: poetry run openapi-spec-validator system_baseline/openapi/api.spec.yaml
+      - name: Validate OpenAPI internal_api Spec
+        run: poetry run openapi-spec-validator system_baseline/openapi/internal_api.spec.yaml
+      - name: Run unit tests
+        run: poetry run ./run_unit_tests.sh
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
