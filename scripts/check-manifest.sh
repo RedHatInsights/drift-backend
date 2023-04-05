@@ -1,6 +1,8 @@
 #!/bin/bash
 
-./scripts/create-manifest.py
+if ! ./scripts/create-manifest.py; then
+    exit 1
+fi
 
 changed=`git diff --name-only HEAD`
 
