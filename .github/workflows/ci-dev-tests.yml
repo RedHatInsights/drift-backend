@@ -1,0 +1,68 @@
+name: CI Dev Tests
+on:
+  push:
+    branches: [ 'master' ]
+  pull_request:
+    branches: [ 'master' ]
+
+permissions:
+  contents: read
+
+jobs:
+  ci-dev-tests:
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: insights
+          POSTGRES_USER: insights
+          POSTGRES_DB: insights
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry~=1.4.0
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --with dev --verbose
+      - name: Check manifest
+        run: poetry run ./scripts/check-manifest.sh
+      - name: Lint with flake8
+        run: poetry run flake8
+      - name: Lint with black
+        run: poetry run black . --check -t py39
+      - name: Lint OpenAPI mgmt_api Spec
+        run: poetry run yamllint historical_system_profiles/openapi/mgmt_api.spec.yaml
+      - name: Lint OpenAPI api Spec
+        run: poetry run yamllint historical_system_profiles/openapi/api.spec.yaml
+      - name: Validate OpenAPI mgmt_api Spec
+        run: poetry run openapi-spec-validator historical_system_profiles/openapi/mgmt_api.spec.yaml
+      - name: Validate OpenAPI api Spec
+        run: poetry run openapi-spec-validator historical_system_profiles/openapi/api.spec.yaml
+      - name: Run unit tests
+        run: poetry run ./run_unit_tests.sh
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Downloads openapi-generator-cli
+        run: wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.1.1/openapi-generator-cli-4.1.1.jar
+      - name: Validate OpenAPI api spec using openapi-generator-cli
+        run:  java -jar openapi-generator-cli-4.1.1.jar validate -i historical_system_profiles/openapi/api.spec.yaml
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
