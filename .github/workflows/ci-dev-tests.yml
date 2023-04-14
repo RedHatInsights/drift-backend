@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   ci-dev-tests:
+    name: CI Developers' tests
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' # don't run on dependabot's actions directly
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
