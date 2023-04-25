@@ -26,8 +26,8 @@ if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; th
         for TAG in "latest" "qa"; do
             docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
             docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
+        done
     fi
-    done
 else
     # on RHEL8 or anything else, use podman
     AUTH_CONF_DIR="$(pwd)/.podman"
@@ -45,6 +45,6 @@ else
         for TAG in "latest" "qa"; do
             podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
             podman push "${IMAGE_NAME}:$TAG"
+        done
     fi
-    done
 fi
