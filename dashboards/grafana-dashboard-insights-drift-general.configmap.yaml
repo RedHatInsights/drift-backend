@@ -120,7 +120,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -200,7 +200,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -280,7 +280,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -360,7 +360,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -440,7 +440,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -520,7 +520,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -600,7 +600,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -680,7 +680,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -759,7 +759,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -839,7 +839,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -919,7 +919,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -999,7 +999,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -1079,7 +1079,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -1159,7 +1159,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -1239,7 +1239,7 @@ data:
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
@@ -1328,7 +1328,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1453,7 +1453,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1580,7 +1580,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1672,7 +1672,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1764,7 +1764,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1817,96 +1817,97 @@ data:
           }
         },
         {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
           "datasource": {
+            "type": "prometheus",
             "uid": "$datasource"
           },
           "fieldConfig": {
             "defaults": {
-              "links": []
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
             },
             "overrides": []
           },
-          "fill": 1,
-          "fillGradient": 0,
           "gridPos": {
             "h": 6,
             "w": 12,
             "x": 12,
             "y": 20
           },
-          "hiddenSeries": false,
           "id": 4,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
           "links": [],
-          "nullPointMode": "null",
           "options": {
-            "alertThreshold": true
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
           },
-          "percentage": false,
-          "pluginVersion": "9.4.3",
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
+          "pluginVersion": "9.3.8",
           "targets": [
             {
               "datasource": {
                 "uid": "$datasource"
               },
-              "expr": "sum(container_memory_usage_bytes{namespace=~\"drift-.*\"}) by (container) / sum(kube_pod_container_resource_limits_memory_bytes{namespace=~\"drift-.*\"}) by (container)",
+              "editorMode": "code",
+              "expr": "avg(container_memory_usage_bytes{namespace=~\"drift-.+|system-baseline-.+|historical-system-profiles-.+\",container=~\"drift-.+|system-baseline-.+|historical-system-profiles-.+\"}) by (container)",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{container}}",
+              "range": true,
               "refId": "A"
             }
           ],
-          "thresholds": [],
-          "timeRegions": [],
           "title": "Memory consumed",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percentunit",
-              "logBase": 1,
-              "max": "1",
-              "show": true
-            },
-            {
-              "format": "short",
-              "logBase": 1,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
+          "type": "timeseries"
         },
         {
           "aliasColors": {
@@ -1955,7 +1956,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2086,7 +2087,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2184,7 +2185,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2287,7 +2288,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2442,7 +2443,7 @@ data:
               "unit": "none"
             }
           },
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "reverseYBuckets": false,
           "targets": [
             {
@@ -2513,7 +2514,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "9.4.3",
+          "pluginVersion": "9.3.8",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -3063,8 +3064,7 @@ data:
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3449,7 +3449,7 @@ data:
       ],
       "refresh": false,
       "revision": 1,
-      "schemaVersion": 38,
+      "schemaVersion": 37,
       "style": "dark",
       "tags": [],
       "templating": {
@@ -3597,7 +3597,7 @@ data:
       "timezone": "utc",
       "title": "Drift",
       "uid": "ZommNF-Wk",
-      "version": 2,
+      "version": 3,
       "weekStart": ""
     }
 kind: ConfigMap
