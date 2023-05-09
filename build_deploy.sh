@@ -4,6 +4,7 @@ set -exv
 
 IMAGE_NAME="quay.io/cloudservices/drift-backend"
 IMAGE_TAG=$(git rev-parse --short=7 HEAD)
+SECURITY_COMPLIANCE_TAG="sc-$(date +%Y%m%d)"
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     echo "QUAY_USER and QUAY_TOKEN must be set"
@@ -20,8 +21,8 @@ if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; th
     docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:${IMAGE_TAG}"
 
     if [[ $GIT_BRANCH == *"security-compliance"* ]]; then
-        docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:security-compliance"
-        docker --config="$DOCKER_CONF" push "${IMAGE}:security-compliance"
+        docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
+        docker --config="$DOCKER_CONF" push "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
     else
         for TAG in "latest" "qa"; do
             docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
@@ -39,8 +40,8 @@ else
     podman push "${IMAGE_NAME}:${IMAGE_TAG}"
 
     if [[ $GIT_BRANCH == *"security-compliance"* ]]; then
-        podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:security-compliance"
-        podman push "${IMAGE_NAME}:security-compliance"
+        podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:${SECURITY_COMPLIANCE_TAG}"
+        podman push "${IMAGE_NAME}:${SECURITY_COMPLIANCE_TAG}"
     else
         for TAG in "latest" "qa"; do
             podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
