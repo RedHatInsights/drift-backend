@@ -31,9 +31,6 @@ jobs:
         cache: 'poetry'
     - name: Install dependencies
       run: poetry install --with dev --verbose
-    - run: mkdir ./dependabot-pr
-    - name: Save branch ref
-      run: echo ${{ github.ref }} | sed 's/refs\/heads\///' > ./dependabot-pr/BRANCH_REF
     - name: Generate manifest
       run: poetry run ./scripts/create-manifest.py
     - name: Configure git
