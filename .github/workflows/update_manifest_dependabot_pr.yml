@@ -1,0 +1,51 @@
+# modified from https://github.com/dependabot/dependabot-actions-workflow
+
+# This workflow runs with a READ-ONLY GITHUB_TOKEN
+# https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions/
+
+# The completion of this workflow triggers the `Update Manifest for Dependabot PR`
+# workflow which has a read-write GITHUB_TOKEN, extracting the changes to
+# license files and pushing these to back to the Dependabot PR branch.
+
+name: Update Manifest for Dependabot PR
+on:
+  push:
+    branches:
+      - "dependabot/pip**"
+
+jobs:
+  build:
+    name: Update Manifest
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' # run only on dependabot's actions (excludes this to trigger another time)
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the push triggers other workflows
+    - name: Install poetry
+      run: pipx install poetry~=1.4.0
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install --with dev --verbose
+    - name: Generate manifest
+      run: poetry run ./scripts/create-manifest.py
+    - name: Configure git
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+    # NOTE: Prefixing/appending commit messages with `[dependabot skip]` allows
+    # dependabot to rebase/update the pull request, force-pushing over any changes
+    - name: Commit changes
+      run: |
+        if [[ $(git status | grep 'manifest') ]]; then
+          git add *-manifest
+          git commit -m "[dependabot skip] Update manifest"
+        else
+          echo "Manifest as not changed"
+        fi
+    - name: Push changes
+      run: git push
