@@ -18,7 +18,8 @@ COPY . ${APP_ROOT}/src
 
 WORKDIR ${APP_ROOT}/src
 
-RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
+RUN microdnf update -y && \
+    microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
     git-core python39 python39-pip tzdata libpq-devel && \
     rpm -qa | sort > packages-before-devel-install.txt && \
     microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
