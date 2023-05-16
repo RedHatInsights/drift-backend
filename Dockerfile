@@ -18,7 +18,8 @@ COPY . ${APP_ROOT}/src
 
 WORKDIR ${APP_ROOT}/src
 
-RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
+RUN microdnf update -y && \
+    microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
     git-core python39 python39-pip tzdata libpq-devel && \
     rpm -qa | sort > packages-before-devel-install.txt && \
     microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
@@ -31,8 +32,8 @@ RUN pip3 install --upgrade pip && \
 # allows unit tests to run successfully within the container if image is built in "test" environment
 RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
 
-#RUN microdnf remove -y $( comm -13 packages-before-devel-install.txt packages-after-devel-install.txt ) && \
-#    rm packages-before-devel-install.txt packages-after-devel-install.txt && \
-#    microdnf clean all
+RUN microdnf remove -y $( comm -13 packages-before-devel-install.txt packages-after-devel-install.txt ) && \
+    rm packages-before-devel-install.txt packages-after-devel-install.txt && \
+    microdnf clean all
 
 CMD poetry run ./run_app.sh
