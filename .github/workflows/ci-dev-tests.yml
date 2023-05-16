@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   ci-dev-tests:
+    name: CI Developers' tests
+    if: github.actor != 'dependabot[bot]' # don't run on dependabot's actions directly
     services:
       postgres:
         image: postgres
