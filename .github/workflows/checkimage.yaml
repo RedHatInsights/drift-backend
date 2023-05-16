@@ -28,3 +28,4 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: 'chore(image): update base image'
+          token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the creation of PR triggers other workflows
