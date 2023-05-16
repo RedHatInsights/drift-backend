@@ -98,5 +98,5 @@ services-drift:drift/python:3.8=urllib3:1.26.14
 services-drift:drift/python:3.8=watchtower:3.0.1
 services-drift:drift/python:3.8=wcwidth:0.2.6
 services-drift:drift/python:3.8=werkzeug:2.2.3
-services-drift:drift/python:3.8=yamllint:1.29.0
+services-drift:drift/python:3.8=yamllint:1.31.0
 services-drift:drift/python:3.8=zipp:3.15.0
