@@ -134,5 +134,5 @@ services-drift:system_baseline/python:3.8=wcwidth:0.2.6
 services-drift:system_baseline/python:3.8=webencodings:0.5.1
 services-drift:system_baseline/python:3.8=werkzeug:1.0.1
 services-drift:system_baseline/python:3.8=wheel:0.38.4
-services-drift:system_baseline/python:3.8=yamllint:1.26.0
+services-drift:system_baseline/python:3.8=yamllint:1.31.0
 services-drift:system_baseline/python:3.8=zipp:3.15.0
