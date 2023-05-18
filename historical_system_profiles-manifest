@@ -1,4 +1,4 @@
-services-drift:historical_system_profiles/python:3.8=alembic:1.10.2
+services-drift:historical_system_profiles/python:3.8=alembic:1.11.1
 services-drift:historical_system_profiles/python:3.8=app-common-python:0.2.5
 services-drift:historical_system_profiles/python:3.8=appdirs:1.4.4
 services-drift:historical_system_profiles/python:3.8=appnope:0.1.3
