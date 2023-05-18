@@ -38,12 +38,12 @@ with open("historical_system_profiles-manifest", "w") as manifest:
         if "version" in package:
             version = package["version"].replace("=", "")
             manifest.write(
-                "services-drift:historical_system_profiles/python:3.8=%s:%s\n" % (name, version)
+                "services-drift:historical_system_profiles/python:3.9=%s:%s\n" % (name, version)
             )
         elif "resolved_reference" in package["source"]:
             ref = package["source"]["resolved_reference"]
             manifest.write(
-                "services-drift:historical_system_profiles/python:3.8=%s:%s\n" % (name, ref)
+                "services-drift:historical_system_profiles/python:3.9=%s:%s\n" % (name, ref)
             )
         else:
             raise f"unable to parse {package}"
