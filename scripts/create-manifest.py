@@ -33,9 +33,9 @@ with open("system_baseline-manifest", "w") as manifest:
         name = package["name"]
         if "version" in package:
             version = package["version"].replace("=", "")
-            manifest.write("services-drift:system_baseline/python:3.8=%s:%s\n" % (name, version))
+            manifest.write("services-drift:system_baseline/python:3.9=%s:%s\n" % (name, version))
         elif "resolved_reference" in package["source"]:
             ref = package["source"]["resolved_reference"]
-            manifest.write("services-drift:system_baseline/python:3.8=%s:%s\n" % (name, ref))
+            manifest.write("services-drift:system_baseline/python:3.9=%s:%s\n" % (name, ref))
         else:
             raise f"unable to parse {package}"
