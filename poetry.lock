@@ -1732,19 +1732,22 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "podman-compose"
-version = "1.0.3"
+version = "1.0.6"
 description = "A script to run docker-compose.yml using podman"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "podman-compose-1.0.3.tar.gz", hash = "sha256:9c9fe8249136e45257662272ade33760613e2d9ca6153269e1e970400ea14675"},
-    {file = "podman_compose-1.0.3-py2.py3-none-any.whl", hash = "sha256:aef75947d2416a5c218cca0b88bdf86cc2be890f41f77aa3146493a3d0510180"},
+    {file = "podman-compose-1.0.6.tar.gz", hash = "sha256:2db235049fca50a5a4ffd511a917808c960dacb8defd5481dd8b36a77d4da2e5"},
+    {file = "podman_compose-1.0.6-py2.py3-none-any.whl", hash = "sha256:48c92e6cdac1732422c6cfa803d8a905a61be4119dc0d41f9ed42c66826e9a78"},
 ]
 
 [package.dependencies]
 python-dotenv = "*"
 pyyaml = "*"
+
+[package.extras]
+devel = ["black", "flake8", "pre-commit", "pylint"]
 
 [[package]]
 name = "prometheus-client"
