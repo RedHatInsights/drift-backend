@@ -54,7 +54,7 @@ class BadUUIDTests(ApiTest):
 class InvalidFactsTests(ApiTest):
     def test_large_facts(self):
         large_factset = []
-        for i in range(2 ** 15):  # 32K
+        for i in range(2**15):  # 32K
             large_factset.append({"name": str(i), "value": "lorem ipsum"})
 
         large_baseline = {

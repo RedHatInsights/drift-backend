@@ -1,7 +1,7 @@
 from system_baseline.exceptions import FactValidationError
 
 
-FACTS_MAXSIZE = 2 ** 20  # 1 MB
+FACTS_MAXSIZE = 2**20  # 1 MB
 
 
 def check_for_duplicate_names(facts):

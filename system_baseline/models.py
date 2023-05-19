@@ -13,7 +13,7 @@ from system_baseline import validators
 
 db = SQLAlchemy()
 
-FACTS_MAXSIZE = 2 ** 19  # 512KB
+FACTS_MAXSIZE = 2**19  # 512KB
 
 
 class SystemBaseline(db.Model):

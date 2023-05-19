@@ -29,7 +29,7 @@ from system_baseline.version import app_version
 
 section = Blueprint("v1", __name__)
 
-FACTS_MAXSIZE = 2 ** 19  # 512KB
+FACTS_MAXSIZE = 2**19  # 512KB
 
 
 def _get_total_available_baselines():
