@@ -1911,18 +1911,18 @@ test = ["pytest (>=4.3)", "pytest-mock (>=3.3)"]
 
 [[package]]
 name = "unleashclient"
-version = "5.5.0"
+version = "5.6.0"
 description = "Python client for the Unleash feature toggle system!"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "UnleashClient-5.5.0-py3-none-any.whl", hash = "sha256:409b981314dca8e7d0a329787bfec6c82d441ef5b4d44c93d0c88e14b15de841"},
-    {file = "UnleashClient-5.5.0.tar.gz", hash = "sha256:7662e338d95e457ca6e536fab9f2f7c500cf6c7289476f935b4d63df869a7785"},
+    {file = "UnleashClient-5.6.0-py3-none-any.whl", hash = "sha256:6c7236344bf4a09afc403765c94320e9eccfabfff4810b73af905cd995897ea0"},
+    {file = "UnleashClient-5.6.0.tar.gz", hash = "sha256:d0bf5137291c814ad97492c46cb0eb458d6cf766e142e7ddf227c6c0084e75c7"},
 ]
 
 [package.dependencies]
-apscheduler = "*"
+apscheduler = "<4.0.0"
 fcache = "*"
 importlib-metadata = "*"
 mmhash3 = "*"
