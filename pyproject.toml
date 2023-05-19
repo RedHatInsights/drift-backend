@@ -47,14 +47,14 @@ packages = []
 
 [tool.poetry.dependencies]
 python = "^3.9"
-connexion = {extras = ["swagger-ui"], version = "==2.5.1"}
-Flask = "==1.1.4"
+connexion = {extras = ["swagger-ui"], version = "*"}
+Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
 boto3 = "*"
 watchtower = "*"
 flask-sqlalchemy = "*"
-sqlalchemy = "<2"
+sqlalchemy = "*"
 alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
@@ -64,19 +64,18 @@ insights-core = "*"
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.102", develop = true}
 app-common-python = "*"
 unleashclient = "*"
-jsonschema = "==3.2.0"
-markupsafe = "==2.0.1"
+jsonschema = "*"
+markupsafe = "*"
 psycopg2 = "*"
 
 
 [tool.poetry.group.dev.dependencies]
-openapi-spec-validator = "*"
 coverage = "*"
 flake8 = "*"
 mock = "*"
 responses = "*"
-yamllint = "==1.31.0"
-black = "==21.6b0"
+yamllint = "*"
+black = "*"
 ipdb = "*"
 python-semantic-release = "*"
 pytest = "*"
@@ -85,6 +84,7 @@ pytest-flask = "*"
 pytest-black = "*"
 pytest-mock = "*"
 toml = "*"
+openapi-spec-validator = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
