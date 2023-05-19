@@ -106,5 +106,5 @@ services-drift:historical_system_profiles/python:3.9=urllib3:1.26.14
 services-drift:historical_system_profiles/python:3.9=watchtower:3.0.1
 services-drift:historical_system_profiles/python:3.9=wcwidth:0.2.6
 services-drift:historical_system_profiles/python:3.9=werkzeug:2.2.3
-services-drift:historical_system_profiles/python:3.9=yamllint:1.29.0
+services-drift:historical_system_profiles/python:3.9=yamllint:1.31.0
 services-drift:historical_system_profiles/python:3.9=zipp:3.15.0
