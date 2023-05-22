@@ -43,6 +43,9 @@ class DbModelTest(unittest.TestCase):
         db.drop_all()
         db.create_all()
 
+    def tearDown(self):
+        db.session.remove()
+
     def _create_app(self):
         app = Flask(__name__)
         # set up DB
