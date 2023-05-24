@@ -96,9 +96,11 @@ def ensure_account_number(**kwargs):
     request = kwargs["request"]
     logger = kwargs["logger"]
 
-    if _is_mgmt_url(request.path) or check_request_from_turnpike(
-        request=request, logger=logger
-    ):  # TODO: pass in app_name for openapi url check
+    if (
+        _is_mgmt_url(request.path)
+        or check_request_from_turnpike(request=request, logger=logger)
+        or _is_openapi_url(request.path, kwargs["app_name"])
+    ):
         return  # allow request
 
     auth_key = get_key_from_headers(request.headers)
@@ -118,9 +120,11 @@ def ensure_org_id(**kwargs):
     request = kwargs["request"]
     logger = kwargs["logger"]
 
-    if _is_mgmt_url(request.path) or check_request_from_turnpike(
-        request=request, logger=logger
-    ):  # TODO: pass in app_name for openapi url check
+    if (
+        _is_mgmt_url(request.path)
+        or check_request_from_turnpike(request=request, logger=logger)
+        or _is_openapi_url(request.path, kwargs["app_name"])
+    ):
         return  # allow request
 
     auth_key = get_key_from_headers(request.headers)
