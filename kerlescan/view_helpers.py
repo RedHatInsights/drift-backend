@@ -55,6 +55,7 @@ def check_request_from_drift_service(**kwargs):
     This method check if the request comes from our drift service.
     """
     request = kwargs["request"]
+    logger = kwargs["logger"]
     auth_key = get_key_from_headers(request.headers)
 
     if auth_key is None:
@@ -65,7 +66,7 @@ def check_request_from_drift_service(**kwargs):
     if identity_type == "System":
         request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
         if request_shared_secret and request_shared_secret == drift_shared_secret:
-            kwargs["logger"].audit("shared-secret found, auth/entitlement authorized")
+            logger.audit("shared-secret found, auth/entitlement authorized")
             return True  # shared secret set and is correct
 
     return False
@@ -77,6 +78,7 @@ def check_request_from_turnpike(**kwargs):
     This method check if the request comes from Turnpike
     """
     request = kwargs["request"]
+    logger = kwargs["logger"]
     auth_key = get_key_from_headers(request.headers)
 
     if auth_key is None:
@@ -86,7 +88,7 @@ def check_request_from_turnpike(**kwargs):
     identity_type = auth.get("identity", {}).get("type", None)
 
     if identity_type == "Associate":
-        kwargs["logger"].audit("Associate account/org found, auth/entitlement authorized")
+        logger.audit("Associate account/org found, auth/entitlement authorized")
         return True
 
     return False
@@ -95,11 +97,12 @@ def check_request_from_turnpike(**kwargs):
 def ensure_account_number(**kwargs):
     request = kwargs["request"]
     logger = kwargs["logger"]
+    app_name = kwargs["app_name"]
 
     if (
         _is_mgmt_url(request.path)
         or check_request_from_turnpike(request=request, logger=logger)
-        or _is_openapi_url(request.path, kwargs["app_name"])
+        or _is_openapi_url(request.path, app_name)
     ):
         return  # allow request
 
@@ -119,11 +122,12 @@ def ensure_account_number(**kwargs):
 def ensure_org_id(**kwargs):
     request = kwargs["request"]
     logger = kwargs["logger"]
+    app_name = kwargs["app_name"]
 
     if (
         _is_mgmt_url(request.path)
         or check_request_from_turnpike(request=request, logger=logger)
-        or _is_openapi_url(request.path, kwargs["app_name"])
+        or _is_openapi_url(request.path, app_name)
     ):
         return  # allow request
 
@@ -147,11 +151,12 @@ def ensure_has_permission(**kwargs):
     """
     request = kwargs["request"]
     logger = kwargs["logger"]
+    app_name = kwargs["app_name"]
 
     if not enable_rbac:
         return
 
-    if _is_mgmt_url(request.path) or _is_openapi_url(request.path, kwargs["app_name"]):
+    if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
         return  # allow request
 
     auth_key = get_key_from_headers(request.headers)
@@ -168,7 +173,7 @@ def ensure_has_permission(**kwargs):
         perms = get_perms(
             kwargs["application"],
             auth_key,
-            kwargs["logger"],
+            logger,
             kwargs["request_metric"],
             kwargs["exception_metric"],
         )
