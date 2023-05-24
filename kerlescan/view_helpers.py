@@ -92,7 +92,10 @@ def check_request_from_turnpike(**kwargs):
     return False
 
 
-def ensure_account_number(request, logger):
+def ensure_account_number(**kwargs):
+    request = kwargs["request"]
+    logger = kwargs["logger"]
+
     if _is_mgmt_url(request.path) or check_request_from_turnpike(
         request=request, logger=logger
     ):  # TODO: pass in app_name for openapi url check
@@ -111,7 +114,10 @@ def ensure_account_number(request, logger):
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
 
 
-def ensure_org_id(request, logger):
+def ensure_org_id(**kwargs):
+    request = kwargs["request"]
+    logger = kwargs["logger"]
+
     if _is_mgmt_url(request.path) or check_request_from_turnpike(
         request=request, logger=logger
     ):  # TODO: pass in app_name for openapi url check
@@ -193,11 +199,14 @@ def ensure_has_permission(**kwargs):
         raise HTTPError(HTTPStatus.REQUEST_TIMEOUT, message="Request to RBAC timed out")
 
 
-def ensure_entitled(request, app_name, logger):
+def ensure_entitled(**kwargs):
     """
     check if the request is entitled. We run this on all requests and bail out
     if the URL is whitelisted. Returning 'None' allows the request to go through.
     """
+    request = kwargs["request"]
+    logger = kwargs["logger"]
+    app_name = kwargs["app_name"]
 
     entitlement_key = "insights"
     if enable_smart_mgmt_check:
@@ -229,7 +238,10 @@ def ensure_entitled(request, app_name, logger):
     raise HTTPError(HTTPStatus.BAD_REQUEST, message="Entitlement not found for account/org.")
 
 
-def log_username(logger, request):
+def log_username(**kwargs):
+    request = kwargs["request"]
+    logger = kwargs["logger"]
+
     if logger.level == logging.DEBUG:
         auth_key = get_key_from_headers(request.headers)
         if auth_key:
