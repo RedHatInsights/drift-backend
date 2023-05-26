@@ -26,7 +26,7 @@ RUN microdnf update -y && \
     rpm -qa | sort > packages-after-devel-install.txt
 
 RUN pip3 install --upgrade pip setuptools wheel && \
-    pip3 install --force-reinstall poetry~=1.4.0 && \
+    pip3 install --force-reinstall poetry~=1.5.0 && \
     poetry install --sync
 
 # allows unit tests to run successfully within the container if image is built in "test" environment
