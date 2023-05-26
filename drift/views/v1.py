@@ -1,7 +1,6 @@
+import concurrent.futures
 import csv
 import io
-
-import concurrent.futures
 
 from http import HTTPStatus
 
@@ -413,14 +412,16 @@ def comparison_report_post():
 def log_username():
     message = "logging username"
     current_app.logger.audit(message, request=request)
-    view_helpers.log_username(current_app.logger, request)
+    view_helpers.log_username(logger=current_app.logger, request=request)
 
 
 @section.before_app_request
 def ensure_entitled():
     message = "Ensuring entitlement"
     current_app.logger.audit(message, request=request)
-    return view_helpers.ensure_entitled(request, app_config.get_app_name(), current_app.logger)
+    return view_helpers.ensure_entitled(
+        request=request, app_name=app_config.get_app_name(), logger=current_app.logger
+    )
 
 
 @section.before_app_request
@@ -448,4 +449,6 @@ def ensure_rbac_comparisons_read():
 def ensure_org_id():
     message = "Validating org_id"
     current_app.logger.audit(message, request=request)
-    return view_helpers.ensure_org_id(request, current_app.logger)
+    return view_helpers.ensure_org_id(
+        request=request, app_name=app_config.get_app_name(), logger=current_app.logger
+    )
