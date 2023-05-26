@@ -47,7 +47,7 @@ packages = []
 [tool.poetry.dependencies]
 python = "^3.9"
 connexion = {extras = ["swagger-ui"], version = "*"}
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.102", develop = true}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.103", develop = true}
 prometheus-client = "*"
 watchtower = "*"
 flake8 = "*"

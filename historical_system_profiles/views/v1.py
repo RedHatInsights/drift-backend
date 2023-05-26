@@ -11,7 +11,7 @@ from kerlescan.inventory_service_interface import fetch_systems_with_profiles
 from kerlescan.service_interface import get_key_from_headers
 from kerlescan.view_helpers import validate_uuids
 
-from historical_system_profiles import config, db_interface, metrics
+from historical_system_profiles import app_config, config, db_interface, metrics
 
 
 section = Blueprint("v1", __name__)
@@ -184,7 +184,9 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
 
 @section.before_app_request
 def ensure_org_id():
-    return view_helpers.ensure_org_id(request, current_app.logger)
+    return view_helpers.ensure_org_id(
+        request=request, app_name=app_config.get_app_name(), logger=current_app.logger
+    )
 
 
 @section.before_app_request
