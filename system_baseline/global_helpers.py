@@ -9,19 +9,23 @@ global_helpers_bp = Blueprint("global_helpers", __name__)
 
 @global_helpers_bp.before_app_request
 def log_username():
-    view_helpers.log_username(current_app.logger, request)
+    view_helpers.log_username(logger=current_app.logger, request=request)
     message = "logged username"
     current_app.logger.audit(message, request=request)
 
 
 @global_helpers_bp.before_app_request
 def ensure_entitled():
-    return view_helpers.ensure_entitled(request, app_config.get_app_name(), current_app.logger)
+    return view_helpers.ensure_entitled(
+        request=request, app_name=app_config.get_app_name(), logger=current_app.logger
+    )
 
 
 @global_helpers_bp.before_app_request
 def ensure_org_id():
-    return view_helpers.ensure_org_id(request, current_app.logger)
+    return view_helpers.ensure_org_id(
+        request=request, app_name=app_config.get_app_name(), logger=current_app.logger
+    )
 
 
 @global_helpers_bp.before_app_request
