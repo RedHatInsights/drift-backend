@@ -26,9 +26,12 @@ def _update_baseline_counts():
     message = "counted baselines"
     current_app.logger.audit(message, request=request, success=True)
 
-    total_accounts_ones = db.engine.execute(RANGES, low=0, high=10).scalar()
-    total_accounts_tens = db.engine.execute(RANGES, low=10, high=100).scalar()
-    total_accounts_hundred_plus = db.engine.execute(RANGES, low=100, high=BIGINT_MAX).scalar()
+    with db.engine.connect() as connection:
+        total_accounts_ones = connection.execute(RANGES, {"low": 0, "high": 10}).scalar()
+        total_accounts_tens = connection.execute(RANGES, {"low": 10, "high": 100}).scalar()
+        total_accounts_hundred_plus = connection.execute(
+            RANGES, {"low": 100, "high": BIGINT_MAX}
+        ).scalar()
 
     baseline_metrics.baseline_count.set(total_baselines)
     baseline_metrics.baseline_account_count.set(total_accounts)
