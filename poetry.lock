@@ -988,18 +988,18 @@ files = [
 
 [[package]]
 name = "insights-core"
-version = "3.1.26"
+version = "3.2.1"
 description = "Insights Core is a data collection and analysis framework"
 optional = false
 python-versions = "*"
 files = [
-    {file = "insights-core-3.1.26.tar.gz", hash = "sha256:11ace77bbc76ab999d403a8af17edfa7a3a7de37067d7d69ea9a0436e5e809b2"},
+    {file = "insights-core-3.2.1.tar.gz", hash = "sha256:989219f8e27b41a0a279261439b7cde4c3a8c14bd32235f2778145e0a1174465"},
 ]
 
 [package.dependencies]
 cachecontrol = [
-    {version = "*", extras = ["filecache"]},
     {version = "*"},
+    {version = "*", extras = ["filecache"]},
     {version = "*", extras = ["redis"]},
 ]
 defusedxml = "*"
