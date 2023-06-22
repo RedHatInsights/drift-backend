@@ -176,6 +176,13 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(fqdn_comparison["name"], "last_boot_time")
         self.assertEqual(fqdn_comparison["state"], "SAME")
 
+        systemd_state_comparison = comparisons["facts"][23]["comparisons"][0]
+        systemd_failed_comparison = comparisons["facts"][23]["comparisons"][1]
+        systemd_jobs_jobs_queued_comparison = comparisons["facts"][23]["comparisons"][2]
+        self.assertEqual(systemd_state_comparison["state"], "SAME")
+        self.assertEqual(systemd_failed_comparison["state"], "SAME")
+        self.assertEqual(systemd_jobs_jobs_queued_comparison["state"], "SAME")
+
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_csv(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT

@@ -43,3 +43,9 @@ class InfoParserTests(unittest.TestCase):
         result = profile_parser.parse_profile(profile, "some_display_name", fake_plastic_tree)
         self.assertEqual(result["network_interfaces.fake-nic.mtu"], "9876")
         self.assertEqual(result["network_interfaces.no_mtu.mtu"], "N/A")
+
+    def test_systemd_fact_parsing(self):
+        profile = {"id": "1234", "systemd": {"state": "running", "failed": 0, "jobs_queued": 0}}
+        fake_plastic_tree = MagicMock()
+        result = profile_parser.parse_profile(profile, "some_display_name", fake_plastic_tree)
+        self.assertEqual(result["systemd.state"], "running")
