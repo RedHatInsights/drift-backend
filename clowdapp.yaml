@@ -26,6 +26,7 @@ objects:
         - name: floorist
           schedule: ${FLOORIST_SCHEDULE}
           suspend: ${{FLOORIST_SUSPEND}}
+          disabled: ${{FLOORIST_DISABLED}}
           concurrencyPolicy: Forbid
           podSpec:
             image: ${FLOORIST_IMAGE}:${FLOORIST_IMAGE_TAG}
@@ -259,6 +260,9 @@ parameters:
     description: Disable Floorist cronjob execution
     required: true
     value: 'true'
+  - name: FLOORIST_DISABLED
+    description: Determines whether to build the Floorist Job.
+    value: 'false'
   - description: Floorist image name
     name: FLOORIST_IMAGE
     value: quay.io/cloudservices/floorist
