@@ -1259,8 +1259,8 @@ watchtower = "*"
 [package.source]
 type = "git"
 url = "https://github.com/RedHatInsights/kerlescan.git"
-reference = "0.103"
-resolved_reference = "093b7611e5b9bc3aef5c562d766b83ff65ce8e60"
+reference = "0.104"
+resolved_reference = "3d9e9ceadd815dad62ac3fa0c2c54a8d932cbed1"
 
 [[package]]
 name = "keyring"
@@ -2728,4 +2728,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "d23456507213fcc8293ffcc9cb1fe1a5b07814b2963dc84088b50fa8af0d0681"
+content-hash = "ce2b5c2355e7322abe44e481ebeef38e07dfc50346b6dbc6312b289f924f3c0b"

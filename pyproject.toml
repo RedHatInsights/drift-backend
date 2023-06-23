@@ -61,7 +61,7 @@ flask-migrate = "*"
 bitmath = "*"
 jsonpatch = "*"
 insights-core = "*"
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.103", develop = true}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.104", develop = true}
 app-common-python = "*"
 unleashclient = "*"
 jsonschema = "*"
