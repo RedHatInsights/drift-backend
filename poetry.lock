@@ -653,12 +653,13 @@ files = [
 
 [[package]]
 name = "insights-core"
-version = "3.2.2"
+version = "3.2.4"
 description = "Insights Core is a data collection and analysis framework"
 optional = false
 python-versions = "*"
 files = [
-    {file = "insights-core-3.2.2.tar.gz", hash = "sha256:2ea0c4d21349aac41770c9b9225dad5d76ee423df7370d2bac0d4b0a6cd12195"},
+    {file = "insights-core-3.2.4.tar.gz", hash = "sha256:dd47363d32d5a3637cc7cab99144880efe4b04e631f7ac49e87e333793924854"},
+    {file = "insights_core-3.2.4-py2.py3-none-any.whl", hash = "sha256:77674bdc7cf2f911e31da43f57641b6189de43630ddd2dd916d35dec631df4ca"},
 ]
 
 [package.dependencies]
@@ -679,9 +680,9 @@ six = "*"
 client = ["cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "defusedxml", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "oyaml", "python-gnupg (==0.4.6)", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six"]
 client-develop = ["cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "coverage", "coverage (==4.3.4)", "defusedxml", "flake8", "flake8 (==2.6.2)", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "mock (==2.0.0)", "oyaml", "pytest", "pytest (==3.0.6)", "pytest (>=4.6.0,<4.7.0)", "pytest-cov", "pytest-cov (==2.4.0)", "python-gnupg (==0.4.6)", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six", "wheel"]
 cluster = ["ansible", "cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "colorama", "defusedxml", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "pandas", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six"]
-develop = ["MarkupSafe (==2.0.1)", "Pygments", "Sphinx", "ansible", "cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "colorama", "coverage", "coverage (==4.3.4)", "defusedxml", "docutils", "flake8", "flake8 (==2.6.2)", "ipython (<8.7.0)", "jedi", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "mock (==2.0.0)", "nbsphinx", "oyaml", "pandas", "pytest", "pytest (==3.0.6)", "pytest (>=4.6.0,<4.7.0)", "pytest-cov", "pytest-cov (==2.4.0)", "python-gnupg (==0.4.6)", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six", "sphinx_rtd_theme", "wheel"]
+develop = ["MarkupSafe (==2.0.1)", "Pygments", "Sphinx", "ansible", "cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "colorama", "coverage", "coverage (==4.3.4)", "defusedxml", "docutils", "flake8", "flake8 (==2.6.2)", "ipython (<8.7.0)", "jedi", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "mock (==2.0.0)", "nbsphinx", "oyaml", "pandas", "pytest", "pytest (==3.0.6)", "pytest (>=4.6.0,<4.7.0)", "pytest-cov", "pytest-cov (==2.4.0)", "python-gnupg (==0.4.6)", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six", "sphinx-rtd-theme", "wheel"]
 develop26 = ["ansible", "cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "colorama", "coverage", "coverage (==4.3.4)", "defusedxml", "flake8", "flake8 (==2.6.2)", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "mock (==2.0.0)", "oyaml", "pandas", "pytest", "pytest (==3.0.6)", "pytest (>=4.6.0,<4.7.0)", "pytest-cov", "pytest-cov (==2.4.0)", "python-gnupg (==0.4.6)", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six", "wheel"]
-docs = ["MarkupSafe (==2.0.1)", "Pygments", "Sphinx", "colorama", "docutils", "ipython (<8.7.0)", "jedi", "nbsphinx", "sphinx_rtd_theme"]
+docs = ["MarkupSafe (==2.0.1)", "Pygments", "Sphinx", "colorama", "docutils", "ipython (<8.7.0)", "jedi", "nbsphinx", "sphinx-rtd-theme"]
 linting = ["flake8", "flake8 (==2.6.2)", "oyaml", "python-gnupg (==0.4.6)", "requests"]
 openshift = ["cachecontrol", "cachecontrol[filecache]", "cachecontrol[redis]", "defusedxml", "jinja2", "jinja2 (<=2.11.3)", "lockfile", "openshift", "pyyaml", "pyyaml (>=3.10,<=3.13)", "redis", "requests", "six"]
 optional = ["python-cjson", "python-logstash", "python-statsd", "watchdog"]
