@@ -1,0 +1,2 @@
+# override linguist-generated to show diff on github in PRs
+poetry.lock linguist-generated=false
