@@ -21,14 +21,16 @@ class RBACTests(unittest.TestCase):
         mock_get_perms.return_value = ["myperm:*:*"]
         mock_request = mm()
         mock_request.path = "/some/path"
-        view_helpers.ensure_has_permission(
-            permissions=[["myperm:*:*"]],
-            application="app",
-            app_name="app-name",
-            request=mock_request,
-            logger=mm(),
-            request_metric=mm(),
-            exception_metric=mm(),
+        self.assertIsNone(
+            view_helpers.ensure_has_permission(
+                permissions=[["myperm:*:*"]],
+                application="app",
+                app_name="app-name",
+                request=mock_request,
+                logger=mm(),
+                request_metric=mm(),
+                exception_metric=mm(),
+            )
         )
 
     @mock.patch("kerlescan.view_helpers.get_key_from_headers")
