@@ -5,7 +5,9 @@ from kerlescan.constants import AUTH_HEADER_NAME, RBAC_SVC_ENDPOINT
 from kerlescan.service_interface import fetch_url
 
 
-def get_perms(application, service_auth_key, logger, request_metric, exception_metric):
+def get_perms(
+    application, service_auth_key, logger, request_metric, exception_metric, flask_g=None
+):
     """
     check if user has a permission
     """
@@ -14,8 +16,17 @@ def get_perms(application, service_auth_key, logger, request_metric, exception_m
 
     rbac_location = urljoin(config.rbac_svc_hostname, RBAC_SVC_ENDPOINT) % application
     logger.audit("Fetching RBAC on %s", rbac_location)
-    rbac_result = fetch_url(rbac_location, auth_header, logger, request_metric, exception_metric)
-    perms = [perm["permission"] for perm in rbac_result["data"]]
+    rbac_data = fetch_url(rbac_location, auth_header, logger, request_metric, exception_metric)[
+        "data"
+    ]
+    perms = [perm["permission"] for perm in rbac_data]
+
+    if flask_g:
+        if "rbac_filters" not in flask_g:
+            flask_g.rbac_filters = {}
+
+        # TODO: get, parse, merge and store RBAC group filters here
+        flask_g.rbac_filter = get_rbac_filters(rbac_data)
 
     return perms
 
