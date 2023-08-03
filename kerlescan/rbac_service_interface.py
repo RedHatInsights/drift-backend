@@ -95,10 +95,10 @@ def get_rbac_filters(rbac_data):
                     get_attfibute_filter_value(attribute_filter)
                     for attribute_filter in attribute_filters
                 ]
-                # flatten them
                 if None in group_ids:
                     group_ids = None
                 else:
+                    # flatten them
                     group_ids = [item for row in group_ids for item in row]
 
     result = {"group.id": group_ids}
