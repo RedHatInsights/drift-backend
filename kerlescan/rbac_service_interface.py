@@ -63,7 +63,9 @@ def get_rbac_filters(rbac_data):
 
     # get only relevant permission records
     definitions = [
-        perm["resourceDefinitions"] for perm in rbac_data if perm["permission"] in permission_list
+        perm.get("resourceDefinitions", [])
+        for perm in rbac_data
+        if perm["permission"] in permission_list
     ]
 
     # if definition contains []

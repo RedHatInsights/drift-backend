@@ -64,6 +64,13 @@ class RBACTests(unittest.TestCase):
         rbac_filters = get_rbac_filters(rbac_data)
         self.assertEqual(rbac_filters, {"group.id": []})  # no hosts
 
+    def test_get_rbac_filters_read_permisson_no_resource_key(self):
+        rbac_data = [
+            {"permission": "inventory:hosts:read"},
+        ]
+        rbac_filters = get_rbac_filters(rbac_data)
+        self.assertEqual(rbac_filters, {"group.id": None})  # all hosts
+
     def test_get_rbac_filters_read_permisson_empty_resource(self):
         rbac_data = [
             {"resourceDefinitions": [], "permission": "inventory:hosts:read"},
