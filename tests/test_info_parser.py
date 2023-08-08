@@ -49,4 +49,4 @@ class InfoParserTests(unittest.TestCase):
         fake_plastic_tree = MagicMock()
         result = profile_parser.parse_profile(profile, "some_display_name", fake_plastic_tree)
         self.assertEqual(result["systemd.state"], "running")
-        self.assertEqual(result["systemd.failed"], 0)
+        self.assertEqual(result["systemd.failed"], "0")
