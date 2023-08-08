@@ -134,7 +134,7 @@ def parse_profile(system_profile, display_name, logger):
             if obj in system_profile.keys():
                 for fact_name in system_profile[obj]:
                     fact_value = system_profile[obj][fact_name]
-                    parsed_profile[obj + "." + fact_name] = fact_value
+                    parsed_profile[obj + "." + fact_name] = str(fact_value)
 
     # start with metadata that we have brought down from the system record
     parsed_profile = {"id": system_profile[SYSTEM_ID_KEY], "name": display_name}
