@@ -46,8 +46,9 @@ def check_for_empty_name_values(facts):
             check_for_empty_name_values(fact["values"])
         if "name" in fact and not fact["name"]:
             raise FactValidationError("fact name cannot be empty")
-        elif "value" in fact and not fact["value"]:
-            raise FactValidationError("value for %s cannot be empty" % fact["name"])
+        elif "value" in fact:
+            if fact["value"] != 0 and not fact["value"]:
+                raise FactValidationError("value for %s cannot be empty" % fact["name"])
 
 
 def check_for_invalid_whitespace_name_values(facts):
