@@ -999,7 +999,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*"
 files = [
     {file = "jsonpatch-1.33-py2.py3-none-any.whl", hash = "sha256:0ae28c0cd062bbd8b8ecc26d7d164fbbea9652a1a3693f3b956c1eae5145dade"},
-    {file = "jsonpatch-1.33.tar.gz", hash = "sha256:9fcd4009c41e6d12348b4a0ff2563ba56a2923a7dfee731d004e212e1ee5030c"},
 ]
 
 [package.dependencies]
@@ -1088,8 +1087,8 @@ watchtower = "*"
 [package.source]
 type = "git"
 url = "https://github.com/RedHatInsights/kerlescan.git"
-reference = "0.104"
-resolved_reference = "3d9e9ceadd815dad62ac3fa0c2c54a8d932cbed1"
+reference = "0.106"
+resolved_reference = "047bae7465fa4782c42bd1dc11c32c7c77319eaf"
 
 [[package]]
 name = "lazy-object-proxy"
@@ -2567,4 +2566,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ce2b5c2355e7322abe44e481ebeef38e07dfc50346b6dbc6312b289f924f3c0b"
+content-hash = "7a59bac5f7a41d618f141acaa5c580e69a7c7118eef7cd380c8622424708ff12"
