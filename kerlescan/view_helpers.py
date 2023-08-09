@@ -171,7 +171,9 @@ def ensure_has_permission(**kwargs):
 
     try:
         perms = get_perms(
-            kwargs["application"],
+            ",".join(
+                [kwargs["application"], "inventory"]
+            ),  # we need to query permissions for the inventory app
             auth_key,
             logger,
             kwargs["request_metric"],
@@ -194,6 +196,7 @@ def ensure_has_permission(**kwargs):
             if all_match:
                 found_one = True
         if found_one:
+            # TODO: return group filter
             return  # allow
         raise HTTPError(
             HTTPStatus.FORBIDDEN,
