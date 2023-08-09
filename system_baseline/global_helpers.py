@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app, g, request
 from kerlescan import view_helpers
 
 from system_baseline import app_config, metrics
@@ -44,6 +44,7 @@ def ensure_rbac_baselines_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters", {}),
     )
 
 
@@ -62,6 +63,7 @@ def ensure_rbac_baselines_write():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters", {}),
     )
 
 
@@ -79,6 +81,7 @@ def ensure_rbac_inventory_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters", {}),
     )
 
 
@@ -100,6 +103,7 @@ def ensure_rbac_notifications_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters", {}),
     )
 
 
@@ -121,6 +125,7 @@ def ensure_rbac_notifications_write():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters", {}),
     )
 
 
