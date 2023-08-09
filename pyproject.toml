@@ -80,6 +80,7 @@ ipython = "*"
 openapi-spec-validator = "*"
 ipdb = "*"
 toml = "*"
+tomli = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
