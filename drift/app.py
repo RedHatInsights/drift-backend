@@ -38,7 +38,9 @@ def create_app():
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
-    setup_cw_logging(flask_app.logger)
+    setup_cw_logging(
+        flask_app.logger, logging.getLogger("gunicorn.access"), logging.getLogger("gunicorn.error")
+    )
 
     flask_app.register_blueprint(v1.section)
     flask_app.register_error_handler(HTTPError, handle_http_error)
