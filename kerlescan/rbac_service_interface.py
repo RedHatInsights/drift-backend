@@ -25,7 +25,7 @@ def get_perms(
         if "rbac_filters" not in flask_g:
             flask_g.rbac_filters = {}
 
-        # TODO: get, parse, merge and store RBAC group filters here
+        # get, parse, merge and store RBAC group filters here
         flask_g.rbac_filter = get_rbac_filters(rbac_data)
 
     return perms
@@ -38,7 +38,7 @@ def get_rbac_filters(rbac_data):
     # [] - no groups ids present, no hosts allowed
     # [id1, id2, None] - group ids present, only hosts with id1, id2 or no group (None) allowed
 
-    # TODO: select all permisions needed
+    # select permisions
     permission_list = [
         "inventory:hosts:read",
         "inventory:hosts:*",
