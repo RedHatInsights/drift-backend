@@ -178,6 +178,7 @@ def ensure_has_permission(**kwargs):
             logger,
             kwargs["request_metric"],
             kwargs["exception_metric"],
+            kwargs.get("flask_g", None),
         )
         # kwargs["permissions"] is now a list of lists.
         # At least one of the lists must work ("or"), but all permissions in each
