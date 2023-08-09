@@ -84,6 +84,7 @@ pytest-flask = "*"
 pytest-black = "*"
 pytest-mock = "*"
 toml = "*"
+tomli = "*"
 openapi-spec-validator = "*"
 [build-system]
 requires = ["poetry-core"]
