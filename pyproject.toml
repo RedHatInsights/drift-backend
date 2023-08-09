@@ -80,6 +80,7 @@ yamllint = "*"
 mock = "*"
 ipdb = "*"
 toml = "*"
+tomli = "*"
 openapi-spec-validator = "*"
 [build-system]
 requires = ["poetry-core"]
