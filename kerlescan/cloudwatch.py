@@ -6,7 +6,7 @@ import watchtower
 from app_common_python import LoadedConfig, isClowderEnabled
 
 
-def setup_cw_logging(logger):  # pragma: no cover
+def setup_cw_logging(main_logger, *other_loggers):  # pragma: no cover
     """
     initialize cloudwatch logging
 
@@ -28,7 +28,7 @@ def setup_cw_logging(logger):  # pragma: no cover
         log_group = os.environ.get("CW_LOG_GROUP", "platform-dev")
 
     if not (key_id and secret):
-        logger.info("CloudWatch logging disabled due to missing access key")
+        main_logger.info("CloudWatch logging disabled due to missing access key")
         return
 
     boto3_logs_client = boto3.client(
@@ -48,5 +48,10 @@ def setup_cw_logging(logger):  # pragma: no cover
         create_log_group=False,
     )
 
-    logger.addHandler(handler)
-    logger.info("CloudWatch logging ENABLED!")
+    loggers = [main_logger] + list(other_loggers)
+    for logger in loggers:
+        logger.addHandler(handler)
+
+    main_logger.info(
+        "CloudWatch logging ENABLED for %s", ", ".join(logger.name for logger in loggers)
+    )
