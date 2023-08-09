@@ -44,7 +44,7 @@ def create_connexion_app():
     gunicorn_logger = logging.getLogger("gunicorn.error")
     flask_app.logger.handlers = gunicorn_logger.handlers
     flask_app.logger.setLevel(gunicorn_logger.level)
-    setup_cw_logging(flask_app.logger)
+    setup_cw_logging(flask_app.logger, logging.getLogger("gunicorn.access"), gunicorn_logger)
     register_hsts_response(flask_app)
 
     # set up DB
