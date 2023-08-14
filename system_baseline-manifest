@@ -1,4 +1,4 @@
-services-drift:system_baseline/python:3.9=alembic:1.11.1
+services-drift:system_baseline/python:3.9=alembic:1.11.2
 services-drift:system_baseline/python:3.9=app-common-python:0.2.6
 services-drift:system_baseline/python:3.9=appdirs:1.4.4
 services-drift:system_baseline/python:3.9=appnope:0.1.3
