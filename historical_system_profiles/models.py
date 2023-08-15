@@ -22,6 +22,7 @@ class HistoricalSystemProfile(db.Model):
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
     system_profile = db.Column(JSONB)
     captured_on = db.Column(db.DateTime, default=datetime.utcnow)
+    groups = db.Column(JSONB)
 
     def __init__(self, system_profile, inventory_id, account, org_id):
         self.inventory_id = inventory_id
