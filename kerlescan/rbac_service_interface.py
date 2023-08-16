@@ -6,7 +6,7 @@ from kerlescan.service_interface import fetch_url
 
 
 def get_perms(
-    application, service_auth_key, logger, request_metric, exception_metric, flask_g=None
+    application, service_auth_key, logger, request_metric, exception_metric, rbac_filters=None
 ):
     """
     check if user has a permission
@@ -21,12 +21,9 @@ def get_perms(
     ]
     perms = [perm["permission"] for perm in rbac_data]
 
-    if flask_g:
-        if "rbac_filters" not in flask_g:
-            flask_g.rbac_filters = {}
-
+    if rbac_filters:
         # get, parse, merge and store RBAC group filters here
-        flask_g.rbac_filter = get_rbac_filters(rbac_data)
+        rbac_filters = get_rbac_filters(rbac_data)
 
     return perms
 
