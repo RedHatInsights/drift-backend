@@ -48,11 +48,15 @@ def get_hsps_by_inventory_id(inventory_id, account_number, org_id, limit, offset
             HistoricalSystemProfile.org_id == org_id,
             HistoricalSystemProfile.inventory_id == inventory_id,
         )
-    else:
+    elif account_number:
         query = HistoricalSystemProfile.query.filter(
             HistoricalSystemProfile.account == account_number,
             HistoricalSystemProfile.inventory_id == inventory_id,
         )
+    else:
+        message = "get_hsps_by_inventory_id need org_id or account"
+        current_app.logger.audit(message, request=request, success=False)
+        raise
 
     query = query.order_by(HistoricalSystemProfile.captured_on.desc())
     query = query.limit(limit).offset(offset)

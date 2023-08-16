@@ -19,7 +19,7 @@ def _record_recv_message(host, request_id, ptc):
     ptc.emit_received_message(
         "received inventory update event",
         request_id=request_id,
-        account=host["account"],
+        account=host["account"] if "account" in host else None,
         org_id=host["org_id"],
         inventory_id=host["id"],
     )
@@ -30,7 +30,7 @@ def _record_success_message(hsp_id, host, request_id, ptc):
     ptc.emit_success_message(
         "stored historical profile %s" % hsp_id,
         request_id=request_id,
-        account=host["account"],
+        account=host["account"] if "account" in host else None,
         org_id=host["org_id"],
         inventory_id=host["id"],
     )
@@ -41,7 +41,7 @@ def _record_duplicate_message(host, request_id, ptc):
     ptc.emit_success_message(
         "profile not saved to db (timestamp already exists)",
         request_id=request_id,
-        account=host["account"],
+        account=host["account"] if "account" in host else None,
         org_id=host["org_id"],
         inventory_id=host["id"],
     )
@@ -80,7 +80,7 @@ def _archive_profile(data, ptc, logger, notification_service):
     profile["tags"] = host["tags"]
 
     captured_date = profile.get("captured_date")
-    account = host["account"]
+    account = host["account"] if "account" in host else None
     org_id = host["org_id"]
 
     # Historical profiles have a "captured_date" which is when the data was
@@ -103,7 +103,7 @@ def _archive_profile(data, ptc, logger, notification_service):
         hsp = db_interface.create_profile(
             inventory_id=host["id"],
             profile=profile,
-            account_number=host["account"],
+            account_number=host["account"] if "account" in host else None,
             org_id=org_id,
         )
         _record_success_message(hsp.id, host, request_id, ptc)
@@ -116,7 +116,7 @@ def _archive_profile(data, ptc, logger, notification_service):
         # occurred.
         _check_and_send_notifications(
             host["id"],
-            host["account"],
+            host["account"] if "account" in host else None,
             host["org_id"],
             host["updated"],
             host["display_name"],
@@ -204,7 +204,7 @@ def _emit_archiver_error(data, ptc, logger):
     ptc.emit_error_message(
         "error when storing historical profile",
         request_id=request_id,
-        account=host["account"],
+        account=host["account"] if "account" in host else None,
         org_id=host["org_id"],
         inventory_id=host["id"],
     )
