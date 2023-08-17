@@ -115,6 +115,7 @@ class SystemBaselineMappedSystem(db.Model):
         UUID(as_uuid=True), ForeignKey("system_baselines.id"), nullable=False
     )
     system_id = db.Column(UUID(as_uuid=True), nullable=False, index=True)
+    groups = db.Column(JSONB)
 
     @classmethod
     def delete_by_system_ids(cls, system_ids, account_number, org_id):
