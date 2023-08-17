@@ -23,7 +23,7 @@ class SystemBaseline(db.Model):
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     account = db.Column(db.String(10), nullable=False)
-    org_id = db.Column(db.String(36))
+    org_id = db.Column(db.String(36), index=True)
     display_name = db.Column(db.String(200), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     modified_on = db.Column(
@@ -34,7 +34,7 @@ class SystemBaseline(db.Model):
         "SystemBaselineMappedSystem",
         cascade="all, delete, delete-orphan",
     )
-    dirty_systems = db.Column(db.Boolean, default=False, nullable=False)
+    dirty_systems = db.Column(db.Boolean, default=False, nullable=True)
     notifications_enabled = db.Column(db.Boolean, default=True, nullable=False)
 
     @property
@@ -110,7 +110,7 @@ class SystemBaselineMappedSystem(db.Model):
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     account = db.Column(db.String(10), nullable=False)
-    org_id = db.Column(db.String(36))
+    org_id = db.Column(db.String(36), index=True)
     system_baseline_id = db.Column(
         UUID(as_uuid=True), ForeignKey("system_baselines.id"), nullable=False
     )
