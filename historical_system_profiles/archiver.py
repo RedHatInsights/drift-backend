@@ -77,10 +77,11 @@ def _archive_profile(data, ptc, logger, notification_service):
     profile["fqdn"] = host["fqdn"]
 
     # tags is on the host but we need it in the profile as well
-    profile["tags"] = host["tags"]
+    tags = profile["tags"] = host["tags"]
 
     captured_date = profile.get("captured_date")
-    account = host["account"] if "account" in host else None
+    inventory_id = host["id"]
+    account = host.get("account")
     org_id = host["org_id"]
 
     # Historical profiles have a "captured_date" which is when the data was
@@ -92,18 +93,18 @@ def _archive_profile(data, ptc, logger, notification_service):
     # profiles in the app via captured_date.
 
     if captured_date and db_interface.is_profile_recorded(
-        captured_date, host["id"], account, org_id
+        captured_date, inventory_id, account, org_id
     ):
         logger.info(
             "profile with date %s is already recorded for %s, using account id: %s, org_id: %s"
-            % (captured_date, host["id"], account, org_id)
+            % (captured_date, inventory_id, account, org_id)
         )
         _record_duplicate_message(host, request_id, ptc)
     else:
         hsp = db_interface.create_profile(
-            inventory_id=host["id"],
+            inventory_id=inventory_id,
             profile=profile,
-            account_number=host["account"] if "account" in host else None,
+            account_number=account,
             org_id=org_id,
         )
         _record_success_message(hsp.id, host, request_id, ptc)
@@ -115,12 +116,12 @@ def _archive_profile(data, ptc, logger, notification_service):
         # triggering a notification, i.e. if drift from any associated baselines has
         # occurred.
         _check_and_send_notifications(
-            host["id"],
-            host["account"] if "account" in host else None,
-            host["org_id"],
+            inventory_id,
+            account,
+            org_id,
             host["updated"],
             host["display_name"],
-            host["tags"],
+            tags,
             notification_service,
             service_auth_key,
             logger,
