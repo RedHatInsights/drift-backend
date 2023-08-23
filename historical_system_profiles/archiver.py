@@ -47,6 +47,12 @@ def _record_duplicate_message(host, request_id, ptc):
     )
 
 
+def _filter_inventory_groups_data(groups):
+    return [
+        {key: group[key] for key in set(["id", "name"]) & set(group.keys())} for group in groups
+    ]
+
+
 def _archive_profile(data, ptc, logger, notification_service):
     """
     given an event, archive a profile and emit a success message
@@ -83,6 +89,7 @@ def _archive_profile(data, ptc, logger, notification_service):
     inventory_id = host["id"]
     account = host.get("account")
     org_id = host["org_id"]
+    groups = host.get("groups")
 
     # Historical profiles have a "captured_date" which is when the data was
     # taken from the system by insights-client. However, some reporters to
@@ -101,11 +108,16 @@ def _archive_profile(data, ptc, logger, notification_service):
         )
         _record_duplicate_message(host, request_id, ptc)
     else:
+        # remove keys we do not care about
+        if groups:
+            groups = _filter_inventory_groups_data(groups)
+
         hsp = db_interface.create_profile(
             inventory_id=inventory_id,
             profile=profile,
             account_number=account,
             org_id=org_id,
+            groups=groups,
         )
         _record_success_message(hsp.id, host, request_id, ptc)
         logger.info(

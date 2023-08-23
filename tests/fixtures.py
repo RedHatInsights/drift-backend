@@ -122,3 +122,22 @@ EVENT_MESSAGE_VALUE_WITHOUT_ACCOUNT = {
     "platform_metadata": {"request_id": "123456"},
     "type": "created",
 }
+
+EVENT_MESSAGE_VALUE_WITH_GROUPS = {
+    "host": {
+        "org_id": "5678",
+        "display_name": "9c033db1729c",
+        "id": "6388350e-b18d-11ea-ad7f-98fa9b07d419",
+        "insights_id": "cd9b8cda-607c-4359-9425-b6a0299a26a2",
+        "fqdn": "my-fqdn",
+        "updated": "2021-04-21T15:03:44.887439+00:00",
+        "tags": [],
+        "system_profile": {"captured_date": "2020-06-18T17:11:05+00:00"},
+        "groups": [
+            {"id": "40366ed4-19d8-4415-993e-1d430dc70ed7", "name": "group_1"},
+            {"id": "736bcb60-bbf5-4464-921f-1c431d76a124", "name": "group_2", "foo": "bar"},
+        ],
+    },
+    "platform_metadata": {"request_id": "123456"},
+    "type": "created",
+}

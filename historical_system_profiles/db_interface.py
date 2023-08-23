@@ -26,12 +26,13 @@ def rollback_on_exception(func):
 
 
 @rollback_on_exception
-def create_profile(inventory_id, profile, account_number, org_id):
+def create_profile(inventory_id, profile, account_number, org_id, groups=None):
     profile = HistoricalSystemProfile(
         account=account_number,
         org_id=org_id,
         inventory_id=inventory_id,
         system_profile=profile,
+        groups=groups,
     )
     db.session.add(profile)
     db.session.commit()

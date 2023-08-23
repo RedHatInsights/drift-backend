@@ -24,11 +24,12 @@ class HistoricalSystemProfile(db.Model):
     captured_on = db.Column(db.DateTime, default=datetime.utcnow)
     groups = db.Column(JSONB)
 
-    def __init__(self, system_profile, inventory_id, account, org_id):
+    def __init__(self, system_profile, inventory_id, account, org_id, groups):
         self.inventory_id = inventory_id
         self.account = account
         self.system_profile = system_profile
         self.org_id = org_id
+        self.groups = groups
         # set the ID here so we can override the system profile's id with the historical profile
         generated_id = str(uuid.uuid4())
         self.id = generated_id
