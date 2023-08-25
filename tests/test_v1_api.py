@@ -694,8 +694,20 @@ class ApiPaginationTests(ApiTest):
 
 
 class ApiSystemsAssociationTests(ApiTest):
-    def setUp(self):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def setUp(self, mock_fetch_systems):
         super(ApiSystemsAssociationTests, self).setUp()
+
+        self.system_ids = [
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+        ]
+
+        mock_fetch_systems.return_value = [
+            {**fixtures.SYSTEM_WITH_PROFILE, "id": system_id} for system_id in self.system_ids
+        ]
+
         self.client.post(
             "api/system-baseline/v1/baselines",
             headers=fixtures.AUTH_HEADER,
@@ -706,12 +718,6 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
         self.baseline_id = [b["id"] for b in result["data"]][0]
-
-        self.system_ids = [
-            str(uuid.uuid4()),
-            str(uuid.uuid4()),
-            str(uuid.uuid4()),
-        ]
 
         response = self.client.post(
             "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems",
@@ -846,17 +852,19 @@ class ApiSystemsAssociationTests(ApiTest):
 
     @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
     def test_adding_few_systems(self, mock_fetch_systems):
-        mock_fetch_systems.return_value = [fixtures.SYSTEM_WITH_PROFILE]
-        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
-        self.assertEqual(response.status_code, 200)
-        result = json.loads(response.data)
-        baseline_id = [b["id"] for b in result["data"]][0]
-
         # to create
         system_ids = [
             str(uuid.uuid4()),
             str(uuid.uuid4()),
         ]
+
+        mock_fetch_systems.return_value = [
+            {**fixtures.SYSTEM_WITH_PROFILE, "id": system_id} for system_id in self.system_ids
+        ]
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        baseline_id = [b["id"] for b in result["data"]][0]
 
         response = self.client.post(
             "api/system-baseline/v1/baselines/" + baseline_id + "/systems",

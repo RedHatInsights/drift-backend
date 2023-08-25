@@ -347,4 +347,8 @@ SYSTEM_WITH_PROFILE = {
     },
     "tags": [],
     "updated": "2018-01-31T14:00:00.500000Z",
+    "groups": [
+        {"id": "40366ed4-19d8-4415-993e-1d430dc70ed7", "name": "group_1"},
+        {"id": "736bcb60-bbf5-4464-921f-1c431d76a124", "name": "group_2", "foo": "bar"},
+    ],
 }

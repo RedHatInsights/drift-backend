@@ -78,10 +78,10 @@ class SystemBaseline(db.Model):
                     "System {} already associated with this baseline".format(system_id)
                 )
 
-    def add_mapped_system(self, system_id):
+    def add_mapped_system(self, system_id, groups=None):
         self.validate_existing_system(system_id)
         new_mapped_system = SystemBaselineMappedSystem(
-            system_id=system_id, account=self.account, org_id=self.org_id
+            system_id=system_id, account=self.account, org_id=self.org_id, groups=groups
         )
         self.mapped_systems.append(new_mapped_system)
         db.session.add(new_mapped_system)

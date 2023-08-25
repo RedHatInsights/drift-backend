@@ -765,6 +765,12 @@ def list_systems_with_baseline(baseline_id):
     return {"system_ids": system_ids}
 
 
+def _filter_inventory_groups_data(groups):
+    return [
+        {key: group[key] for key in set(["id", "name"]) & set(group.keys())} for group in groups
+    ]
+
+
 def create_systems_with_baseline(baseline_id, body):
     ensure_rbac_notifications_write()
     validate_uuids([baseline_id])
@@ -791,8 +797,18 @@ def create_systems_with_baseline(baseline_id, body):
     current_app.logger.audit(message, request=request, success=True)
 
     try:
+        auth_key = get_key_from_headers(request.headers)
+        systems_with_profiles = fetch_systems_with_profiles(
+            system_ids, auth_key, current_app.logger, get_event_counters()
+        )
+        systems_groups = {
+            system.get("id"): system.get("groups") for system in systems_with_profiles
+        }
         for system_id in system_ids:
-            baseline.add_mapped_system(system_id)
+            groups = systems_groups.get(system_id)
+            if groups:
+                groups = _filter_inventory_groups_data(groups)
+            baseline.add_mapped_system(system_id, groups)
 
         db.session.commit()
     except ValueError as error:
