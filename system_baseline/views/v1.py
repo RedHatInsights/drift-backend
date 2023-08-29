@@ -3,7 +3,7 @@ from http import HTTPStatus
 import jsonpatch
 import jsonpointer
 
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app, g, request
 from kerlescan import profile_parser, view_helpers
 from kerlescan.exceptions import HTTPError, ItemNotReturned, RBACDenied
 from kerlescan.hsp_service_interface import fetch_historical_sys_profiles
@@ -741,6 +741,7 @@ def list_systems_with_baseline(baseline_id):
         query = SystemBaseline.query.filter(
             SystemBaseline.account == account_number, SystemBaseline.id == baseline_id
         )
+
     baseline = query.first_or_404()
 
     # DRFT-830
@@ -752,7 +753,9 @@ def list_systems_with_baseline(baseline_id):
     current_app.logger.audit(message, request=request, success=True)
 
     try:
-        system_ids = baseline.mapped_system_ids()
+        system_ids = baseline.mapped_system_ids(
+            rbac_group_filters=g.get("rbac_filters").get("group.id", None)
+        )
     except ValueError as error:
         message = str(error)
         current_app.logger.audit(message, request=request, success=False)
