@@ -20,6 +20,7 @@ baseline_id1 = uuid.uuid4()
 baseline_id2 = uuid.uuid4()
 baseline_id3 = uuid.uuid4()
 baseline_id4 = uuid.uuid4()
+baseline_with_systems_with_groups = uuid.uuid4()
 
 system_id1 = uuid.uuid4()
 system_id2 = uuid.uuid4()
@@ -425,3 +426,69 @@ class SystemBaselineMappedSystemTest(DbModelTest):
         self.assertEqual(
             sorted(mapped_systems_count), sorted([(baseline_id3, 2), (baseline_id4, 3)])
         )
+
+
+class MappedSystemsWithGroupsTest(DbModelTest):
+    def populate_db_with_stuff(self):
+        # we care only about mapped systems with groups (or without) for these tests
+        rows = [
+            SystemBaseline(
+                account=account1,
+                org_id=org_id1,
+                id=baseline_with_systems_with_groups,
+                display_name="baseline_with_systems_with_groups",
+                baseline_facts=baseline_facts,
+                mapped_systems=[
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        org_id=org_id1,
+                        system_id=system_id1,
+                        groups=[{"id": "group_id_1", "name": "group_name_1"}],
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        org_id=org_id1,
+                        system_id=system_id2,
+                        groups=[{"id": "group_id_2", "name": "group_name_2"}],
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        org_id=org_id1,
+                        system_id=system_id3,
+                        groups=[
+                            {"id": "group_id_1", "name": "group_name_1"},
+                            {"id": "group_id_3", "name": "group_name_3"},
+                        ],
+                    ),
+                    SystemBaselineMappedSystem(
+                        account=account1,
+                        org_id=org_id1,
+                        system_id=system_id4,
+                    ),
+                ],
+            ),
+        ]
+        db.session.add_all(rows)
+        db.session.commit()
+
+    def test_get_mapped_system_ids(self):
+        self.populate_db_with_stuff()
+
+        baseline = SystemBaseline.query.filter(
+            SystemBaseline.id == baseline_with_systems_with_groups,
+        ).one()
+
+        mapped_systems = baseline.mapped_system_ids()
+        self.assertEqual(4, len(mapped_systems))
+
+        rbac_group_filters = [{"id": "group_id_1"}]
+        mapped_systems = baseline.mapped_system_ids(rbac_group_filters=rbac_group_filters)
+        self.assertEqual(2, len(mapped_systems))
+
+        rbac_group_filters = [{"id": "group_id_1"}, {"id": "group_id_2"}]
+        mapped_systems = baseline.mapped_system_ids(rbac_group_filters=rbac_group_filters)
+        self.assertEqual(3, len(mapped_systems))
+
+        rbac_group_filters = [{"id": "group_id_3"}]
+        mapped_systems = baseline.mapped_system_ids(rbac_group_filters=rbac_group_filters)
+        self.assertEqual(1, len(mapped_systems))

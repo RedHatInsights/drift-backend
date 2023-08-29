@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import cast, func, or_
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.schema import ForeignKey, UniqueConstraint
@@ -33,6 +33,7 @@ class SystemBaseline(db.Model):
     mapped_systems = relationship(
         "SystemBaselineMappedSystem",
         cascade="all, delete, delete-orphan",
+        lazy="dynamic",
     )
     dirty_systems = db.Column(db.Boolean, default=False, nullable=True)
     notifications_enabled = db.Column(db.Boolean, default=True, nullable=False)
@@ -47,9 +48,20 @@ class SystemBaseline(db.Model):
         validators.check_for_duplicate_names(value)
         return value
 
-    def mapped_system_ids(self):
+    def mapped_system_ids(self, rbac_group_filters=None):
+        mapped_systems_query = self.mapped_systems
+        if rbac_group_filters:
+            mapped_systems_query = mapped_systems_query.filter(
+                or_(
+                    *[
+                        SystemBaselineMappedSystem.groups.contains(cast([rbac_group_filter], JSONB))
+                        for rbac_group_filter in rbac_group_filters
+                    ]
+                )
+            )
+
         mapped_system_ids = []
-        for mapped_system in self.mapped_systems:
+        for mapped_system in mapped_systems_query:
             mapped_system_ids.append(str(mapped_system.system_id))
         return mapped_system_ids
 
