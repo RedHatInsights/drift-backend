@@ -145,15 +145,19 @@ class RBACTests(unittest.TestCase):
                 "permission": "inventory:hosts:read",
             },
         ]
+
         rbac_filters = get_rbac_filters(rbac_data)
+        if rbac_filters.get("group.id"):
+            group_ids = {group.get("id") for group in rbac_filters.get("group.id", [])}
+        else:
+            group_ids = None
+
         self.assertEqual(
-            rbac_filters,
+            group_ids,
             {
-                "group.id": [
-                    "df57820e-965c-49a6-b0bc-797b7dd60581",
-                    "df3f0efd-c853-41b5-80a1-86881d5343d1",
-                    None,
-                ]
+                "df57820e-965c-49a6-b0bc-797b7dd60581",
+                "df3f0efd-c853-41b5-80a1-86881d5343d1",
+                None,
             },
         )
 
@@ -188,14 +192,18 @@ class RBACTests(unittest.TestCase):
                 "permission": "inventory:hosts:read",
             },
         ]
+
         rbac_filters = get_rbac_filters(rbac_data)
+        if rbac_filters.get("group.id"):
+            group_ids = {group.get("id") for group in rbac_filters.get("group.id", [])}
+        else:
+            group_ids = None
+
         self.assertEqual(
-            rbac_filters,
+            group_ids,
             {
-                "group.id": [
-                    "df57820e-965c-49a6-b0bc-797b7dd60581",
-                    "df3f0efd-c853-41b5-80a1-86881d5343d1",
-                ]
+                "df57820e-965c-49a6-b0bc-797b7dd60581",
+                "df3f0efd-c853-41b5-80a1-86881d5343d1",
             },
         )
 
@@ -227,10 +235,16 @@ class RBACTests(unittest.TestCase):
                 "permission": "inventory:hosts:read",
             },
         ]
+
         rbac_filters = get_rbac_filters(rbac_data)
+        if rbac_filters.get("group.id"):
+            group_ids = {group.get("id") for group in rbac_filters.get("group.id", [])}
+        else:
+            group_ids = None
+
         self.assertEqual(
-            rbac_filters,
-            {"group.id": None},
+            group_ids,
+            None,
         )
 
     def test_get_rbac_filters_value_string(self):
@@ -248,14 +262,18 @@ class RBACTests(unittest.TestCase):
                 "permission": "inventory:hosts:read",
             },
         ]
+
         rbac_filters = get_rbac_filters(rbac_data)
+        if rbac_filters.get("group.id"):
+            group_ids = {group.get("id") for group in rbac_filters.get("group.id", [])}
+        else:
+            group_ids = None
+
         self.assertEqual(
-            rbac_filters,
+            group_ids,
             {
-                "group.id": [
-                    "df57820e-965c-49a6-b0bc-797b7dd60581",
-                    "df3f0efd-c853-41b5-80a1-86881d5343d1",
-                ]
+                "df57820e-965c-49a6-b0bc-797b7dd60581",
+                "df3f0efd-c853-41b5-80a1-86881d5343d1",
             },
         )
 
@@ -275,14 +293,13 @@ class RBACTests(unittest.TestCase):
             },
         ]
         rbac_filters = get_rbac_filters(rbac_data)
+        group_ids = {group.get("id") for group in rbac_filters.get("group.id", [])}
         self.assertEqual(
-            rbac_filters,
+            group_ids,
             {
-                "group.id": [
-                    "df57820e-965c-49a6-b0bc-797b7dd60581",
-                    "df3f0efd-c853-41b5-80a1-86881d5343d1",
-                    None,
-                ]
+                "df57820e-965c-49a6-b0bc-797b7dd60581",
+                "df3f0efd-c853-41b5-80a1-86881d5343d1",
+                None,
             },
         )
 
