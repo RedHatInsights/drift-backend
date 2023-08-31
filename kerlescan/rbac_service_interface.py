@@ -21,9 +21,9 @@ def get_perms(
     ]
     perms = [perm["permission"] for perm in rbac_data]
 
-    if rbac_filters:
+    if rbac_filters is not None and isinstance(rbac_filters, dict):
         # get, parse, merge and store RBAC group filters here
-        rbac_filters = get_rbac_filters(rbac_data)
+        rbac_filters.update(get_rbac_filters(rbac_data))
 
     return perms
 
