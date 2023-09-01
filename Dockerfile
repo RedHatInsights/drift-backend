@@ -14,9 +14,7 @@ ENV POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
 
 ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
 
-COPY . ${APP_ROOT}/src
-
-WORKDIR ${APP_ROOT}/src
+WORKDIR ${APP_ROOT}
 
 RUN microdnf update -y && \
     microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
@@ -25,6 +23,10 @@ RUN microdnf update -y && \
     microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
     rpm -qa | sort > packages-after-devel-install.txt
 
+COPY . ${APP_ROOT}/src
+
+WORKDIR ${APP_ROOT}/src
+
 RUN pip3 install --upgrade pip && \
     pip3 install --force-reinstall poetry~=1.5.0 && \
     poetry install --sync
@@ -32,8 +34,12 @@ RUN pip3 install --upgrade pip && \
 # allows unit tests to run successfully within the container if image is built in "test" environment
 RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
 
+WORKDIR ${APP_ROOT}
+
 RUN microdnf remove -y $( comm -13 packages-before-devel-install.txt packages-after-devel-install.txt ) && \
     rm packages-before-devel-install.txt packages-after-devel-install.txt && \
     microdnf clean all
+
+WORKDIR ${APP_ROOT}/src
 
 CMD poetry run ./run_app.sh
