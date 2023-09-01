@@ -36,6 +36,8 @@ def ensure_rbac_baselines_read():
     # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
     # If we just have *:*, it works, but if not, we need both notifications:read and
     # baselines:read in order to allow access.
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:baselines:read"]],
         application="drift",
@@ -44,7 +46,7 @@ def ensure_rbac_baselines_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
-        rbac_filters=g.get("rbac_filters", {}),
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
@@ -55,19 +57,23 @@ def ensure_rbac_baselines_write():
     # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
     # If we just have *:*, it works, but if not, we need both notifications:read and
     # baselines:read in order to allow access.
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:baselines:write"]],
         application="drift",
-        app_name="system-baseline",
+        app_name="system-baseline,inventory",
         request=request,
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
-        rbac_filters=g.get("rbac_filters", {}),
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
 def ensure_rbac_inventory_read():
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     return view_helpers.ensure_has_permission(
         permissions=[
             ["inventory:*:*"],
@@ -81,11 +87,13 @@ def ensure_rbac_inventory_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
-        rbac_filters=g.get("rbac_filters", {}),
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
 def ensure_rbac_notifications_read():
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     # permissions consist of a list of "or" permissions where any will work,
     # and each sublist is a set of "and" permissions that all must be true.
     # For example:
@@ -103,11 +111,13 @@ def ensure_rbac_notifications_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
-        rbac_filters=g.get("rbac_filters", {}),
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
 def ensure_rbac_notifications_write():
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     # permissions consist of a list of "or" permissions where any will work,
     # and each sublist is a set of "and" permissions that all must be true.
     # For example:
@@ -125,7 +135,7 @@ def ensure_rbac_notifications_write():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
-        rbac_filters=g.get("rbac_filters", {}),
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
