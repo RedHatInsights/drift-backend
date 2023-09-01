@@ -464,6 +464,7 @@ class MappedSystemsWithGroupsTest(DbModelTest):
                         account=account1,
                         org_id=org_id1,
                         system_id=system_id4,
+                        groups=[],
                     ),
                 ],
             ),
@@ -490,5 +491,9 @@ class MappedSystemsWithGroupsTest(DbModelTest):
         self.assertEqual(3, len(mapped_systems))
 
         rbac_group_filters = [{"id": "group_id_3"}]
+        mapped_systems = baseline.mapped_system_ids(rbac_group_filters=rbac_group_filters)
+        self.assertEqual(1, len(mapped_systems))
+
+        rbac_group_filters = [{"id": None}]
         mapped_systems = baseline.mapped_system_ids(rbac_group_filters=rbac_group_filters)
         self.assertEqual(1, len(mapped_systems))

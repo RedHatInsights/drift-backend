@@ -49,12 +49,25 @@ class SystemBaseline(db.Model):
         return value
 
     def mapped_system_ids(self, rbac_group_filters=None):
+        # rbac_group_filters behaviour
+        # format is a list of dictionaries
+        # possible values:
+        # None - no filter applied, all hosts allowed
+        # [] - no groups ids present, no hosts allowed
+        # [{}, {}] - group ids present, get values of "id" keys
+        # or hosts with no group present (None value in "id" key)
+        # [{'id': None}, {'id': '39eb2f52-37c1-4f75-95e6-7237d0b385b7'}]
+
         mapped_systems_query = self.mapped_systems
         if rbac_group_filters:
             mapped_systems_query = mapped_systems_query.filter(
                 or_(
                     *[
-                        SystemBaselineMappedSystem.groups.contains(cast([rbac_group_filter], JSONB))
+                        SystemBaselineMappedSystem.groups == "[]"
+                        if "id" in rbac_group_filter and rbac_group_filter["id"] is None
+                        else SystemBaselineMappedSystem.groups.contains(
+                            cast([rbac_group_filter], JSONB)
+                        )
                         for rbac_group_filter in rbac_group_filters
                     ]
                 )
