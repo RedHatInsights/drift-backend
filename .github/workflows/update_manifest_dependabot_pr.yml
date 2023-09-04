@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]' # run only on dependabot's actions (excludes this to trigger another time)
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the push triggers other workflows
     - name: Install poetry
