@@ -702,10 +702,34 @@ class ApiSystemsAssociationTests(ApiTest):
             str(uuid.uuid4()),
             str(uuid.uuid4()),
             str(uuid.uuid4()),
+            str(uuid.uuid4()),
+            str(uuid.uuid4()),
+        ]
+
+        self.system_groupings = [
+            [
+                {"id": "d6bba69a-25a8-11e9-81b8-c85b761454fa", "name": "first group"},
+            ],
+            [
+                {"id": "11b3cbce-25a9-11e9-8457-c85b761454fa", "name": "second group"},
+            ],
+            [
+                {"id": "d6bba69a-25a8-11e9-81b8-c85b761454fa", "name": "first group"},
+            ],
+            [
+                {"id": "d6bba69a-25a8-11e9-81b8-c85b761454fa", "name": "first group"},
+                {"id": "11b3cbce-25a9-11e9-8457-c85b761454fa", "name": "second group"},
+            ],
+            [],
         ]
 
         mock_fetch_systems.return_value = [
-            {**fixtures.SYSTEM_WITH_PROFILE, "id": system_id} for system_id in self.system_ids
+            {
+                **fixtures.SYSTEM_WITH_PROFILE,
+                "id": system_id,
+                "groups": self.system_groupings[index],
+            }
+            for index, system_id in enumerate(self.system_ids)
         ]
 
         self.client.post(
@@ -768,10 +792,59 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(response.status_code, 200)
 
         response_system_ids = json.loads(response.data)["system_ids"]
-        self.assertEqual(len(response_system_ids), 3)
+        self.assertEqual(len(response_system_ids), 5)
 
         for system_id in self.system_ids:
             self.assertIn(system_id, response_system_ids)
+
+    def test_list_systems_with_baseline_and_inventory_group_ids_filter(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems"
+            "?group_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+            "&group_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)["system_ids"]
+        self.assertEqual(len(response_system_ids), 4)
+
+    def test_list_systems_with_baseline_and_inventory_group_names_filter(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems"
+            "?group_names[]=first%20group"
+            "&group_names[]=second%20group",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)["system_ids"]
+        self.assertEqual(len(response_system_ids), 4)
+
+    def test_list_systems_with_baseline_and_inventory_group_ids_and_names_filter(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems"
+            "?group_names[]=first%20group"
+            "&group_names[]=second%20group"
+            "&group_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)["system_ids"]
+        self.assertEqual(len(response_system_ids), 4)
+
+    def test_list_systems_with_baseline_and_inventory_group_filter_non_grouped(self):
+        response = self.client.get(
+            "api/system-baseline/v1/baselines/" + self.baseline_id + "/systems"
+            "?group_ids[]="
+            "&group_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response_system_ids = json.loads(response.data)["system_ids"]
+        self.assertEqual(len(response_system_ids), 3)
 
     def test_delete_systems_with_baseline(self):
         # to delete
@@ -848,7 +921,7 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(response.status_code, 200)
 
         response_system_ids = json.loads(response.data)["system_ids"]
-        self.assertEqual(len(response_system_ids), 3)
+        self.assertEqual(len(response_system_ids), 5)
 
     @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
     def test_adding_few_systems(self, mock_fetch_systems):
@@ -874,7 +947,7 @@ class ApiSystemsAssociationTests(ApiTest):
         self.assertEqual(response.status_code, 200)
 
         response_system_ids = json.loads(response.data)["system_ids"]
-        self.assertEqual(len(response_system_ids), 5)
+        self.assertEqual(len(response_system_ids), 7)
 
         for system_id in system_ids:
             self.assertIn(system_id, response_system_ids)
@@ -885,7 +958,7 @@ class ApiSystemsAssociationTests(ApiTest):
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
-        self.assertEqual(result["data"][0]["mapped_system_count"], 3)
+        self.assertEqual(result["data"][0]["mapped_system_count"], 5)
 
     @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
     def test_get_system_count_for_baselines_by_ids(self, mock_fetch_systems):
@@ -901,4 +974,4 @@ class ApiSystemsAssociationTests(ApiTest):
         )
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
-        self.assertEqual(result["data"][0]["mapped_system_count"], 3)
+        self.assertEqual(result["data"][0]["mapped_system_count"], 5)

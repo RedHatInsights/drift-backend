@@ -48,7 +48,15 @@ class SystemBaseline(db.Model):
         validators.check_for_duplicate_names(value)
         return value
 
-    def mapped_system_ids(self, rbac_group_filters=None):
+    def get_groups_query_filters(self, filters):
+        return [
+            SystemBaselineMappedSystem.groups == "[]"
+            if "id" in filter and filter["id"] is None
+            else SystemBaselineMappedSystem.groups.contains(cast([filter], JSONB))
+            for filter in filters
+        ]
+
+    def mapped_system_ids(self, rbac_group_filters=None, api_group_filters=None):
         # rbac_group_filters behaviour
         # format is a list of dictionaries
         # possible values:
@@ -59,18 +67,15 @@ class SystemBaseline(db.Model):
         # [{'id': None}, {'id': '39eb2f52-37c1-4f75-95e6-7237d0b385b7'}]
 
         mapped_systems_query = self.mapped_systems
+
         if rbac_group_filters:
             mapped_systems_query = mapped_systems_query.filter(
-                or_(
-                    *[
-                        SystemBaselineMappedSystem.groups == "[]"
-                        if "id" in rbac_group_filter and rbac_group_filter["id"] is None
-                        else SystemBaselineMappedSystem.groups.contains(
-                            cast([rbac_group_filter], JSONB)
-                        )
-                        for rbac_group_filter in rbac_group_filters
-                    ]
-                )
+                or_(*self.get_groups_query_filters(rbac_group_filters))
+            )
+
+        if api_group_filters:
+            mapped_systems_query = mapped_systems_query.filter(
+                or_(*self.get_groups_query_filters(api_group_filters))
             )
 
         mapped_system_ids = []

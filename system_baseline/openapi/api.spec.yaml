@@ -210,6 +210,25 @@ paths:
       summary: list systems with baseline
       description: "list systems with baseline"
       operationId: system_baseline.views.v1.list_systems_with_baseline
+      parameters:
+        - name: group_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          required: false
+          description: list of Inventory Group IDs to filter by
+        - name: group_names[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          required: false
+          description: list of Inventory Group names to filter by
       responses:
         '200':
           description: a created list of system associations

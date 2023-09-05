@@ -726,12 +726,20 @@ def update_baseline(baseline_id, system_baseline_patch):
     return [query.first().to_json()]
 
 
-def list_systems_with_baseline(baseline_id):
+def list_systems_with_baseline(baseline_id, group_ids=None, group_names=None):
     ensure_rbac_notifications_read()
     ensure_rbac_inventory_read()
     validate_uuids([baseline_id])
     account_number = view_helpers.get_account_number(request)
     org_id = view_helpers.get_org_id(request)
+
+    api_group_filters = []
+    if group_ids:
+        api_group_filters = api_group_filters + [
+            {"id": None} if group_id == "" else {"id": group_id} for group_id in group_ids
+        ]
+    if group_names:
+        api_group_filters = api_group_filters + [{"name": group_name} for group_name in group_names]
 
     if org_id:
         query = SystemBaseline.query.filter(
@@ -754,7 +762,8 @@ def list_systems_with_baseline(baseline_id):
 
     try:
         system_ids = baseline.mapped_system_ids(
-            rbac_group_filters=g.get("rbac_filters").get("group.id", None)
+            rbac_group_filters=g.get("rbac_filters").get("group.id", None),
+            api_group_filters=api_group_filters,
         )
     except ValueError as error:
         message = str(error)
