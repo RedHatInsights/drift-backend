@@ -127,7 +127,7 @@ def get_baselines_by_ids(baseline_ids, limit, offset, order_by, order_how):
     for loop adds mapped system count for each baseline in the list and sets to 0 if none
     """
     mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(
-        account_number, org_id
+        account_number, org_id, rbac_group_filters=g.get("rbac_filters").get("group.id", None)
     )
     for baseline in json_list:
         baseline["mapped_system_count"] = 0
@@ -293,7 +293,7 @@ def get_baselines(limit, offset, order_by, order_how, display_name=None):
     for loop adds mapped system count for each baseline in the list and sets to 0 if none
     """
     mapped_systems_count = SystemBaselineMappedSystem.get_mapped_system_count(
-        account_number, org_id
+        account_number, org_id, rbac_group_filters=g.get("rbac_filters").get("group.id", None)
     )
     for baseline in json_list:
         baseline["mapped_system_count"] = 0

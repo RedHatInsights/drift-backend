@@ -48,7 +48,8 @@ class SystemBaseline(db.Model):
         validators.check_for_duplicate_names(value)
         return value
 
-    def get_groups_query_filters(self, filters):
+    @staticmethod
+    def get_groups_query_filters(filters):
         return [
             SystemBaselineMappedSystem.groups == "[]"
             if "id" in filter and filter["id"] is None
@@ -158,8 +159,14 @@ class SystemBaselineMappedSystem(db.Model):
         db.session.commit()
 
     @classmethod
-    def get_mapped_system_count(cls, account_number, org_id):
-        query = cls.query.with_entities(
+    def get_mapped_system_count(cls, account_number, org_id, rbac_group_filters=None):
+        mapped_systems_query = cls.query
+        if rbac_group_filters is not None:
+            mapped_systems_query = mapped_systems_query.filter(
+                or_(*SystemBaseline.get_groups_query_filters(rbac_group_filters))
+            )
+
+        query = mapped_systems_query.with_entities(
             cls.system_baseline_id, func.count(cls.system_baseline_id)
         ).group_by(cls.system_baseline_id)
 
