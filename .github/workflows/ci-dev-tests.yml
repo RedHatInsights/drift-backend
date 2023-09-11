@@ -15,7 +15,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' # don't run on dependabot's actions directly
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install poetry
         run: pipx install poetry~=1.5.0
       - name: Set up Python 3.9
