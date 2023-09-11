@@ -839,20 +839,20 @@ files = [
 
 [[package]]
 name = "insights-core"
-version = "3.2.14"
+version = "3.2.15"
 description = "Insights Core is a data collection and analysis framework"
 optional = false
 python-versions = "*"
 files = [
-    {file = "insights-core-3.2.14.tar.gz", hash = "sha256:854687fd62c89d1f19a36fa2c3a6f1cf0d66b3a1f78028a470f8c1e62be464d2"},
-    {file = "insights_core-3.2.14-py2.py3-none-any.whl", hash = "sha256:3126b16c34163cf62a1556e1687a7df77f72e60df9c5c142bf8a871a687b949f"},
+    {file = "insights-core-3.2.15.tar.gz", hash = "sha256:98e723133ca339dc86c255ecdb2a0ef1fa3e6ee7d9c3088bf4560a225e5be078"},
+    {file = "insights_core-3.2.15-py2.py3-none-any.whl", hash = "sha256:b2d043a2e8b9138a6b9fea6ceff71f56921437fab6e3f68cb06350525bae01d6"},
 ]
 
 [package.dependencies]
 cachecontrol = [
     {version = "*"},
-    {version = "*", extras = ["filecache"]},
     {version = "*", extras = ["redis"]},
+    {version = "*", extras = ["filecache"]},
 ]
 defusedxml = "*"
 jinja2 = {version = "*", markers = "python_version > \"2.7\""}
