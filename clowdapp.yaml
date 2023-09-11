@@ -65,11 +65,11 @@ objects:
                 value: '1'
             resources:
               limits:
-                cpu: 300m
-                memory: 1Gi
+                cpu: ${POPULATOR_CPU_LIMIT}
+                memory: ${POPULATOR_MEMORY_LIMIT}
               requests:
-                cpu: 50m
-                memory: 512Mi
+                cpu: ${POPULATOR_CPU_REQUESTS}
+                memory: ${POPULATOR_MEMORY_REQUESTS}
       deployments:
         - name: backend-service
           minReplicas: ${{MIN_REPLICAS}}
@@ -94,11 +94,11 @@ objects:
               periodSeconds: 10
             resources:
               limits:
-                cpu: 500m
-                memory: 1Gi
+                cpu: ${SERVICE_CPU_LIMIT}
+                memory: ${SERVICE_MEMORY_LIMIT}
               requests:
-                cpu: 100m
-                memory: 512Mi
+                cpu: ${SERVICE_CPU_REQUESTS}
+                memory: ${SERVICE_MEMORY_REQUESTS}
             volumes:
               - emptyDir: {}
                 name: hsp-prometheus-data
@@ -151,11 +151,11 @@ objects:
               periodSeconds: 10
             resources:
               limits:
-                cpu: 250m
-                memory: 512Mi
+                cpu: ${CLEANER_CPU_LIMIT}
+                memory: ${CLEANER_MEMORY_LIMIT}
               requests:
-                cpu: 250m
-                memory: 256Mi
+                cpu: ${CLEANER_CPU_REQUESTS}
+                memory: ${CLEANER_MEMORY_REQUESTS}
             volumes:
               - emptyDir: {}
                 name: historical-system-profiles-prometheus-data
@@ -218,11 +218,11 @@ objects:
               periodSeconds: 10
             resources:
               limits:
-                cpu: 250m
-                memory: 1Gi
+                cpu: ${ARCHIVER_CPU_LIMIT}
+                memory: ${ARCHIVER_MEMORY_LIMIT}
               requests:
-                cpu: 250m
-                memory: 512Mi
+                cpu: ${ARCHIVER_CPU_REQUESTS}
+                memory: ${ARCHIVER_MEMORY_REQUESTS}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
             volumes:
@@ -291,11 +291,11 @@ objects:
               periodSeconds: 10
             resources:
               limits:
-                cpu: 250m
-                memory: 1Gi
+                cpu: ${DELETER_CPU_LIMIT}
+                memory: ${DELETER_MEMORY_LIMIT}
               requests:
-                cpu: 250m
-                memory: 512Mi
+                cpu: ${DELETER_CPU_REQUESTS}
+                memory: ${DELETER_MEMORY_REQUESTS}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
             volumes:
@@ -369,6 +369,66 @@ parameters:
   - name: IMAGE
     description: image name
     value: quay.io/cloudservices/historical-system-profiles-backend
+  - name: POPULATOR_CPU_LIMIT
+    description: cpu limit for service
+    value: 300m
+  - name: POPULATOR_MEMORY_LIMIT
+    description: memory limit for service
+    value: 1Gi
+  - name: POPULATOR_CPU_REQUESTS
+    description: cpu requests for service
+    value: 50m
+  - name: POPULATOR_MEMORY_REQUESTS
+    description: memory requests for service
+    value: 512mi
+  - name: SERVICE_CPU_LIMIT
+    description: cpu limit of backend service
+    value: 500m
+  - name: SERVICE_MEMORY_LIMIT
+    description: memory limit of backend service
+    value: 1Gi
+  - name: SERVICE_CPU_REQUESTS
+    description: cpu request of backend service
+    value: 100m
+  - name: SERVICE_MEMORY_REQUESTS
+    description: memory requests of backend service
+    value: 512Mi
+  - name: CLEANER_CPU_LIMIT
+    description: cpu limit of cleaner service
+    value: 250m
+  - name: CLEANER_MEMORY_LIMIT
+    description: memory limit of cleaner service
+    value: 512Mi
+  - name: CLEANER_CPU_REQUESTS
+    description: cpu requests of cleaner service
+    value: 250m
+  - name: CLEANER_MEMORY_REQUESTS
+    description: memory requests of cleaner service
+    value: 256Mi
+  - name: ARCHIVER_CPU_LIMIT
+    description: cpu limit of archiver service
+    value: 250m
+  - name: ARCHIVER_MEMORY_LIMIT
+    description: memory limit of archiver service
+    value: 1Gi
+  - name: ARCHIVER_CPU_REQUESTS
+    description: cpu requests of archiver service
+    value: 250m
+  - name: ARCHIVER_MEMORY_REQUESTS
+    description: memory requests of archiver service
+    value: 512Mi
+  - name: DELETER_CPU_LIMIT
+    description: cpu limit of deleter service
+    value: 250m
+  - name: DELETER_MEMORY_LIMIT
+    description: memory limit of deleter service
+    value: 1Gi
+  - name: DELETER_CPU_REQUESTS
+    description: cpu requests of deleter service
+    value: 250m
+  - name: DELETER_MEMORY_REQUESTS
+    description: memory requests of deleter service
+    value: 512Mi
   - name: MIN_REPLICAS
     description: minimum pod replicas for horizontal pod autoscaler
     value: "3"
