@@ -380,7 +380,7 @@ parameters:
     value: 50m
   - name: POPULATOR_MEMORY_REQUESTS
     description: memory requests for service
-    value: 512mi
+    value: 512Mi
   - name: SERVICE_CPU_LIMIT
     description: cpu limit of backend service
     value: 500m
