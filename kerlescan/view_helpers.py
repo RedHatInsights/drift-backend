@@ -56,18 +56,11 @@ def check_request_from_drift_service(**kwargs):
     """
     request = kwargs["request"]
     logger = kwargs["logger"]
-    auth_key = get_key_from_headers(request.headers)
 
-    if auth_key is None:
-        return False
-
-    auth = json.loads(base64.b64decode(auth_key))
-    identity_type = auth.get("identity", {}).get("type", None)
-    if identity_type == "System":
-        request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
-        if request_shared_secret and request_shared_secret == drift_shared_secret:
-            logger.audit("shared-secret found, auth/entitlement authorized")
-            return True  # shared secret set and is correct
+    request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+    if request_shared_secret and request_shared_secret == drift_shared_secret:
+        logger.audit("shared-secret found, auth/entitlement authorized")
+        return True  # shared secret set and is correct
 
     return False
 
