@@ -8,7 +8,7 @@ from . import fixtures, utils
 
 
 class ArchiverTests(utils.ApiTest):
-    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    @mock.patch("historical_system_profiles.archiver._further_processing")
     def test_archive_profile_with_account(self, mock_check_and_send):
         mock_check_and_send.return_value = None
         message = MagicMock()
@@ -31,7 +31,7 @@ class ArchiverTests(utils.ApiTest):
         with self.test_flask_app.app_context():
             db_interface.delete_hsps_by_inventory_id("6388350e-b18d-11ea-ad7f-98fa9b07d419")
 
-    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    @mock.patch("historical_system_profiles.archiver._further_processing")
     def test_archive_profile_without_account(self, mock_check_and_send):
         mock_check_and_send.return_value = None
         message = MagicMock()
@@ -54,7 +54,7 @@ class ArchiverTests(utils.ApiTest):
         with self.test_flask_app.app_context():
             db_interface.delete_hsps_by_inventory_id("6388350e-b18d-11ea-ad7f-98fa9b07d419")
 
-    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    @mock.patch("historical_system_profiles.archiver._further_processing")
     def test_archive_profile_with_groups(self, mock_check_and_send):
         mock_check_and_send.return_value = None
         message = MagicMock()

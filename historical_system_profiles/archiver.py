@@ -125,16 +125,17 @@ def _archive_profile(data, ptc, logger, notification_service):
         # After the new hsp is saved, we need to check for any reason to alert via
         # triggering a notification, i.e. if drift from any associated baselines has
         # occurred.
-        _check_and_send_notifications(
-            inventory_id,
-            account,
-            org_id,
-            host["updated"],
-            host["display_name"],
-            tags,
-            notification_service,
-            service_auth_key,
-            logger,
+        _further_processing(
+            inventory_id=inventory_id,
+            account_id=account,
+            org_id=org_id,
+            system_check_in=host["updated"],
+            display_name=host["display_name"],
+            tags=tags,
+            groups=groups,
+            notification_service=notification_service,
+            service_auth_key=service_auth_key,
+            logger=logger,
         )
 
 
@@ -142,16 +143,17 @@ def _check_if_notification_enabled(baseline_id, service_auth_key, logger):
     return fetch_baselines([baseline_id], service_auth_key, logger)[0]["notifications_enabled"]
 
 
-def _check_and_send_notifications(
-    inventory_id,
-    account_id,
-    org_id,
-    system_check_in,
-    display_name,
-    tags,
-    notification_service,
-    service_auth_key,
-    logger,
+def _further_processing(
+    inventory_id=None,
+    account_id=None,
+    org_id=None,
+    system_check_in=None,
+    display_name=None,
+    tags=None,
+    groups=None,
+    notification_service=None,
+    service_auth_key=None,
+    logger=None,
 ):
     # After the new hsp is saved, we need to check for any reason to alert Notifications
     # First, check if this system id is associated with any baselines
