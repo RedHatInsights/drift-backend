@@ -102,6 +102,7 @@ def ensure_account_number(**kwargs):
     if (
         _is_mgmt_url(request.path)
         or check_request_from_turnpike(request=request, logger=logger)
+        or check_request_from_drift_service(**kwargs)
         or _is_openapi_url(request.path, app_name)
     ):
         return  # allow request
@@ -127,6 +128,7 @@ def ensure_org_id(**kwargs):
     if (
         _is_mgmt_url(request.path)
         or check_request_from_turnpike(request=request, logger=logger)
+        or check_request_from_drift_service(**kwargs)
         or _is_openapi_url(request.path, app_name)
     ):
         return  # allow request
@@ -156,14 +158,15 @@ def ensure_has_permission(**kwargs):
     if not enable_rbac:
         return
 
-    if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
+    if (
+        _is_mgmt_url(request.path)
+        or check_request_from_drift_service(**kwargs)
+        or check_request_from_turnpike(**kwargs)
+        or _is_openapi_url(request.path, app_name)
+    ):
         return  # allow request
 
     auth_key = get_key_from_headers(request.headers)
-
-    # check if the request comes from our own drift service
-    if check_request_from_drift_service(**kwargs) or check_request_from_turnpike(**kwargs):
-        return
 
     if not auth_key:
         logger.debug("entitlement not found for account/org.")
@@ -226,17 +229,18 @@ def ensure_entitled(**kwargs):
 
     # TODO: Blueprint.before_request was not working as expected, using
     # before_app_request and checking URL here instead.
-    if _is_mgmt_url(request.path) or _is_openapi_url(request.path, app_name):
+    if (
+        _is_mgmt_url(request.path)
+        or _is_openapi_url(request.path, app_name)
+        or check_request_from_drift_service(request=request, logger=logger)
+        or check_request_from_turnpike(request=request, logger=logger)
+    ):
         return  # allow request
 
-    # check if the request comes from our own drift service
-    if check_request_from_drift_service(
-        request=request, logger=logger
-    ) or check_request_from_turnpike(request=request, logger=logger):
+        # check if the request comes from our own drift service
         return
 
     auth_key = get_key_from_headers(request.headers)
-
     if not auth_key:
         logger.debug("entitlement not found for account/org.")
         raise HTTPError(HTTPStatus.BAD_REQUEST, message="identity not found on request")
