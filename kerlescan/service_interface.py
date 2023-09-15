@@ -42,7 +42,7 @@ def _validate_service_response(response, logger, auth_header):
         raise ServiceError("Error received from backend service")
 
 
-def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="get"):
+def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="get", json=None):
     """
     helper to make a single request
     """
@@ -53,7 +53,9 @@ def fetch_url(url, auth_header, logger, time_metric, exception_metric, method="g
     logger.debug("fetching %s" % url)
     with time_metric.time():
         with exception_metric.count_exceptions():
-            response = requests.request(method, url, headers=auth_header, verify=tls_ca_path)
+            response = requests.request(
+                method, url, headers=auth_header, verify=tls_ca_path, json=json
+            )
     logger.debug("fetched %s" % url)
     _validate_service_response(response, logger, auth_header)
     return response.json()
