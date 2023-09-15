@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import cast, func, or_
+from sqlalchemy import cast, func, or_, update
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.schema import ForeignKey, UniqueConstraint
@@ -148,6 +148,15 @@ class SystemBaselineMappedSystem(db.Model):
     system_id = db.Column(UUID(as_uuid=True), nullable=False, index=True)
     groups = db.Column(JSONB)
 
+    def to_json(self):
+        json_dict = {}
+        json_dict["id"] = str(self.id)
+        json_dict["account"] = self.account
+        json_dict["org_id"] = self.org_id
+        json_dict["system_baseline_id"] = self.system_baseline_id
+        json_dict["groups"] = self.groups
+        return json_dict
+
     @classmethod
     def delete_by_system_ids(cls, system_ids, account_number, org_id):
         if org_id:
@@ -176,3 +185,21 @@ class SystemBaselineMappedSystem(db.Model):
             results = query.filter(cls.account == account_number).all()
 
         return results
+
+    @classmethod
+    def update_systems(cls, system_id, groups=None):
+        if groups is None:
+            return
+
+        query = (
+            update(cls)
+            .where(cls.system_id == system_id)
+            .values(groups=groups)
+            .returning(cls.id, cls.system_id, cls.system_baseline_id, cls.groups)
+        )
+        updated_systems_data = db.session.execute(query).all()
+        db.session.commit()
+        return [
+            cls(id=data[0], system_id=data[1], system_baseline_id=data[2], groups=data[3])
+            for data in updated_systems_data
+        ]

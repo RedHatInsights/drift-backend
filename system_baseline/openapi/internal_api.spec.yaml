@@ -44,6 +44,37 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /systems/{system_id}:
+    parameters:
+      - $ref: '#/components/parameters/SystemId'
+    patch:
+      summary: update mapped system records
+      description: "update mapped system records, accepts groups only"
+      operationId: system_baseline.internal_views.v1.update_system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_patch
+              type: object
+              x-nullable: true
+              properties:
+                groups:
+                  $ref: "#/components/schemas/InventoryGroups"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /systems/{system_ids}:
     parameters:
       - $ref: '#/components/parameters/SystemIds'
@@ -158,6 +189,32 @@ components:
           items:
             type: string
             format: uuid
+    SystemList:
+      type: array
+      items:
+        $ref: "#/components/schemas/System"
+    System:
+      type: object
+      required:
+        - id
+        - account
+        - org_id
+        - system_baseline_id
+        - groups
+    InventoryGroups:
+      type: array
+      items:
+        $ref: "#/components/schemas/InventoryGroup"
+    InventoryGroup:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
   parameters:
     SystemIdParam:
       name: system_id
@@ -166,6 +223,12 @@ components:
       schema:
         $ref: "#/components/schemas/SystemId"
       description: system id to search by
+    SystemId:
+      in: path
+      name: system_id
+      required: true
+      schema:
+        $ref: "#/components/schemas/SystemId"
     SystemIds:
       in: path
       name: system_ids

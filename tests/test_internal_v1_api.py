@@ -7,6 +7,7 @@ import mock
 from mock import patch
 
 from system_baseline import app
+from system_baseline.models import SystemBaselineMappedSystem
 
 from . import fixtures
 
@@ -392,3 +393,157 @@ class InternalApiBaselinesTests(ApiTest):
 
         response_baseline_ids = json.loads(response.data)
         self.assertEqual(len(response_baseline_ids), len(baseline_ids))
+
+
+class ApiMappedSystemPatchTests(ApiTest):
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def setUp(self, mock_fetch_systems):
+        super(ApiMappedSystemPatchTests, self).setUp()
+        mock_fetch_systems.return_value = [fixtures.SYSTEM_WITH_PROFILE]
+
+        # create a few baselines
+        for i in range(1, 4):
+            self.client.post(
+                "api/system-baseline/v1/baselines",
+                headers=fixtures.AUTH_HEADER,
+                json=fixtures.BASELINE_ONE_LOAD,
+            )
+
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.baseline_ids = [b["id"] for b in result["data"]]
+
+        # create a mapped system associated with these baselines
+        self.system_id = str(uuid.uuid4())
+        for baseline_id in self.baseline_ids:
+            self.client.post(
+                "api/system-baseline/v1/baselines/" + baseline_id + "/systems",
+                headers=fixtures.AUTH_HEADER,
+                json={"system_ids": [self.system_id]},
+            )
+
+    @mock.patch("system_baseline.views.v1.fetch_systems_with_profiles")
+    def tearDown(self, mock_fetch_systems):
+        super(ApiMappedSystemPatchTests, self).tearDown()
+        mock_fetch_systems.return_value = [fixtures.SYSTEM_WITH_PROFILE]
+        response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
+        data = json.loads(response.data)["data"]
+        for baseline in data:
+            # get systems for baseline
+            response = self.client.get(
+                "api/system-baseline/v1/baselines/" + baseline["id"] + "/systems",
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+            system_ids = json.loads(response.data)
+
+            # delete systems
+            response = self.client.post(
+                "api/system-baseline/v1/baselines/" + baseline["id"] + "/systems/deletion_request",
+                headers=fixtures.AUTH_HEADER,
+                json=system_ids,
+            )
+            self.assertEqual(response.status_code, 200)
+
+            # delete baseline
+            response = self.client.delete(
+                "api/system-baseline/v1/baselines/%s" % baseline["id"],
+                headers=fixtures.AUTH_HEADER,
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_update_mapped_system_with_groups(self):
+        response = self.client.patch(
+            "api/system-baseline/internal/v1/systems/" + self.system_id,
+            json={
+                "groups": [
+                    {"id": "new_group", "name": "new_group_name"},
+                    {"id": "another_group", "name": "another_group_name"},
+                ]
+            },
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        systems = SystemBaselineMappedSystem.query.where(
+            SystemBaselineMappedSystem.system_id == self.system_id
+        ).all()
+        for system in systems:
+            self.assertEqual(
+                system.groups,
+                [
+                    {"id": "new_group", "name": "new_group_name"},
+                    {"id": "another_group", "name": "another_group_name"},
+                ],
+            )
+
+    def test_update_mapped_system_without_groups(self):
+        response = self.client.patch(
+            "api/system-baseline/internal/v1/systems/" + self.system_id,
+            json={},
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        systems = SystemBaselineMappedSystem.query.where(
+            SystemBaselineMappedSystem.system_id == self.system_id
+        ).all()
+        for system in systems:
+            self.assertEqual(system.groups, [])
+
+    def test_update_mapped_system_with_other_data(self):
+        response = self.client.patch(
+            "api/system-baseline/internal/v1/systems/" + self.system_id,
+            json={
+                "groups": [
+                    {"id": "new_group", "name": "new_group_name"},
+                    {"id": "another_group", "name": "another_group_name"},
+                ]
+            },
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        systems = SystemBaselineMappedSystem.query.where(
+            SystemBaselineMappedSystem.system_id == self.system_id
+        ).all()
+        for system in systems:
+            self.assertEqual(
+                system.groups,
+                [
+                    {"id": "new_group", "name": "new_group_name"},
+                    {"id": "another_group", "name": "another_group_name"},
+                ],
+            )
+
+        # update mapped system with other data
+        response = self.client.patch(
+            "api/system-baseline/internal/v1/systems/" + self.system_id,
+            json={"foo": "bar"},
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # make sure it groups are not overwritten
+        systems = SystemBaselineMappedSystem.query.where(
+            SystemBaselineMappedSystem.system_id == self.system_id
+        ).all()
+        for system in systems:
+            self.assertEqual(
+                system.groups,
+                [
+                    {"id": "new_group", "name": "new_group_name"},
+                    {"id": "another_group", "name": "another_group_name"},
+                ],
+            )
+
+    def test_update_not_existing_mapped_system(self):
+        system_id = str(uuid.uuid4())
+        response = self.client.patch(
+            "api/system-baseline/internal/v1/systems/" + system_id,
+            json={"groups": [{"id": "foo"}]},
+            headers=fixtures.AUTH_HEADER,
+        )
+        self.assertEqual(response.status_code, 404)

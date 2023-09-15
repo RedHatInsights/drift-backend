@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request
+from flask import Blueprint, abort, current_app, request
 from kerlescan import view_helpers
 from kerlescan.view_helpers import validate_uuids
 
@@ -85,3 +85,17 @@ def create_systems_deletion_request(body):
     """
     system_ids = body["system_ids"]
     return delete_systems_by_ids(system_ids)
+
+
+def update_system(system_id, system_patch):
+    if system_patch:
+        groups = system_patch.get("groups", [])
+    else:
+        groups = []
+
+    updated_systems = SystemBaselineMappedSystem.update_systems(system_id, groups=groups)
+
+    if not updated_systems:
+        abort(404)
+    else:
+        return [system.to_json() for system in updated_systems]
