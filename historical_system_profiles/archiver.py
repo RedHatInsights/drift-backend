@@ -1,6 +1,8 @@
 import time
 
-from historical_system_profiles import db_interface, listener_metrics, probes
+from kerlescan.system_baseline_service_interface import update_mapped_system_groups
+
+from historical_system_profiles import db_interface, listener_metrics, metrics, probes
 from historical_system_profiles.baseline_service_interface import (
     fetch_baselines,
     fetch_system_baseline_associations,
@@ -144,9 +146,9 @@ def _check_if_notification_enabled(baseline_id, service_auth_key, logger):
 
 
 def _further_processing(
-    inventory_id=None,
-    account_id=None,
-    org_id=None,
+    inventory_id,
+    account_id,
+    org_id,
     system_check_in=None,
     display_name=None,
     tags=None,
@@ -165,6 +167,17 @@ def _further_processing(
     # If yes, then for each baseline associated, call for a short-circuited comparison
     # to see if the system has drifted from that baseline.
     if baseline_ids:
+        # update groups in Baselines Associated System
+        update_mapped_system_groups(
+            inventory_id,
+            groups,
+            service_auth_key,
+            logger,
+            metrics.baseline_service_requests,
+            metrics.baseline_service_exceptions,
+        )
+
+        # check for Drift Event enabled, do a comparison and send notification
         drift_found = False
         event = EventDriftBaselineDetected(
             account_id, org_id, inventory_id, system_check_in, display_name, tags
