@@ -1,8 +1,6 @@
 import time
 
-from historical_system_profiles import db_interface
-from historical_system_profiles import listener_metrics as metrics
-from historical_system_profiles import probes
+from historical_system_profiles import db_interface, listener_metrics, probes
 from historical_system_profiles.baseline_service_interface import (
     fetch_baselines,
     fetch_system_baseline_associations,
@@ -15,7 +13,7 @@ from historical_system_profiles.notification_service_interface import (
 
 
 def _record_recv_message(host, request_id, ptc):
-    metrics.profile_messages_consumed.inc()
+    listener_metrics.profile_messages_consumed.inc()
     ptc.emit_received_message(
         "received inventory update event",
         request_id=request_id,
@@ -26,7 +24,7 @@ def _record_recv_message(host, request_id, ptc):
 
 
 def _record_success_message(hsp_id, host, request_id, ptc):
-    metrics.profile_messages_processed.inc()
+    listener_metrics.profile_messages_processed.inc()
     ptc.emit_success_message(
         "stored historical profile %s" % hsp_id,
         request_id=request_id,
@@ -37,7 +35,7 @@ def _record_success_message(hsp_id, host, request_id, ptc):
 
 
 def _record_duplicate_message(host, request_id, ptc):
-    metrics.profile_messages_processed_duplicates.inc()
+    listener_metrics.profile_messages_processed_duplicates.inc()
     ptc.emit_success_message(
         "profile not saved to db (timestamp already exists)",
         request_id=request_id,
@@ -211,7 +209,7 @@ def _emit_archiver_error(data, ptc, logger):
     send an error message to payload tracker. This does not raise an
     exception.
     """
-    metrics.profile_messages_errored.inc()
+    listener_metrics.profile_messages_errored.inc()
     host = data.value["host"]
     request_id = _get_request_id(data)
     ptc.emit_error_message(
