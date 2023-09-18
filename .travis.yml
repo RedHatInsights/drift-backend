@@ -1,0 +1,20 @@
+language: python
+
+python:
+ - "3.9"
+
+script:
+  - .travis/check-manifest.sh
+  - flake8
+  - black . --check -t py39
+  - yamllint drift/openapi/mgmt_api.spec.yaml
+  - yamllint drift/openapi/api.spec.yaml
+  - ./run_unit_tests.sh
+
+install:
+  - pip install --force-reinstall poetry~=1.4.0
+  - poetry install --with dev --verbose --verbose
+  - pip install codecov
+
+after_success:
+  - codecov
