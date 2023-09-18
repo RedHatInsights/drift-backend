@@ -6,7 +6,6 @@ ENV LC_ALL=C.utf8
 ENV LANG=C.utf8
 
 ENV APP_ROOT=/opt/app-root
-ENV PIP_NO_CACHE_DIR=1
 
 ENV POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config
 ENV POETRY_DATA_DIR=/opt/app-root/.pypoetry/data
@@ -23,13 +22,16 @@ RUN microdnf update -y && \
     microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
     rpm -qa | sort > packages-after-devel-install.txt
 
-COPY . ${APP_ROOT}/src
+RUN pip3 install --upgrade pip && \
+    pip3 install --force-reinstall poetry~=1.5.0
+
+COPY pyproject.toml poetry.lock ${APP_ROOT}/src
 
 WORKDIR ${APP_ROOT}/src
 
-RUN pip3 install --upgrade pip && \
-    pip3 install --force-reinstall poetry~=1.5.0 && \
-    poetry install --sync
+RUN poetry install --sync
+
+COPY . ${APP_ROOT}/src
 
 # allows unit tests to run successfully within the container if image is built in "test" environment
 RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
