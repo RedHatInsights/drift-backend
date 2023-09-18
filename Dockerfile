@@ -1,6 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-RUN microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
+RUN microdnf update -y && \
+    microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
     git-core python39 python39-pip tzdata libpq-devel && \
     rpm -qa | sort > packages-before-devel-install.txt && \
     microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
