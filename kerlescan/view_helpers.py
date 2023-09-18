@@ -8,6 +8,7 @@ from http import HTTPStatus
 from requests.exceptions import Timeout
 
 from kerlescan.config import drift_shared_secret, enable_rbac, enable_smart_mgmt_check, path_prefix
+from kerlescan.constants import DRIFT_INTERNAL_API_HEADER_NAME
 from kerlescan.exceptions import HTTPError, RBACDenied
 from kerlescan.rbac_service_interface import get_perms
 from kerlescan.service_interface import get_key_from_headers
@@ -57,7 +58,7 @@ def check_request_from_drift_service(**kwargs):
     request = kwargs["request"]
     logger = kwargs["logger"]
 
-    request_shared_secret = request.headers.get("x-rh-drift-internal-api", None)
+    request_shared_secret = request.headers.get(DRIFT_INTERNAL_API_HEADER_NAME, None)
     if request_shared_secret and request_shared_secret == drift_shared_secret:
         logger.audit("shared-secret found, auth/entitlement authorized")
         return True  # shared secret set and is correct
