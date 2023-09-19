@@ -1,3 +1,5 @@
+import base64
+import json
 import time
 
 from kerlescan.system_baseline_service_interface import update_mapped_system_groups
@@ -90,6 +92,10 @@ def _archive_profile(data, ptc, logger, notification_service):
     account = host.get("account")
     org_id = host["org_id"]
     groups = host.get("groups")
+
+    if service_auth_key is None:
+        service_auth_key_data = {"identity": {"org_id": org_id, "account": account}}
+        service_auth_key = base64.b64encode(bytes(json.dumps(service_auth_key_data), "UTF-8"))
 
     # Historical profiles have a "captured_date" which is when the data was
     # taken from the system by insights-client. However, some reporters to
