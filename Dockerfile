@@ -23,7 +23,7 @@ RUN microdnf update -y && \
     rpm -qa | sort > packages-after-devel-install.txt
 
 RUN pip3 install --upgrade pip setuptools wheel && \
-    pip3 install --force-reinstall poetry~=1.5.0
+    pip3 install --force-reinstall poetry~=1.6.0
 
 COPY pyproject.toml poetry.lock ${APP_ROOT}/src
 
