@@ -26,7 +26,7 @@ COPY . ${APP_ROOT}/src
 WORKDIR ${APP_ROOT}/src
 
 RUN pip3 install --upgrade pip && \
-    pip3 install --force-reinstall poetry~=1.5.0
+    pip3 install --force-reinstall poetry~=1.6.0
 
 RUN chown -R insights:0 /opt/app-root  && \
     chgrp -R 0 /opt/app-root && \
