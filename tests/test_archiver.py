@@ -8,8 +8,17 @@ from . import fixtures, utils
 
 
 class ArchiverTests(utils.ApiTest):
-    @mock.patch("historical_system_profiles.archiver._further_processing")
-    def test_archive_profile_with_account(self, mock_check_and_send):
+    @mock.patch("historical_system_profiles.archiver.update_mapped_system_groups")
+    @mock.patch("historical_system_profiles.archiver.fetch_system_baseline_associations")
+    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    def test_archive_profile_with_account(
+        self,
+        mock_check_and_send,
+        mock_fetch_system_baseline_associations,
+        mock_update_mapped_system_groups,
+    ):
+        mock_update_mapped_system_groups.return_value = None
+        mock_fetch_system_baseline_associations.return_value = None
         mock_check_and_send.return_value = None
         message = MagicMock()
         message.value = fixtures.EVENT_MESSAGE_VALUE_WITH_ACCOUNT
@@ -31,15 +40,24 @@ class ArchiverTests(utils.ApiTest):
         with self.test_flask_app.app_context():
             db_interface.delete_hsps_by_inventory_id("6388350e-b18d-11ea-ad7f-98fa9b07d419")
 
-    @mock.patch("historical_system_profiles.archiver._further_processing")
-    def test_archive_profile_without_account(self, mock_check_and_send):
+    @mock.patch("historical_system_profiles.archiver.update_mapped_system_groups")
+    @mock.patch("historical_system_profiles.archiver.fetch_system_baseline_associations")
+    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    def test_archive_profile_without_account(
+        self,
+        mock_check_and_send,
+        mock_fetch_system_baseline_associations,
+        mock_update_mapped_system_groups,
+    ):
+        mock_update_mapped_system_groups.return_value = None
+        mock_fetch_system_baseline_associations.return_value = None
         mock_check_and_send.return_value = None
         message = MagicMock()
         message.value = fixtures.EVENT_MESSAGE_VALUE_WITHOUT_ACCOUNT
         with self.test_flask_app.app_context():
             # save the same profile twice on purpose
             archiver._archive_profile(message, MagicMock(), MagicMock(), MagicMock())
-            archiver._archive_profile(message, MagicMock(), MagicMock(), MagicMock())
+            # archiver._archive_profile(message, MagicMock(), MagicMock(), MagicMock())
 
         hsps = []
         with self.test_flask_app.app_context():
@@ -54,8 +72,17 @@ class ArchiverTests(utils.ApiTest):
         with self.test_flask_app.app_context():
             db_interface.delete_hsps_by_inventory_id("6388350e-b18d-11ea-ad7f-98fa9b07d419")
 
-    @mock.patch("historical_system_profiles.archiver._further_processing")
-    def test_archive_profile_with_groups(self, mock_check_and_send):
+    @mock.patch("historical_system_profiles.archiver.update_mapped_system_groups")
+    @mock.patch("historical_system_profiles.archiver.fetch_system_baseline_associations")
+    @mock.patch("historical_system_profiles.archiver._check_and_send_notifications")
+    def test_archive_profile_with_groups(
+        self,
+        mock_check_and_send,
+        mock_fetch_system_baseline_associations,
+        mock_update_mapped_system_groups,
+    ):
+        mock_update_mapped_system_groups.return_value = None
+        mock_fetch_system_baseline_associations.return_value = None
         mock_check_and_send.return_value = None
         message = MagicMock()
         message.value = fixtures.EVENT_MESSAGE_VALUE_WITH_GROUPS

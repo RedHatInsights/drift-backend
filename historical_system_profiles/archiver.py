@@ -97,6 +97,19 @@ def _archive_profile(data, ptc, logger, notification_service):
         service_auth_key_data = {"identity": {"org_id": org_id, "account": account}}
         service_auth_key = base64.b64encode(bytes(json.dumps(service_auth_key_data), "UTF-8"))
 
+    baseline_ids = fetch_system_baseline_associations(inventory_id, service_auth_key, logger)
+
+    if baseline_ids:
+        # update groups in Baselines Associated System
+        update_mapped_system_groups(
+            inventory_id,
+            groups,
+            service_auth_key,
+            logger,
+            metrics.baseline_service_requests,
+            metrics.baseline_service_exceptions,
+        )
+
     # Historical profiles have a "captured_date" which is when the data was
     # taken from the system by insights-client. However, some reporters to
     # inventory service run in a batch mode and do not update the
@@ -133,8 +146,9 @@ def _archive_profile(data, ptc, logger, notification_service):
         # After the new hsp is saved, we need to check for any reason to alert via
         # triggering a notification, i.e. if drift from any associated baselines has
         # occurred.
-        _further_processing(
+        _check_and_send_notifications(
             inventory_id=inventory_id,
+            baseline_ids=baseline_ids,
             account_id=account,
             org_id=org_id,
             system_check_in=host["updated"],
@@ -151,8 +165,9 @@ def _check_if_notification_enabled(baseline_id, service_auth_key, logger):
     return fetch_baselines([baseline_id], service_auth_key, logger)[0]["notifications_enabled"]
 
 
-def _further_processing(
+def _check_and_send_notifications(
     inventory_id,
+    baseline_ids,
     account_id,
     org_id,
     system_check_in=None,
@@ -169,20 +184,9 @@ def _further_processing(
     # to see if the system has drifted from that baseline.
     # If anything has changed, send a kafka message to trigger a notification.
 
-    baseline_ids = fetch_system_baseline_associations(inventory_id, service_auth_key, logger)
     # If yes, then for each baseline associated, call for a short-circuited comparison
     # to see if the system has drifted from that baseline.
     if baseline_ids:
-        # update groups in Baselines Associated System
-        update_mapped_system_groups(
-            inventory_id,
-            groups,
-            service_auth_key,
-            logger,
-            metrics.baseline_service_requests,
-            metrics.baseline_service_exceptions,
-        )
-
         # check for Drift Event enabled, do a comparison and send notification
         drift_found = False
         event = EventDriftBaselineDetected(
