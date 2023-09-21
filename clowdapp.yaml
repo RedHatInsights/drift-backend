@@ -434,7 +434,7 @@ parameters:
     value: "3"
   - name: MAX_REPLICAS
     description: maximum pod replicas for horizontal pod autoscaler
-    value: "3"
+    value: "6"
   - description: ClowdEnv Name
     name: ENV_NAME
   - name: CLOWDER_ENABLED
