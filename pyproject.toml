@@ -49,8 +49,6 @@ python = "^3.9"
 connexion = {extras = ["swagger-ui"], version = "*"}
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.112", develop = true}
 prometheus-client = "*"
-watchtower = "*"
-flake8 = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
 alembic = "*"
@@ -61,10 +59,6 @@ kafka-python = "*"
 logstash-formatter = "*"
 python-dateutil = "*"
 pytz = "*"
-app-common-python = "*"
-jsonschema = "*"
-markupsafe = "*"
-click = "*"
 
 
 [tool.poetry.group.dev.dependencies]
