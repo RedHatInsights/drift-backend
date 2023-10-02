@@ -51,21 +51,12 @@ connexion = {extras = ["swagger-ui"], version = "*"}
 Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
-boto3 = "*"
-watchtower = "*"
 flask-sqlalchemy = "*"
-sqlalchemy = "*"
 alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
-bitmath = "*"
 jsonpatch = "*"
-insights-core = "*"
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.112", develop = true}
-app-common-python = "*"
-unleashclient = "*"
-jsonschema = "*"
-markupsafe = "*"
 psycopg2 = "*"
 
 
