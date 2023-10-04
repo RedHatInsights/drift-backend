@@ -4,6 +4,7 @@ set -exv
 
 IMAGE_NAME="quay.io/cloudservices/drift-backend"
 IMAGE_TAG=$(git rev-parse --short=7 HEAD)
+SECURITY_COMPLIANCE_TAG="sc-$(date +%Y%m%d)-$(git rev-parse --short=7 HEAD)"
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     echo "QUAY_USER and QUAY_TOKEN must be set"
@@ -18,10 +19,16 @@ if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; th
     docker --config="$DOCKER_CONF" login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
     docker --config="$DOCKER_CONF" build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:${IMAGE_TAG}"
-    for TAG in "latest" "qa"; do
-        docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
-        docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
-    done
+    
+    if [[ $GIT_BRANCH == "origin/security-compliance" ]]; then
+        docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
+        docker --config="$DOCKER_CONF" push "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
+    else
+        for TAG in "latest" "qa"; do
+            docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
+            docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
+        done
+    fi
 else
     # on RHEL8 or anything else, use podman
     AUTH_CONF_DIR="$(pwd)/.podman"
