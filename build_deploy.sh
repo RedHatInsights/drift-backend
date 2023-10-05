@@ -4,6 +4,7 @@ set -exv
 
 IMAGE_NAME="quay.io/cloudservices/system-baseline-backend"
 IMAGE_TAG=$(git rev-parse --short=7 HEAD)
+SECURITY_COMPLIANCE_TAG="sc-$(date +%Y%m%d)-$(git rev-parse --short=7 HEAD)"
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     echo "QUAY_USER and QUAY_TOKEN must be set"
@@ -38,9 +39,9 @@ else
     podman build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     podman push "${IMAGE_NAME}:${IMAGE_TAG}"
 
-    if [[ $GIT_BRANCH == *"security-compliance"* ]]; then
-        podman tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:security-compliance"
-        podman push "${IMAGE}:security-compliance"
+    if [[ "$GIT_BRANCH" == "origin/security-compliance" ]]; then
+        podman tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
+        podman push "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
     else
         for TAG in "latest" "qa"; do
             podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
