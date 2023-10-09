@@ -11,6 +11,12 @@ if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     exit 1
 fi
 
+if [[ "$GIT_BRANCH" == "origin/security-compliance" ]]; then
+    PUSH_TAG="${SECURITY_COMPLIANCE_TAG}"
+else
+    PUSH_TAG=("latest" "qa")
+fi
+
 if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; then
     # on RHEL7, use docker
     DOCKER_CONF="$PWD/.docker"
@@ -19,16 +25,12 @@ if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; th
     docker --config="$DOCKER_CONF" login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
     docker --config="$DOCKER_CONF" build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:${IMAGE_TAG}"
-    
-    if [[ $GIT_BRANCH == "origin/security-compliance" ]]; then
-        docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
-        docker --config="$DOCKER_CONF" push "${IMAGE}:${SECURITY_COMPLIANCE_TAG}"
-    else
-        for TAG in "latest" "qa"; do
-            docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
-            docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
-        done
-    fi
+
+    for TAG in "${PUSH_TAG[@]}"; do
+        docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
+        docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:$TAG"
+    done
+
 else
     # on RHEL8 or anything else, use podman
     AUTH_CONF_DIR="$(pwd)/.podman"
@@ -38,7 +40,8 @@ else
     podman login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
     podman build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     podman push "${IMAGE_NAME}:${IMAGE_TAG}"
-    for TAG in "latest" "qa"; do
+
+    for TAG in "${PUSH_TAG[@]}"; do
         podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:$TAG"
         podman push "${IMAGE_NAME}:$TAG"
     done
