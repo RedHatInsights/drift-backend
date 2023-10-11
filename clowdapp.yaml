@@ -33,43 +33,6 @@ objects:
           partitions: 1
         - topicName: platform.inventory.events
           partitions: 1
-      jobs:
-        - name: org-id-populator
-          podSpec:
-            image: quay.io/cloudservices/tenant-utils:7336069
-            command:
-              - ./org-id-column-populator
-              - -C
-              - -a
-              - account
-              - -o
-              - org_id
-              - -t
-              - historical_system_profiles
-              - --ean-translator-addr
-              - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
-              - --ean-translator-timeout
-              - "60"
-              - --batch-size
-              - "20"
-              - --db-operation-timeout
-              - "100"
-            env:
-              - name: TENANT_TRANSLATOR_HOST
-                value: ${TENANT_TRANSLATOR_HOST}
-              - name: TENANT_TRANSLATOR_PORT
-                value: ${TENANT_TRANSLATOR_PORT}
-              - name: POPULATOR_LOG_FORMAT
-                value: ${POPULATOR_LOG_FORMAT}
-              - name: LOG_BATCH_FREQUENCY
-                value: '1'
-            resources:
-              limits:
-                cpu: ${POPULATOR_CPU_LIMIT}
-                memory: ${POPULATOR_MEMORY_LIMIT}
-              requests:
-                cpu: ${POPULATOR_CPU_REQUESTS}
-                memory: ${POPULATOR_MEMORY_REQUESTS}
       deployments:
         - name: backend-service
           minReplicas: ${{MIN_REPLICAS}}
@@ -369,18 +332,6 @@ parameters:
   - name: IMAGE
     description: image name
     value: quay.io/cloudservices/historical-system-profiles-backend
-  - name: POPULATOR_CPU_LIMIT
-    description: cpu limit for service
-    value: 300m
-  - name: POPULATOR_MEMORY_LIMIT
-    description: memory limit for service
-    value: 1Gi
-  - name: POPULATOR_CPU_REQUESTS
-    description: cpu requests for service
-    value: 50m
-  - name: POPULATOR_MEMORY_REQUESTS
-    description: memory requests for service
-    value: 512Mi
   - name: SERVICE_CPU_LIMIT
     description: cpu limit of backend service
     value: 500m
@@ -459,15 +410,3 @@ parameters:
   - name: EXPIRED_CLEANER_SLEEP_MINUTES
     describes: How often are old data cleaned
     value: "20"
-  - description: Host for the EAN to OrgId translator.
-    name: TENANT_TRANSLATOR_HOST
-    required: true
-    value: 'gateway.3scale-dev.svc.cluster.local'
-  - description: Port for the EAN to OrgId translator.
-    name: TENANT_TRANSLATOR_PORT
-    required: true
-    value: '8891'
-  - name: POPULATOR_LOG_FORMAT
-    value: cloudwatch
-  - name: POPULATOR_RUN_NUMBER # in case the populator needs to be run more than once increment this parameter to get a new job
-    value: '1'
