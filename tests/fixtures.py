@@ -1,3 +1,10 @@
+from datetime import datetime, timedelta
+
+
+def datetime_n_days_ago(n):
+    datetime.isoformat((datetime.now() - timedelta(days=n)))
+
+
 """
 decoded AUTH_HEADER (newlines added for readability):
 {
@@ -141,3 +148,34 @@ EVENT_MESSAGE_VALUE_WITH_GROUPS = {
     "platform_metadata": {"request_id": "123456"},
     "type": "created",
 }
+
+HSPS_WITH_DIFFERENT_GROUPS = [
+    {
+        "account": "5678",
+        "inventory_id": "20666ed4-49d8-4415-973e-1d410dc70ed7",
+        "org_id": "5678",
+        "created_on": datetime_n_days_ago(3),
+        "system_profile": {"captured_date": datetime_n_days_ago(2)},
+        "groups": [{"id": "40366ed4-19d8-4415-993e-1d430dc70ed7", "name": "group_1"}],
+    },
+    {
+        "account": "1234",
+        "inventory_id": "30365ed4-19d8-4415-993e-1d430dc70ed7",
+        "org_id": "5678",
+        "created_on": datetime_n_days_ago(4),  # same profile as below, but earlier
+        "system_profile": {"captured_date": datetime_n_days_ago(3)},
+        "groups": [
+            {"id": "58766ed4-19d8-4415-993e-1d430dc70ed7", "name": "group_tmp", "foo": "bar"}
+        ],
+    },
+    {
+        "account": "1234",
+        "inventory_id": "30365ed4-19d8-4415-993e-1d430dc70ed7",
+        "org_id": "5678",
+        "created_on": datetime_n_days_ago(2),
+        "system_profile": {"captured_date": datetime_n_days_ago(1)},
+        "groups": [
+            {"id": "736bcb60-bbf5-4464-921f-1c431d76a124", "name": "group_2", "foo": "bar"}
+        ],  # latest HSP for the system - the profile above should not be evaluated, only returned
+    },
+]

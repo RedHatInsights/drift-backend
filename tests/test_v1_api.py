@@ -1,5 +1,8 @@
 import json
 
+from flask import g
+
+
 # needed to do deletes + creates
 from historical_system_profiles import db_interface
 
@@ -99,6 +102,35 @@ class HSPApiTests(utils.ApiTest):
             response.json["message"],
             "ids [9db484bc-ab2a-11ea-9a15-98fa9b07d419] not available to display",
         )
+
+    def test_filter_hsps_by_inventory_groups(self):
+        with self.test_flask_app.app_context():
+            g.rbac_filters = {"group.id": [{"id": "736bcb60-bbf5-4464-921f-1c431d76a124"}]}
+            self.assertEqual(
+                g.get("rbac_filters"),
+                {"group.id": [{"id": "736bcb60-bbf5-4464-921f-1c431d76a124"}]},
+            )
+
+            for profile in fixtures.HSPS_WITH_DIFFERENT_GROUPS:
+                self.addInventoryRecord(
+                    profile["inventory_id"], "system_for_account_{}".format(profile["account"])
+                )
+                db_interface.create_profile(
+                    profile["inventory_id"],
+                    profile["system_profile"],
+                    profile["account"],
+                    profile["org_id"],
+                    profile["groups"],
+                )
+
+        response = self.client.get(
+            "/api/historical-system-profiles/v1/systems/30365ed4-19d8-4415-993e-1d430dc70ed7",
+            headers=fixtures.AUTH_HEADER,
+        )
+
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEquals(2, len(data["data"][0]["profiles"]))
 
     def test_pagination(self):
         # create inventory record

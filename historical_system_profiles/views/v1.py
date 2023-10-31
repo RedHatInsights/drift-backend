@@ -4,7 +4,7 @@ from collections import Counter
 from http import HTTPStatus
 
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app, g, request
 from kerlescan import view_helpers
 from kerlescan.exceptions import HTTPError, RBACDenied
 from kerlescan.inventory_service_interface import fetch_systems_with_profiles
@@ -52,6 +52,42 @@ def _get_current_names_for_profiles(hsps):
         enriched_hsps.append(hsp)
 
     return enriched_hsps
+
+
+def _filter_inventory_groups_access(hsps):
+    """
+    takes the latest HSP (as the representation of all the HSPs) to check, that
+    the user has an access to any of the *latest* HSP's groups.
+
+    returns *all* HSPs if a matching group to HSP's is found in RBAC filters,
+    otherwise returns an empty array.
+
+    returns *all* HSPs, if no RBAC filters are received (meaning that the user
+    has access to all the systems).
+    """
+    has_access = False
+    sorted_hsps = sorted(hsps, key=lambda p: p.created_on)
+    access_groups = g.rbac_filters.get("group.id", None)
+
+    # access to all hosts
+    if access_groups is None:
+        return hsps
+
+    if len(sorted_hsps) > 0:
+        latest_hsp = sorted_hsps[-1]
+
+        # access to grouped hosts
+        for hsp_group in latest_hsp.groups:
+            if hsp_group["id"] in [filter_group["id"] for filter_group in access_groups]:
+                has_access = True
+                break
+            else:
+                continue
+
+    if has_access:
+        return hsps
+    else:
+        return []
 
 
 def _filter_old_hsps(hsps):
@@ -153,8 +189,9 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
         inventory_id, account_number, org_id, limit, offset
     )
     valid_profiles = _filter_old_hsps(query_results)
+    accessible_profiles = _filter_inventory_groups_access(valid_profiles)
 
-    if not valid_profiles:
+    if not accessible_profiles:
         message = "no historical profiles found for inventory_id %s" % inventory_id
         current_app.logger.audit(message, request=request, success=False)
         raise HTTPError(
@@ -166,7 +203,7 @@ def get_hsps_by_inventory_id(inventory_id, limit, offset):
     # the full records, then slicing and sorting
 
     profile_metadata = []
-    for profile in valid_profiles:
+    for profile in accessible_profiles:
         profile_metadata.append(
             {
                 "captured_date": profile.captured_date,
@@ -197,6 +234,8 @@ def ensure_rbac_hsps_read():
     # permissions=[["drift:*:*"], ["drift:notifications:read", "drift:baselines:read"]]
     # If we just have *:*, it works, but if not, we need both notifications:read and
     # baselines:read in order to allow access.
+    if g.get("rbac_filters") is None:
+        g.rbac_filters = {}
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:historical-system-profiles:read"]],
         application="drift",
@@ -205,6 +244,7 @@ def ensure_rbac_hsps_read():
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
         exception_metric=metrics.rbac_exceptions,
+        rbac_filters=g.get("rbac_filters"),
     )
 
 
