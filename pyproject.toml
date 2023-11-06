@@ -47,7 +47,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-connexion = {extras = ["flask", "swagger-ui"], version = "^3.0.0"}
+connexion = {extras = ["flask", "swagger-ui", "uvicorn"], version = "^3.0.0"}
 Flask = "*"
 gunicorn = "*"
 prometheus_client = "*"
