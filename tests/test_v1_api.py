@@ -21,8 +21,7 @@ class ApiTests(unittest.TestCase):
         patched_rbac.return_value = None  # validate all RBAC requests
         self.addCleanup(self.stopPatches)
         test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        self.client = test_connexion_app.test_client()
 
     def stopPatches(self):
         self.rbac_patcher.stop()
@@ -112,7 +111,7 @@ class ApiTests(unittest.TestCase):
             "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
             headers=fixtures.AUTH_HEADER,
         )
-        system_metadata = json.loads(response.data)["systems"]
+        system_metadata = json.loads(response.content)["systems"]
         timestamps = [s["last_updated"] for s in system_metadata]
         self.assertEqual(
             timestamps,
@@ -130,7 +129,7 @@ class ApiTests(unittest.TestCase):
             "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
             headers=fixtures.AUTH_HEADER,
         )
-        system_metadata = json.loads(response.data)["systems"]
+        system_metadata = json.loads(response.content)["systems"]
         timestamps = [s["last_updated"] for s in system_metadata]
         self.assertEqual(
             timestamps,
@@ -151,7 +150,7 @@ class ApiTests(unittest.TestCase):
             headers=fixtures.AUTH_HEADER,
         )
         self.assertEqual(response.status_code, 200)
-        comparisons = json.loads(response.data)
+        comparisons = json.loads(response.content)
         # we hard-code the index lookup since we know the fixture layout
         network_comparisons = comparisons["facts"][14]["comparisons"]
         ipv4_comparison = [
@@ -194,7 +193,7 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-type"], "text/csv")
-        csv_data = StringIO(response.data.decode("ascii"))
+        csv_data = StringIO(response.content.decode("ascii"))
         reader = csv.DictReader(csv_data)
         self.assertEqual(
             [
@@ -222,7 +221,7 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        returned_comparisons = json.loads(response.data)["facts"]
+        returned_comparisons = json.loads(response.content)["facts"]
         returned_fact_names = set(x["name"] for x in returned_comparisons)
         self.assertNotIn("name", returned_fact_names)
         self.assertEquals("", returned_comparisons[0]["systems"][0]["value"])
@@ -312,7 +311,7 @@ class DebugLoggingApiTests(unittest.TestCase):
 
         test_connexion_app = app.create_app()
         test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        self.client = test_connexion_app.test_client()
 
         self.stream = StringIO()
         self.handler = logging.StreamHandler(self.stream)
