@@ -45,7 +45,11 @@ class ApiTests(unittest.TestCase):
                 "11b3cbce-25a9-11e9-8457-c85b761454fa",
             ]
         }
-        response = self.client.post("api/drift/v1/comparison_report", data=data)
+        response = self.client.post(
+            "api/drift/v1/comparison_report",
+            data=data,
+            headers={"Content-Type": "application/json"},
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_compare_api_no_account_number(self):
