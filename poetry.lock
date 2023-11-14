@@ -1879,13 +1879,13 @@ devenv = ["black", "check-manifest", "flake8", "pyroma", "pytest (>=4.3)", "pyte
 
 [[package]]
 name = "unleashclient"
-version = "5.9.2"
+version = "5.10.0"
 description = "Python client for the Unleash feature toggle system!"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "UnleashClient-5.9.2-py3-none-any.whl", hash = "sha256:4058156cfef5180b2c72debcc8b4342836afa5292c2cf95b00cede1dfd9d4b75"},
-    {file = "UnleashClient-5.9.2.tar.gz", hash = "sha256:135de858d8ccb83f64959a18a7b3577c40ec614f5e784de4b56ae59c3259ae4e"},
+    {file = "UnleashClient-5.10.0-py3-none-any.whl", hash = "sha256:7779301d6e0dad464e9cd7c3d39207869a791d39f0072882395aed9a5653615b"},
+    {file = "UnleashClient-5.10.0.tar.gz", hash = "sha256:413eeeacfd040c4145000ada4544c50cabe7be22d2239af02e79b5f31728d72f"},
 ]
 
 [package.dependencies]
