@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 from kerlescan import config
 from kerlescan.constants import (
     AUTH_HEADER_NAME,
+    FILTERED_OUT_OPERATING_SYSTEMS,
     INVENTORY_SVC_SYSTEM_PROFILES_ENDPOINT,
     INVENTORY_SVC_SYSTEM_TAGS_ENDPOINT,
     INVENTORY_SVC_SYSTEMS_ENDPOINT,
@@ -25,6 +26,17 @@ def ensure_correct_system_count(system_ids_requested, result):
         system_ids_returned = {system["id"] for system in result}
         missing_ids = set(system_ids_requested) - system_ids_returned
         raise ItemNotReturned("ids [%s] not available to display" % ", ".join(missing_ids))
+
+
+def filter_out_systems(systems_with_profiles):
+    # remove CentOS Linux systems
+    systems_with_profiles = [
+        system
+        for system in systems_with_profiles
+        if system.get("operating_system", {}).get("name") not in FILTERED_OUT_OPERATING_SYSTEMS
+    ]
+
+    return systems_with_profiles
 
 
 def interleave_systems_and_profiles(systems_result, system_profiles_result, system_tags_result):
@@ -141,6 +153,8 @@ def fetch_systems_with_profiles(system_ids, service_auth_key, logger, counters):
 
     ensure_correct_system_count(system_ids, systems_result)
 
-    return interleave_systems_and_profiles(
+    systems_with_profiles = interleave_systems_and_profiles(
         systems_result, system_profiles_result, system_tags_result
     )
+
+    return filter_out_systems(systems_with_profiles)

@@ -63,3 +63,4 @@ SYSTEM_PROFILE_LISTS_OF_STRINGS = {"gpg_pubkeys"}
 GPG_KEY_PREFIX = "gpg-pubkey-"
 SAP_RELATED_FACTS = {"sap_system", "sap_sids", "sap_instance_number", "sap_version"}
 OBJECT_FACTS = {"ansible", "mssql", "systemd"}
+FILTERED_OUT_OPERATING_SYSTEMS = ["CentOS", "CentOS Linux"]
