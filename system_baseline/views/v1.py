@@ -816,7 +816,8 @@ def create_systems_with_baseline(baseline_id, body):
         systems_groups = {
             system.get("id"): system.get("groups") for system in systems_with_profiles
         }
-        for system_id in system_ids:
+        for system in systems_with_profiles:
+            system_id = system["id"]
             groups = systems_groups.get(system_id)
             if groups:
                 groups = _filter_inventory_groups_data(groups)

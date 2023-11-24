@@ -56,7 +56,7 @@ alembic = "*"
 flask-script = "*"
 flask-migrate = "*"
 jsonpatch = "*"
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.112", develop = true}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.114", develop = true}
 psycopg2 = "*"
 
 
