@@ -2,6 +2,7 @@ import base64
 import json
 import time
 
+from kerlescan.inventory_service_interface import filter_out_systems
 from kerlescan.system_baseline_service_interface import update_mapped_system_groups
 
 from historical_system_profiles import db_interface, listener_metrics, metrics, probes
@@ -81,6 +82,10 @@ def _archive_profile(data, ptc, logger, notification_service):
     _record_recv_message(host, request_id, ptc)
 
     profile = host["system_profile"]
+
+    if not filter_out_systems([profile]):
+        return
+
     # fqdn is on the host but we need it in the profile as well
     profile["fqdn"] = host["fqdn"]
 
