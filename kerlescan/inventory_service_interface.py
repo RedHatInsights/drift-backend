@@ -33,7 +33,8 @@ def filter_out_systems(systems_with_profiles):
     systems_with_profiles = [
         system
         for system in systems_with_profiles
-        if system.get("operating_system", {}).get("name") not in FILTERED_OUT_OPERATING_SYSTEMS
+        if system.get("system_profile", {}).get("operating_system", {}).get("name")
+        not in FILTERED_OUT_OPERATING_SYSTEMS
     ]
 
     return systems_with_profiles
