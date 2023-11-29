@@ -352,3 +352,7 @@ SYSTEM_WITH_PROFILE = {
         {"id": "736bcb60-bbf5-4464-921f-1c431d76a124", "name": "group_2", "foo": "bar"},
     ],
 }
+
+
+def a_system_with_profile(system_id, groups=None):
+    return {**SYSTEM_WITH_PROFILE, "id": system_id, "groups": [] if groups is None else groups}
