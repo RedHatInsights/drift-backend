@@ -932,7 +932,7 @@ class ApiSystemsAssociationTests(ApiTest):
         ]
 
         mock_fetch_systems.return_value = [
-            {**fixtures.SYSTEM_WITH_PROFILE, "id": system_id} for system_id in self.system_ids
+            fixtures.a_system_with_profile(system_id) for system_id in system_ids
         ]
         response = self.client.get("api/system-baseline/v1/baselines", headers=fixtures.AUTH_HEADER)
         self.assertEqual(response.status_code, 200)
