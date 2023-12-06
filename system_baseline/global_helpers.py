@@ -41,7 +41,7 @@ def ensure_rbac_baselines_read():
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:baselines:read"]],
         application="drift",
-        app_name="system-baseline,inventory",
+        app_name="system-baseline",
         request=request,
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
@@ -62,7 +62,7 @@ def ensure_rbac_baselines_write():
     return view_helpers.ensure_has_permission(
         permissions=[["drift:*:*"], ["drift:baselines:write"]],
         application="drift",
-        app_name="system-baseline,inventory",
+        app_name="system-baseline",
         request=request,
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
@@ -82,7 +82,7 @@ def ensure_rbac_inventory_read():
             ["inventory:hosts:read"],
         ],
         application="inventory",
-        app_name="system-baseline,inventory",
+        app_name="system-baseline",
         request=request,
         logger=current_app.logger,
         request_metric=metrics.rbac_requests,
