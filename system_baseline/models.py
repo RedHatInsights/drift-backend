@@ -22,7 +22,7 @@ class SystemBaseline(db.Model):
     __table_args__ = (UniqueConstraint("account", "display_name", name="_account_display_name_uc"),)
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account = db.Column(db.String(10), nullable=False)
+    account = db.Column(db.String(10))
     org_id = db.Column(db.String(36), index=True)
     display_name = db.Column(db.String(200), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -87,7 +87,7 @@ class SystemBaseline(db.Model):
     def to_json(self, withhold_facts=False, withhold_system_ids=True, withhold_systems_count=True):
         json_dict = {}
         json_dict["id"] = str(self.id)
-        json_dict["account"] = self.account
+        json_dict["account"] = self.account if self.account else ""
         json_dict["org_id"] = self.org_id
         json_dict["display_name"] = self.display_name
         json_dict["fact_count"] = self.fact_count
@@ -140,7 +140,7 @@ class SystemBaselineMappedSystem(db.Model):
     )
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account = db.Column(db.String(10), nullable=False)
+    account = db.Column(db.String(10))
     org_id = db.Column(db.String(36), index=True)
     system_baseline_id = db.Column(
         UUID(as_uuid=True), ForeignKey("system_baselines.id"), nullable=False
@@ -151,7 +151,7 @@ class SystemBaselineMappedSystem(db.Model):
     def to_json(self):
         json_dict = {}
         json_dict["id"] = str(self.id)
-        json_dict["account"] = self.account
+        json_dict["account"] = self.account if self.account else ""
         json_dict["org_id"] = self.org_id
         json_dict["system_baseline_id"] = self.system_baseline_id
         json_dict["groups"] = self.groups
