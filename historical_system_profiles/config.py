@@ -1,7 +1,7 @@
 import logging
 import os
 
-from app_common_python import KafkaTopics, LoadedConfig, isClowderEnabled
+from app_common_python import KafkaServers, KafkaTopics, LoadedConfig, isClowderEnabled
 from kerlescan.config import str_to_bool
 
 
@@ -16,10 +16,7 @@ def load_db_setting(env_name, attribute, default):
 
 def load_kafka_brokers(env_name, default):
     if isClowderEnabled():
-        cfg = LoadedConfig
-
-        broker_cfg = cfg.kafka.brokers[0]
-        return f"{broker_cfg.hostname}:{broker_cfg.port}"
+        return KafkaServers
 
     return os.getenv(env_name, default).split(",")
 
