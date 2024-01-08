@@ -1,0 +1,412 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: historical-system-profiles
+objects:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: ClowdApp
+    metadata:
+      name: historical-system-profiles
+      labels:
+        app: historical-system-profiles
+    spec:
+      envName: ${ENV_NAME}
+      dependencies:
+        - host-inventory
+        - rbac
+        - ingress
+        - system-baseline
+        - drift
+      optionalDependencies:
+        - notifications-backend
+        - notifications-gw
+      testing:
+        iqePlugin: drift
+      database:
+        name: historical-system-profiles
+        version: 12
+      kafkaTopics:
+        - topicName: platform.notifications.ingress
+          partitions: 1
+        - topicName: platform.payload-status
+          partitions: 1
+        - topicName: platform.inventory.events
+          partitions: 1
+      deployments:
+        - name: backend-service
+          minReplicas: ${{MIN_REPLICAS}}
+          webServices:
+            public:
+              enabled: true
+              apiPath: historical-system-profiles
+          podSpec:
+            imagePullPolicy: Always
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 120
+              periodSeconds: 10
+            readinessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 120
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${SERVICE_CPU_LIMIT}
+                memory: ${SERVICE_MEMORY_LIMIT}
+              requests:
+                cpu: ${SERVICE_CPU_REQUESTS}
+                memory: ${SERVICE_MEMORY_REQUESTS}
+            volumes:
+              - emptyDir: {}
+                name: hsp-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: hsp-prometheus-data
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: historical-system-profiles
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+              - name: LOG_LEVEL
+                value: ${LOG_LEVEL}
+        - name: expired-cleaner-service
+          minReplicas: ${{MIN_REPLICAS}}
+          podSpec:
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_cleaner_liveness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 1200
+            readinessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_readiness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${CLEANER_CPU_LIMIT}
+                memory: ${CLEANER_MEMORY_LIMIT}
+              requests:
+                cpu: ${CLEANER_CPU_REQUESTS}
+                memory: ${CLEANER_MEMORY_REQUESTS}
+            volumes:
+              - emptyDir: {}
+                name: historical-system-profiles-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: historical-system-profiles-prometheus-data
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: hsp-expired-cleaner
+              - name: SERVICE_MODE
+                value: 'CLEAN_EXPIRED_RECORDS'
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+              - name: LOG_LEVEL
+                value: ${LOG_LEVEL}
+              - name: LIVENESS_PROBE_FILE
+                value: ${LIVENESS_PROBE_FILE}
+              - name: READINESS_PROBE_FILE
+                value: ${READINESS_PROBE_FILE}
+              - name: EXPIRED_CLEANER_SLEEP_MINUTES
+                value: ${EXPIRED_CLEANER_SLEEP_MINUTES}
+        - name: archiver-service
+          minReplicas: ${{MIN_REPLICAS}}
+          podSpec:
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_liveness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            readinessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_readiness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${ARCHIVER_CPU_LIMIT}
+                memory: ${ARCHIVER_MEMORY_LIMIT}
+              requests:
+                cpu: ${ARCHIVER_CPU_REQUESTS}
+                memory: ${ARCHIVER_MEMORY_REQUESTS}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            volumes:
+              - emptyDir: {}
+                name: historical-system-profiles-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: historical-system-profiles-prometheus-data
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: hsp-archiver
+              - name: SERVICE_MODE
+                value: 'LISTENER'
+              - name: LISTENER_TYPE
+                value: 'ARCHIVER'
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+              - name: KAFKA_SECURITY_PROTOCOL
+                value: ${KAFKA_SECURITY_PROTOCOL}
+              - name: KAFKA_SASL_MECHANISM
+                value: ${KAFKA_SASL_MECHANISM}
+              - name: ENABLE_KAFKA_SSL
+                value: ${ENABLE_KAFKA_SSL}
+              - name: LOG_LEVEL
+                value: ${LOG_LEVEL}
+              - name: LIVENESS_PROBE_FILE
+                value: ${LIVENESS_PROBE_FILE}
+              - name: READINESS_PROBE_FILE
+                value: ${READINESS_PROBE_FILE}
+        - name: deleter-service
+          minReplicas: ${{MIN_REPLICAS}}
+          podSpec:
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_liveness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            readinessProbe:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - sh
+                  - check_readiness_probe.sh
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${DELETER_CPU_LIMIT}
+                memory: ${DELETER_MEMORY_LIMIT}
+              requests:
+                cpu: ${DELETER_CPU_REQUESTS}
+                memory: ${DELETER_MEMORY_REQUESTS}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            volumes:
+              - emptyDir: {}
+                name: historical-system-profiles-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: historical-system-profiles-prometheus-data
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: hsp-deleter
+              - name: SERVICE_MODE
+                value: 'LISTENER'
+              - name: LISTENER_TYPE
+                value: 'DELETER'
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+              - name: KAFKA_SECURITY_PROTOCOL
+                value: ${KAFKA_SECURITY_PROTOCOL}
+              - name: KAFKA_SASL_MECHANISM
+                value: ${KAFKA_SASL_MECHANISM}
+              - name: ENABLE_KAFKA_SSL
+                value: ${ENABLE_KAFKA_SSL}
+              - name: LOG_LEVEL
+                value: ${LOG_LEVEL}
+              - name: LIVENESS_PROBE_FILE
+                value: ${LIVENESS_PROBE_FILE}
+              - name: READINESS_PROBE_FILE
+                value: ${READINESS_PROBE_FILE}
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: historical-system-profiles
+      labels:
+        app: historical-system-profiles
+    spec:
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: historical-system-profiles
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
+      targetCPUUtilizationPercentage: 50
+parameters:
+  - name: DRIFT_ENABLE_RBAC
+    description: enable rbac. needs to be "True" or "False".
+    value: "True"
+  - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+    description: enable the smart mgmt entitlement check on requests. Needs to be "True" or "False".
+    value: "False"
+  - name: IMAGE_TAG
+    description: image tag to pull
+    required: true
+  - name: IMAGE
+    description: image name
+    value: quay.io/cloudservices/historical-system-profiles-backend
+  - name: SERVICE_CPU_LIMIT
+    description: cpu limit of backend service
+    value: 500m
+  - name: SERVICE_MEMORY_LIMIT
+    description: memory limit of backend service
+    value: 1Gi
+  - name: SERVICE_CPU_REQUESTS
+    description: cpu request of backend service
+    value: 100m
+  - name: SERVICE_MEMORY_REQUESTS
+    description: memory requests of backend service
+    value: 512Mi
+  - name: CLEANER_CPU_LIMIT
+    description: cpu limit of cleaner service
+    value: 250m
+  - name: CLEANER_MEMORY_LIMIT
+    description: memory limit of cleaner service
+    value: 512Mi
+  - name: CLEANER_CPU_REQUESTS
+    description: cpu requests of cleaner service
+    value: 250m
+  - name: CLEANER_MEMORY_REQUESTS
+    description: memory requests of cleaner service
+    value: 256Mi
+  - name: ARCHIVER_CPU_LIMIT
+    description: cpu limit of archiver service
+    value: 250m
+  - name: ARCHIVER_MEMORY_LIMIT
+    description: memory limit of archiver service
+    value: 1Gi
+  - name: ARCHIVER_CPU_REQUESTS
+    description: cpu requests of archiver service
+    value: 250m
+  - name: ARCHIVER_MEMORY_REQUESTS
+    description: memory requests of archiver service
+    value: 512Mi
+  - name: DELETER_CPU_LIMIT
+    description: cpu limit of deleter service
+    value: 250m
+  - name: DELETER_MEMORY_LIMIT
+    description: memory limit of deleter service
+    value: 1Gi
+  - name: DELETER_CPU_REQUESTS
+    description: cpu requests of deleter service
+    value: 250m
+  - name: DELETER_MEMORY_REQUESTS
+    description: memory requests of deleter service
+    value: 512Mi
+  - name: MIN_REPLICAS
+    description: minimum pod replicas for horizontal pod autoscaler
+    value: "3"
+  - name: MAX_REPLICAS
+    description: maximum pod replicas for horizontal pod autoscaler
+    value: "6"
+  - description: ClowdEnv Name
+    name: ENV_NAME
+  - name: CLOWDER_ENABLED
+    value: "true"
+  - name: SERVICE_MODE
+  - name: LISTENER_TYPE
+  - name: ENABLE_KAFKA_SSL
+    value: "False"
+  - name: KAFKA_SECURITY_PROTOCOL
+    description: The Kafka Security Protocol
+    value: PLAINTEXT
+  - name: KAFKA_SASL_MECHANISM
+    value: 'PLAIN'
+  - name: LOG_LEVEL
+    value: INFO
+  - name: LIVENESS_PROBE_FILE
+    describes: File used as liveness probe
+    value: '/tmp/liveness_probe'
+  - name: READINESS_PROBE_FILE
+    describes: File used as readiness probe
+    value: '/tmp/readiness_probe'
+  - name: EXPIRED_CLEANER_SLEEP_MINUTES
+    describes: How often are old data cleaned
+    value: "20"

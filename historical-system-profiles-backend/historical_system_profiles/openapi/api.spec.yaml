@@ -1,0 +1,235 @@
+---
+openapi: 3.0.1
+
+info:
+  version: "0.1"
+  title: Historical system profile service
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+
+servers:
+  - url: "{{ path_prefix }}{{ app_name }}/v1"
+
+paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: historical_system_profiles.views.v1.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /systems/{inventory_id}:
+    parameters:
+      - $ref: '#/components/parameters/InventoryId'
+      - $ref: '#/components/parameters/LimitParam'
+      - $ref: '#/components/parameters/OffsetParam'
+    get:
+      summary: fetch the list of profiles available for a given system id
+      description: "Fetch the list of profiles available for a given system id"
+      operationId: historical_system_profiles.views.v1.get_hsps_by_inventory_id
+      responses:
+        '200':
+          description: a list of historical profiles
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: '#/components/schemas/HistoricalProfilesForSystem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /profiles/{profile_ids}:
+    parameters:
+      - $ref: '#/components/parameters/ProfileIds'
+    get:
+      summary: fetch the list of profiles available for the given profile ids
+      description: "Fetch the list of profiles available for the given ids"
+      operationId: historical_system_profiles.views.v1.get_hsps_by_ids
+      responses:
+        '200':
+          description: a list of historical profiles
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HistoricalProfileStub'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  responses:
+    InternalServerError:
+      description: "An internal server error has occurred."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: "Insufficient permissions to fulfill request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: "The server could not process the current request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - detail
+        - status
+        - title
+        - type
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+    HistoricalProfileIn:
+      type: object
+      additionalProperties: false
+      required:
+        - profile
+        - inventory_id
+      properties:
+        profile:
+          type: object
+        inventory_id:
+          type: string
+    HistoricalProfile:
+      type: object
+      additionalProperties: false
+      required:
+        - account
+        - org_id
+        - created
+        - display_name
+        - id
+        - inventory_id
+        - system_profile
+        - captured_date
+      properties:
+        account:
+          type: string
+        org_id:
+          type: string
+        created:
+          type: string
+        display_name:
+          type: string
+        inventory_id:
+          type: string
+        id:
+          type: string
+        system_profile:
+          type: object
+        captured_date:
+          type: string
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
+    HistoricalProfileStub:
+      required:
+        - inventory_id
+        - display_name
+      properties:
+        inventory_id:
+          type: string
+        display_name:
+          type: string
+    HistoricalProfilesForSystem:
+      required:
+        - profiles
+      properties:
+        profiles:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+              captured_date:
+                type: string
+              system_id:
+                type: string
+  parameters:
+    InventoryId:
+      in: path
+      name: inventory_id
+      required: true
+      schema:
+        type: string
+        minLength: 32
+        maxLength: 36
+    ProfileIds:
+      in: path
+      name: profile_ids
+      required: true
+      # TODO: deduplicate with above
+      # TODO: unsure why this is not validating, "100" should be invalid
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 32
+          maxLength: 36
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: number of items to return
+    OffsetParam:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: item number offset
