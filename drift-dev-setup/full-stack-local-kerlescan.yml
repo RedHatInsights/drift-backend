@@ -1,0 +1,325 @@
+# this is heavily adapted from the puptoo full-stack.yml
+version: "2.4"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+      - ZOOKEEPER_SERVER_ID=1
+    healthcheck:
+      test: ["CMD", "cub", "zk-ready", "zookeeper:32181", "80"]
+      interval: 2s
+      retries: 5
+  kafka:
+    build:
+      context: ./kafka
+    ports:
+      - 29092:29092
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+    healthcheck:
+      test: ["CMD", "bash", "kafka-check.sh"]
+      interval: 2s
+      retries: 30
+  pup:
+    image: puptoo:latest
+    ports:
+      - 8000:8000 #for prometheus endpoint
+    environment:
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      - kafka
+  minio:
+      image: minio/minio
+      command: server /data
+      ports:
+        - 9000:9000
+      environment:
+        - MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY
+        - MINIO_SECRET_KEY=$MINIO_SECRET_KEY
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY;
+      /usr/bin/mc mb myminio/insights-upload-perma;
+      /usr/bin/mc mb myminio/insights-upload-rejected;
+      /usr/bin/mc policy download myminio/insights-upload-perma;
+      /usr/bin/mc policy download myminio/insights-upload-rejected;
+      exit 0;
+      "
+  ingress:
+    image: ingress:latest # we expect this image to exist already
+    ports:
+      - 8080:3000
+    environment:
+      - AWS_ACCESS_KEY_ID=$MINIO_ACCESS_KEY
+      - AWS_SECRET_ACCESS_KEY=$MINIO_SECRET_KEY
+      - AWS_REGION=us-east-1
+      - INGRESS_STAGEBUCKET=insights-upload-perma
+      - INGRESS_REJECTBUCKET=insights-upload-rejected
+      - INGRESS_INVENTORYURL=http://inventory:8080/api/inventory/v1/hosts
+      - INGRESS_VALIDTOPICS=testareno,advisor #if you test a different topic, add it here
+      - OPENSHIFT_BUILD_COMMIT=woopwoop
+      - INGRESS_MINIODEV=true
+      - INGRESS_MINIOACCESSKEY=$MINIO_ACCESS_KEY
+      - INGRESS_MINIOSECRETKEY=$MINIO_SECRET_KEY
+      - INGRESS_MINIOENDPOINT=minio:9000
+    depends_on:
+      - kafka
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: insights
+  baselinedb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: baselinedb
+  hspdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: insights
+      POSTGRES_USER: insights
+      POSTGRES_DB: insights
+  inventory:
+    #image: inventory:mq # we expect this image to exist already
+    image: quay.io/cloudservices/insights-inventory:latest
+    command: bash -c "make upgrade_db && make run_inv_mq_service"
+    environment:
+      - INVENTORY_DB_HOST=db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - BYPASS_RBAC=true
+    links:
+      - db
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8081:8080"
+  inventory-rest:
+    #image: inventory:mq # we expect this image to exist already
+    image: quay.io/cloudservices/insights-inventory:latest
+    command: bash -c "make upgrade_db && make run_inv_web_service"
+    environment:
+      - INVENTORY_DB_HOST=db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - KAFKA_TOPIC=platform.system-profile
+      - KAFKA_GROUP=inventory
+      - WEB_CONCURRENCY=1
+      - BYPASS_RBAC=true
+    links:
+      - db
+    depends_on:
+      inventory:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8082:8080"
+  system-baseline-migration:
+    #image: system-baseline:latest
+    image: quay.io/cloudservices/system-baseline-backend:latest
+    command: bash -c "FLASK_APP=system_baseline.app:get_flask_app_with_migration flask db upgrade"
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_DB_HOST=baselinedb
+    links:
+      - baselinedb
+    depends_on:
+      - baselinedb
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  system-baseline-rest:
+    #image: system-baseline:latest
+    image: quay.io/cloudservices/system-baseline-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_DB_HOST=baselinedb
+      - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
+      - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v1/profiles
+      - DRIFT_SHARED_SECRET=foo
+    links:
+      - baselinedb
+    depends_on:
+      - baselinedb
+      - system-baseline-migration
+    ports:
+      - "8083:8080"
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  drift-rest:
+    #image: drift:latest
+    image: quay.io/cloudservices/drift-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - BASELINE_SVC_URL=http://system-baseline-rest:8080
+      - HSP_SVC_URL=http://hsp-rest:8080/api/historical-system-profiles/v0/profiles
+      - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
+      - DRIFT_SHARED_SECRET=foo
+    links:
+      - inventory-rest
+      - system-baseline-rest
+      - hsp-rest
+    depends_on:
+      - inventory-rest
+      - system-baseline-rest
+      - hsp-rest
+    ports:
+      - "8084:8080"
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  hsp-migration:
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
+    command: bash -c "FLASK_APP=historical_system_profiles.app:get_flask_app_with_migration flask db upgrade"
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - HSP_DB_HOST=hspdb
+    links:
+      - hspdb
+    depends_on:
+      - hspdb
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  hsp-rest:
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - INVENTORY_SVC_URL=http://inventory-rest:8080
+      - HSP_DB_HOST=hspdb
+      - ENABLE_RBAC=False
+      - WEB_CONCURRENCY=1
+      - DRIFT_SHARED_SECRET=foo
+    links:
+      - hspdb
+      - inventory-rest
+    depends_on:
+      - hspdb
+      - inventory-rest
+    ports:
+      - "8085:8080"
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  hsp-archiver:
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - LISTENER_TYPE=ARCHIVER
+      - APP_FILE=kafka_listener.py
+      - LISTENER_DELAY=20
+      - DRIFT_SHARED_SECRET=foo
+      - BASELINE_SVC_URL=http://system-baseline-rest:8080
+      - DRIFT_SVC_URL=http://drift-rest:8080
+    links:
+      - hspdb
+      - kafka
+    depends_on:
+      kafka:
+        condition: service_healthy
+      hspdb:
+        condition: service_started
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  hsp-deleter:
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - LISTENER_TYPE=DELETER
+      - APP_FILE=kafka_listener.py
+    links:
+      - hspdb
+      - kafka
+    depends_on:
+      kafka:
+        condition: service_healthy
+      hspdb:
+        condition: service_started
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  hsp-expired-cleaner:
+    #image: hsp:latest
+    image: quay.io/cloudservices/historical-system-profiles-backend:latest
+    environment:
+      - prometheus_multiproc_dir=/tmp
+      - HSP_DB_HOST=hspdb
+      - APP_FILE=clean_expired_records.py
+      - EXPIRED_CLEANER_SLEEP_MINUTES=1
+    links:
+      - hspdb
+    depends_on:
+      hspdb:
+        condition: service_started
+    volumes:
+      - ../kerlescan:/opt/app-root/src/kerlescan:z
+  upload-client:
+    build:
+      context: ./client
+    environment:
+      - ACCOUNT_NUMBER=1212729
+      - SLEEP=5 # even if sleep is zero, each upload takes about 10 sec to generate
+    links:
+      - ingress
+    depends_on:
+      - hsp-archiver
+  insights-proxy:
+    image: docker.io/redhatinsights/insights-proxy
+    ports:
+      - "1337:1337"
+    extra_hosts:
+      - "ci.foo.redhat.com:127.0.0.1"
+      - "qa.foo.redhat.com:127.0.0.1"
+      - "stage.foo.redhat.com:127.0.0.1"
+      - "prod.foo.redhat.com:127.0.0.1"
+    volumes:
+      - .:/config:z
+    environment:
+      - LINUX=True
+      - PLATFORM=linux
+      - CUSTOM_CONF=true
+      - USE_CLOUD=true # for cloud.redhat.com resources instead of console.redhat.com
+    links:
+      - "drift-frontend"
+      - "inventory-rest"
+      - "system-baseline-rest"
+      - "drift-rest"
+  drift-frontend:
+    build:
+      context: ./drift-frontend-container-build
+    extra_hosts:
+      - "ci.foo.redhat.com:127.0.0.1"
+      - "qa.foo.redhat.com:127.0.0.1"
+      - "stage.foo.redhat.com:127.0.0.1"
+      - "prod.foo.redhat.com:127.0.0.1"
+    ports:
+      - "8002:8002"
+    volumes:
+      - .:/config

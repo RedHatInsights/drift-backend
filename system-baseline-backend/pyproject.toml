@@ -1,0 +1,81 @@
+[tool.black]
+line-length=100
+target-version=["py39"]
+
+[tool.isort]
+profile = "black"
+atomic=true
+line_length = 100
+lines_after_imports=2
+lines_between_types=1
+known_third_party=[
+    "pytest",
+    "click",
+]
+known_first_party=["system-baseline-backend"]
+
+[tool.coverage.run]
+branch = false
+source = ["system-baseline-backend"]
+omit = ["system-baseline-backend/tests/*",]
+
+[tool.coverage.paths]
+source = ["system-baseline-backend/"]
+
+[tool.coverage.report]
+fail_under = 73
+skip_covered = true
+show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.2.1"
+addopts = "-s --tb=native --cov=."
+testpaths = "./tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning'
+    ]
+
+[tool.poetry]
+name = "system-baseline-backend"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.9"
+connexion = {extras = ["swagger-ui"], version = "*"}
+Flask = "*"
+gunicorn = "*"
+prometheus_client = "*"
+flask-sqlalchemy = "*"
+alembic = "*"
+flask-script = "*"
+flask-migrate = "*"
+jsonpatch = "*"
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.114", develop = true}
+psycopg2 = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+coverage = "*"
+flake8 = "*"
+mock = "*"
+responses = "*"
+yamllint = "*"
+black = "*"
+ipdb = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+toml = "*"
+tomli = "*"
+openapi-spec-validator = "*"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

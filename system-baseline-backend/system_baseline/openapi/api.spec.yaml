@@ -1,0 +1,590 @@
+---
+openapi: 3.0.1
+info:
+  version: "1.0"
+  title: System Baseline Backend Service
+  description: Service that returns system baselines
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: "{{ path_prefix }}{{ app_name }}/v1"
+
+paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: system_baseline.views.v1.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /baselines:
+    get:
+      summary: fetch list of Baseline IDs
+      description: "Fetch the list of Baseline IDs"
+      operationId: system_baseline.views.v1.get_baselines
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderHowParam'
+        - $ref: '#/components/parameters/displayNameParam'
+      responses:
+        '200':
+          description: a paginated list of baselines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: create a baseline
+      description: "create a baseline"
+      operationId: system_baseline.views.v1.create_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BaselineIn"
+              x-body-name: system_baseline_in
+      responses:
+        '200':
+          description: a created baseline object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/deletion_request:
+    post:
+      summary: create a request to delete one or more baselines
+      description: "create a request to delete one or more baselines"
+      operationId: system_baseline.views.v1.create_deletion_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BaselineIdsList"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_ids}:
+    parameters:
+      - $ref: '#/components/parameters/BaselineIds'
+    get:
+      summary: fetch one or more Baseline objects
+      description: "Fetch one or more Baseline objects"
+      operationId: system_baseline.views.v1.get_baselines_by_ids
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderHowParam'
+      responses:
+        '200':
+          description: a paginated list of baselines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: delete one or more baselines
+      description: "delete one or more baselines"
+      operationId: system_baseline.views.v1.delete_baselines_by_ids
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+    patch:
+      summary: update a baseline
+      description: "update a baseline"
+      operationId: system_baseline.views.v1.update_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_baseline_patch
+              type: object
+              required:
+                - display_name
+                - facts_patch
+              properties:
+                display_name:
+                  $ref: "#/components/schemas/DisplayName"
+                facts_patch:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/JsonPatch"
+                notifications_enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: a list of updated Baseline objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: copy a baseline
+      description: "copy a baseline, returning a new ID"
+      operationId: system_baseline.views.v1.copy_baseline_by_id
+      parameters:
+        - in: query
+          name: display_name
+          required: true
+          schema:
+            $ref: "#/components/schemas/DisplayName"
+          description: display name of the baseline
+      responses:
+        '200':
+          description: a created baseline object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Baseline"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+    get:
+      summary: list systems with baseline
+      description: "list systems with baseline"
+      operationId: system_baseline.views.v1.list_systems_with_baseline
+      parameters:
+        - name: group_ids[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          required: false
+          description: list of Inventory Group IDs to filter by
+        - name: group_names[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          required: false
+          description: list of Inventory Group names to filter by
+      responses:
+        '200':
+          description: a created list of system associations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemIdsList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: add systems with baseline
+      description: "add systems with baseline"
+      operationId: system_baseline.views.v1.create_systems_with_baseline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a created list of system associations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemIdsList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems/{system_ids}:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+      - $ref: "#/components/parameters/SystemIds"
+    delete:
+      summary: delete one or more systems with baseline
+      description: "delete one or more systems with baselines"
+      operationId: system_baseline.views.v1.delete_systems_with_baseline
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /baselines/{baseline_id}/systems/deletion_request:
+    parameters:
+      - $ref: '#/components/parameters/BaselineId'
+    post:
+      summary: delete systems with baseline
+      description: "delete systems with baseline"
+      operationId: system_baseline.views.v1.create_deletion_request_for_systems
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  responses:
+    InternalServerError:
+      description: "An internal server error has occurred."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: "Insufficient permissions to fulfill request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: "The server could not process the current request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  securitySchemes:
+    ApiKeyAuth:
+      description: "Identity header provided by 3scale"
+      in: "header"
+      name: "x-rh-identity"
+      type: "apiKey"
+  schemas:
+    DataPage:
+      type: object
+      required:
+        - data
+        - links
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Baseline"
+        links:
+          type: object
+          required:
+            - first
+            - last
+            - next
+            - previous
+          properties:
+            first:
+              type: string
+              format: url
+            last:
+              type: string
+              format: url
+            next:
+              type: string
+              format: url
+            previous:
+              type: string
+              format: url
+        meta:
+          type: object
+          required:
+            - count
+            - total_available
+          properties:
+            count:
+              type: integer
+            total_available:
+              type: integer
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - detail
+        - status
+        - title
+        - type
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+    Baseline:
+      type: object
+      required:
+        - account
+        - org_id
+        - created
+        - display_name
+        - id
+        - updated
+        - notifications_enabled
+      properties:
+        account:
+          type: string
+        org_id:
+          type: string
+        baseline_facts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaselineFact"
+        created:
+          type: string
+          format: date
+        display_name:
+          $ref: "#/components/schemas/DisplayName"
+        fact_count:
+          type: integer
+        id:
+          type: string
+          format: uuid
+        updated:
+          type: string
+          format: date
+        notifications_enabled:
+          type: boolean
+        mapped_system_count:
+          type: integer
+    BaselineIn:
+      type: object
+      additionalProperties: false
+      required:
+        - display_name
+      properties:
+        display_name:
+          $ref: "#/components/schemas/DisplayName"
+        inventory_uuid:
+          type: string
+        hsp_uuid:
+          type: string
+        baseline_facts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaselineFact"
+    BaselineIdsList:
+      type: object
+      additionalProperties: false
+      required:
+        - baseline_ids
+      properties:
+        baseline_ids:
+          type: array
+          items:
+            type: string
+            minLength: 32
+            maxLength: 36
+    SystemIdsList:
+      type: object
+      additionalProperties: false
+      required:
+        - system_ids
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    JsonPatch:
+      description: a JSON patch
+      type: object
+    DisplayName:
+      description: the baseline display name
+      type: string
+      minLength: 1
+      maxLength: 200
+    BaselineFact:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        value:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        values:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - value
+            properties:
+              name:
+                type: string
+              value:
+                oneOf:
+                  - type: string
+                  - type: array
+                    items:
+                      type: string
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
+  parameters:
+    orderByParam:
+      name: order_by
+      in: query
+      required: false
+      schema:
+        default: "display_name"
+        type: string
+        enum:
+          - display_name
+          - created_on
+          - updated
+      description: Ordering field name, defaults to display_name
+    orderHowParam:
+      name: order_how
+      in: query
+      required: false
+      schema:
+        default: "ASC"
+        type: string
+        enum:
+          - ASC
+          - DESC
+      description: Direction of the ordering, defaults to ASC
+    displayNameParam:
+      name: display_name
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/DisplayName"
+      description: string to search for in display name
+    offsetParam:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: item number offset
+    limitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: A number of items to return
+    BaselineIds:
+      in: path
+      name: baseline_ids
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+    BaselineId:
+      in: path
+      name: baseline_id
+      required: true
+      schema:
+        type: string
+    SystemIds:
+      in: path
+      name: system_ids
+      required: true
+      schema:
+        type: array
+        items:
+          type: string

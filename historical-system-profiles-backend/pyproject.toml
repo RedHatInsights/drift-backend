@@ -1,0 +1,81 @@
+[tool.black]
+line-length=100
+target-version=["py39"]
+
+[tool.isort]
+profile = "black"
+atomic=true
+line_length = 100
+lines_after_imports=2
+lines_between_types=1
+known_third_party=[
+    "pytest",
+    "click",
+]
+known_first_party=["historical-system-profiles-backend"]
+
+[tool.coverage.run]
+branch = false
+source = ["historical-system-profiles-backend"]
+omit = ["historical-system-profiles-backend/tests/*",]
+
+[tool.coverage.paths]
+source = ["historical-system-profiles-backend/"]
+
+[tool.coverage.report]
+fail_under = 30
+skip_covered = true
+show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.2.1"
+addopts = "-s --tb=native --cov=."
+testpaths = "./tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning'
+    ]
+[tool.poetry]
+name = "historical-system-profiles-backend"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.9"
+connexion = {extras = ["swagger-ui"], version = "*"}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.114", develop = true}
+prometheus-client = "*"
+gunicorn = "*"
+flask-sqlalchemy = "*"
+alembic = "*"
+flask-script = "*"
+flask-migrate = "*"
+psycopg2 = "*"
+kafka-python = "*"
+logstash-formatter = "*"
+python-dateutil = "*"
+pytz = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+flake8 = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+coverage = {extras = ["toml"], version = "*"}
+yamllint = "*"
+mock = "*"
+ipdb = "*"
+toml = "*"
+tomli = "*"
+openapi-spec-validator = "*"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
