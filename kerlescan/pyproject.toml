@@ -1,0 +1,71 @@
+[tool.black]
+line-length=100
+target-version=["py38"]
+
+[tool.isort]
+profile = "black"
+atomic=true
+line_length = 100
+lines_after_imports=2
+lines_between_types=1
+known_third_party=[
+    "pytest",
+    "click",
+]
+known_first_party=["kerlescan"]
+
+[tool.coverage.run]
+branch = false
+source = ["kerlescan"]
+omit = ["kerlescan/tests/*",]
+
+[tool.coverage.paths]
+source = ["kerlescan/kerlescan"]
+
+[tool.coverage.report]
+fail_under = 0  # we need to change to 73 in the future after we create more tests
+skip_covered = true
+show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.2.1"
+addopts = "-s --tb=native --cov=./kerlescan --no-cov-on-fail"
+testpaths = "./tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning'
+    ]
+
+[tool.poetry]
+name = "kerlescan"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+boto3 = "*"
+watchtower = "*"
+insights-core = "*"
+bitmath = "*"
+app-common-python = "*"
+unleashclient = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+coverage = "*"
+flake8 = "*"
+mock = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+pytest-black = "*"
+pytest-mock = "*"
+responses = "*"
+yamllint = "*"
+black = "*"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
