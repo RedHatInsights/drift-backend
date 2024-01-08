@@ -1,0 +1,235 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: system-baseline
+objects:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: ClowdApp
+    metadata:
+      name: system-baseline
+      labels:
+        app: system-baseline
+    spec:
+      envName: ${ENV_NAME}
+      dependencies:
+        - host-inventory
+        - rbac
+      optionalDependencies:
+        - historical-system-profiles
+      testing:
+        iqePlugin: drift
+      database:
+        name: system-baseline
+        version: 13
+      jobs:
+        - name: baselines-org-id-populator
+          podSpec:
+            image: quay.io/cloudservices/tenant-utils:7336069
+            command:
+              - ./org-id-column-populator
+              - -C
+              - -a
+              - account
+              - -o
+              - org_id
+              - -t
+              - system_baselines
+              - --ean-translator-addr
+              - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
+              - --ean-translator-timeout
+              - "60"
+            env:
+              - name: TENANT_TRANSLATOR_HOST
+                value: ${TENANT_TRANSLATOR_HOST}
+              - name: TENANT_TRANSLATOR_PORT
+                value: ${TENANT_TRANSLATOR_PORT}
+              - name: POPULATOR_LOG_FORMAT
+                value: ${POPULATOR_LOG_FORMAT}
+              - name: LOG_BATCH_FREQUENCY
+                value: '1'
+            resources:
+              limits:
+                cpu: 300m
+                memory: 1Gi
+              requests:
+                cpu: 50m
+                memory: 512Mi
+        - name: mapped-systems-org-id-populator
+          podSpec:
+            image: quay.io/cloudservices/tenant-utils:7336069
+            command:
+              - ./org-id-column-populator
+              - -C
+              - -a
+              - account
+              - -o
+              - org_id
+              - -t
+              - system_baseline_mapped_systems
+              - --ean-translator-addr
+              - http://${TENANT_TRANSLATOR_HOST}:${TENANT_TRANSLATOR_PORT}
+              - --ean-translator-timeout
+              - "60"
+            env:
+              - name: TENANT_TRANSLATOR_HOST
+                value: ${TENANT_TRANSLATOR_HOST}
+              - name: TENANT_TRANSLATOR_PORT
+                value: ${TENANT_TRANSLATOR_PORT}
+              - name: POPULATOR_LOG_FORMAT
+                value: ${POPULATOR_LOG_FORMAT}
+              - name: LOG_BATCH_FREQUENCY
+                value: '1'
+            resources:
+              limits:
+                cpu: 300m
+                memory: 1Gi
+              requests:
+                cpu: 50m
+                memory: 512Mi
+      deployments:
+        - name: backend-service
+          minReplicas: ${{MIN_REPLICAS}}
+          webServices:
+            public:
+              enabled: true
+              apiPath: system-baseline
+          podSpec:
+            imagePullPolicy: Always
+            image: ${IMAGE}:${IMAGE_TAG}
+            livenessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 120
+              periodSeconds: 10
+            readinessProbe:
+              httpGet:
+                path: /mgmt/v0/status
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}
+            volumes:
+              - emptyDir: {}
+                name: system-baseline-prometheus-data
+            volumeMounts:
+              - mountPath: /prometheus-data
+                name: system-baseline-prometheus-data
+            env:
+              - name: APP_CONFIG
+                value: gunicorn.conf.py
+              - name: ENABLE_RBAC
+                value: "${DRIFT_ENABLE_RBAC}"
+              - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+                value: "${ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK}"
+              - name: WEB_CONCURRENCY
+                value: "4"
+              - name: PATH_PREFIX
+                value: /api/
+              - name: APP_NAME
+                value: system-baseline
+              - name: ENABLE_PIPENV
+                value: 'true'
+              - name: prometheus_multiproc_dir
+                value: /prometheus-data
+              - name: DRIFT_SHARED_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    key: shared-secret
+                    name: drift-interpod-comms
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: system-baseline
+      labels:
+        app: system-baseline
+    spec:
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: system-baseline
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
+      targetCPUUtilizationPercentage: 50
+  - apiVersion: metrics.console.redhat.com/v1alpha1
+    kind: FloorPlan
+    metadata:
+      name: system-baseline
+    spec:
+      database:
+        secretName: ${FLOORIST_DB_SECRET_NAME}
+      objectStore:
+        secretName: ${FLOORIST_BUCKET_SECRET_NAME}
+      suspend: ${{FLOORIST_SUSPEND}}
+      logLevel: ${FLOORIST_LOGLEVEL}
+      queries:
+        - prefix: insights/system-baseline/baselines
+          query: >-
+            SELECT
+              SB.ACCOUNT AS ACCOUNT_ID,
+              SB.ID as BASELINE_ID,
+              SBMS.SYSTEM_ID::TEXT AS ASSOCIATED_SYSTEM_ID FROM SYSTEM_BASELINES SB
+              LEFT OUTER JOIN SYSTEM_BASELINE_MAPPED_SYSTEMS SBMS ON SBMS.SYSTEM_BASELINE_ID  = SB.ID;
+parameters:
+  - name: DRIFT_ENABLE_RBAC
+    description: enable rbac. needs to be "True" or "False".
+    value: "True"
+  - name: ENABLE_SMART_MANGEMENT_ENTITLEMENT_CHECK
+    description: enable the smart mgmt entitlement check on requests. Needs to be "True" or "False".
+    value: "False"
+  - name: IMAGE_TAG
+    description: image tag to pull
+  - name: IMAGE
+    description: image name
+    value: quay.io/cloudservices/system-baseline-backend
+  - name: MIN_REPLICAS
+    description: minimum pod replicas for horizontal pod autoscaler
+    value: "3"
+  - name: MAX_REPLICAS
+    description: maximum pod replicas for horizontal pod autoscaler
+    value: "3"
+  - name: CPU_LIMIT
+    value: 700m
+  - name: MEMORY_LIMIT
+    value: 1Gi
+  - name: CPU_REQUEST
+    value: 200m
+  - name: MEMORY_REQUEST
+    value: 512Mi
+  - description: ClowdEnv Name
+    name: ENV_NAME
+  - name: CLOWDER_ENABLED
+    value: "true"
+  - name: FLOORIST_SUSPEND
+    description: Disable Floorist cronjob execution
+    required: true
+    value: 'true'
+  - description: bucket secret name
+    name: FLOORIST_BUCKET_SECRET_NAME
+    required: true
+    value: dummy-secret
+  - description: database secret name
+    name: FLOORIST_DB_SECRET_NAME
+    value: system-baseline-db
+  - name: FLOORIST_LOGLEVEL
+    description: Floorist loglevel config
+    value: 'INFO'
+  - description: Host for the EAN to OrgId translator.
+    name: TENANT_TRANSLATOR_HOST
+    required: true
+    value: 'gateway.3scale-dev.svc.cluster.local'
+  - description: Port for the EAN to OrgId translator.
+    name: TENANT_TRANSLATOR_PORT
+    required: true
+    value: '8891'
+  - name: POPULATOR_LOG_FORMAT
+    value: cloudwatch
+  - name: POPULATOR_RUN_NUMBER # in case the populator needs to be run more than once increment this parameter to get a new job
+    value: '1'

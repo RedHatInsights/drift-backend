@@ -1,0 +1,240 @@
+---
+openapi: 3.0.1
+info:
+  version: "0.1"
+  title: System Baseline Backend Service Management Plane
+  description: Internal API for System Baseline Service
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: "{{ path_prefix }}{{ app_name }}/internal/v1"
+
+paths:
+  /version:
+    get:
+      summary: get the service version
+      description: "get the service version"
+      operationId: system_baseline.internal_views.v1.get_version
+      responses:
+        '200':
+          description: a service version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /baselines:
+    get:
+      summary: fetch list of Baseline IDs
+      description: "Fetch the list of Baseline IDs"
+      operationId: system_baseline.internal_views.v1.get_baselines_by_system_id
+      parameters:
+        - $ref: '#/components/parameters/SystemIdParam'
+      responses:
+        '200':
+          description: a paginated list of baselines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaselineIdsList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /systems/{system_id}:
+    parameters:
+      - $ref: '#/components/parameters/SystemId'
+    patch:
+      summary: update mapped system records
+      description: "update mapped system records, accepts groups only"
+      operationId: system_baseline.internal_views.v1.update_system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: system_patch
+              type: object
+              x-nullable: true
+              properties:
+                groups:
+                  $ref: "#/components/schemas/InventoryGroups"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemList"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /systems/{system_ids}:
+    parameters:
+      - $ref: '#/components/parameters/SystemIds'
+    delete:
+      summary: delete one or more systems
+      description: "delete one or more systems"
+      operationId: system_baseline.internal_views.v1.delete_systems_by_ids
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /systems/deletion_request:
+    post:
+      summary: create a request to delete one or more systems
+      description: "create a request to delete one or more systems"
+      operationId:
+        system_baseline.internal_views.v1.create_systems_deletion_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemIdsList"
+      responses:
+        '200':
+          description: a success message
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  responses:
+    InternalServerError:
+      description: "An internal server error has occurred."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: "Insufficient permissions to fulfill request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: "The server could not process the current request."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  securitySchemes:
+    ApiKeyAuth:
+      description: "Identity header provided by 3scale"
+      in: "header"
+      name: "x-rh-identity"
+      type: "apiKey"
+  schemas:
+    Version:
+      required:
+        - version
+      properties:
+        version:
+          type: string
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - detail
+        - status
+        - title
+        - type
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+    SystemId:
+      description: the system id
+      type: string
+    BaselineIdsList:
+      type: array
+      items:
+        type: string
+        format: uuid
+    SystemIdsList:
+      type: object
+      additionalProperties: false
+      required:
+        - system_ids
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    SystemList:
+      type: array
+      items:
+        $ref: "#/components/schemas/System"
+    System:
+      type: object
+      required:
+        - id
+        - account
+        - org_id
+        - system_baseline_id
+        - groups
+    InventoryGroups:
+      type: array
+      items:
+        $ref: "#/components/schemas/InventoryGroup"
+    InventoryGroup:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+  parameters:
+    SystemIdParam:
+      name: system_id
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/SystemId"
+      description: system id to search by
+    SystemId:
+      in: path
+      name: system_id
+      required: true
+      schema:
+        $ref: "#/components/schemas/SystemId"
+    SystemIds:
+      in: path
+      name: system_ids
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          format: uuid
