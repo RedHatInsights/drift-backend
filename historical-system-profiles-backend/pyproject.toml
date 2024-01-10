@@ -47,7 +47,7 @@ packages = []
 [tool.poetry.dependencies]
 python = "^3.9"
 connexion = {extras = ["swagger-ui"], version = "*"}
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.114", develop = true}
+kerlescan = {git = "https://github.com/redhatinsights/drift-backend.git", rev = "RHINENG-6040--merge-drift-backend-apps-repositories-into-one", subdirectory = "kerlescan"}
 prometheus-client = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
