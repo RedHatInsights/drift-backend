@@ -54,7 +54,7 @@ prometheus_client = "*"
 watchtower = "*"
 python-dateutil = "*"
 unleashclient = "*"
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.114", develop = true}
+kerlescan = {git = "https://github.com/redhatinsights/drift-backend.git", rev = "RHINENG-6040--merge-drift-backend-apps-repositories-into-one", subdirectory = "kerlescan"}
 
 
 [tool.poetry.group.dev.dependencies]
