@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/drift-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00" # UTC
+  - package-ecosystem: "pip"
+    directory: "/system-baseline-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00" # UTC
+  - package-ecosystem: "pip"
+    directory: "/historical-system-profiles-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00" # UTC
+  - package-ecosystem: "pip"
+    directory: "/kerlescan"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00" # UTC
