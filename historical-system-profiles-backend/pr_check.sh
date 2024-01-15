@@ -14,6 +14,8 @@ IQE_MARKER_EXPRESSION="smoke" # Need to check this
 IQE_FILTER_EXPRESSION=""
 IQE_CJI_TIMEOUT="30m"
 
+# we need to run CICD scripts from app dir
+cd "$(dirname "$0")"
 
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
