@@ -1,0 +1,91 @@
+name: Regular base image update check
+on:
+  schedule:
+    - cron: "5 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  drift-build:
+    name: Drift Base Image Update Check
+    defaults:
+      run:
+        working-directory: ./drift-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install skopeo
+        run: sudo apt-get install -y skopeo
+      - name: Check change
+        run: |
+          skopeo inspect "docker://$(grep -Po '(?<=FROM )([^"]+)' Dockerfile)" | grep -Po '(?<="Digest": ")([^"]+)' > .baseimagedigest
+          docker run --rm --entrypoint sh -u 0 quay.io/cloudservices/drift-backend:latest -c \
+            'microdnf upgrade -y > /dev/null; rpm -qa | sort | sha256sum' \
+            >> .baseimagedigest
+      - name: Do change if the digest changed
+        run: |
+          git config user.name 'Update-a-Bot'
+          git config user.email 'insights@redhat.com'
+          git add .baseimagedigest
+          git commit -m "chore(image): update and rebuild image" || echo "No new changes"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: 'chore(image): update base image'
+          token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the creation of PR triggers other workflows
+  baselines-build:
+    name: Baselines Base Image Update Check
+    defaults:
+      run:
+        working-directory: ./system-baseline-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install skopeo
+        run: sudo apt-get install -y skopeo
+      - name: Check change
+        run: |
+          skopeo inspect "docker://$(grep -Po '(?<=FROM )([^"]+)' Dockerfile)" | grep -Po '(?<="Digest": ")([^"]+)' > .baseimagedigest
+          docker run --rm --entrypoint sh -u 0 quay.io/cloudservices/system-baseline-backend:latest -c \
+            'microdnf upgrade -y > /dev/null; rpm -qa | sort | sha256sum' \
+            >> .baseimagedigest
+      - name: Do change if the digest changed
+        run: |
+          git config user.name 'Update-a-Bot'
+          git config user.email 'insights@redhat.com'
+          git add .baseimagedigest
+          git commit -m "chore(image): update and rebuild image" || echo "No new changes"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: 'chore(image): update base image'
+          token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the creation of PR triggers other workflows
+  hsps-build:
+    name: HSPs Base Image Update Check
+    defaults:
+      run:
+        working-directory: ./historical-system-profiles-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install skopeo
+        run: sudo apt-get install -y skopeo
+      - name: Check change
+        run: |
+          skopeo inspect "docker://$(grep -Po '(?<=FROM )([^"]+)' Dockerfile)" | grep -Po '(?<="Digest": ")([^"]+)' > .baseimagedigest
+          docker run --rm --entrypoint sh -u 0 quay.io/cloudservices/historical-system-profiles-backend:latest -c \
+            'microdnf upgrade -y > /dev/null; rpm -qa | sort | sha256sum' \
+            >> .baseimagedigest
+      - name: Do change if the digest changed
+        run: |
+          git config user.name 'Update-a-Bot'
+          git config user.email 'insights@redhat.com'
+          git add .baseimagedigest
+          git commit -m "chore(image): update and rebuild image" || echo "No new changes"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: 'chore(image): update base image'
+          token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the creation of PR triggers other workflows
