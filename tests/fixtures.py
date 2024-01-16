@@ -78,6 +78,7 @@ AUTH_HEADER_NO_ACCT_BUT_HAS_ENTS = {
     "fX0K"
 }
 
+
 """
 decoded AUTH_HEADER_NO_ACCT (newlines added for readablity):
 {
@@ -110,41 +111,6 @@ AUTH_HEADER_NO_ACCT = {
     "JpbnRlcm5hbCI6eyJvcmdfaWQiOiI5OTk5In19fQo="
 }
 
-"""
-decoded AUTH_HEADER_SERVICE_ACCOUNT (newlines added for readablity):
-{
-  "entitlements": {},
-  "identity": {
-    "auth_type": "jwt-auth",
-    "internal": {
-      "auth_time": 500,
-      "cross_access": false,
-      "org_id": "9999"
-    },
-    "org_id": "9999",
-    "service_account": {
-      "client_id": "b69eaf9e-e6a6-4f9e-805e-02987daddfxd",
-      "username": "service-account-b69eaf9e-e6a6-4f9e-805e-02987daddfxd"
-    },
-    "type": "ServiceAccount"
-  }
-}
-"""
-
-AUTH_HEADER_SERVICE_ACCOUNT = {
-    "X-RH-IDENTITY": "ewogICJlbnRpdGxlbWVudHMiOiB7fSwKICAiaWRlbnRpdHki"
-    "OiB7CiAgICAiYXV0aF90eXBlIjogImp3dC1hdXRoIiwKICAg"
-    "ICJpbnRlcm5hbCI6IHsKICAgICAgImF1dGhfdGltZSI6IDUwM"
-    "CwKICAgICAgImNyb3NzX2FjY2VzcyI6IGZhbHNlLAogICAgI"
-    "CAib3JnX2lkIjogIjk5OTkiCiAgICB9LAogICAgIm9yZ19pZ"
-    "CI6ICI5OTk5IiwKICAgICJzZXJ2aWNlX2FjY291bnQiOiB7C"
-    "iAgICAgICJjbGllbnRfaWQiOiAiYjY5ZWFmOWUtZTZhNi00Z"
-    "jllLTgwNWUtMDI5ODdkYWRkZnhkIiwKICAgICAgInVzZXJuYW"
-    "1lIjogInNlcnZpY2UtYWNjb3VudC1iNjllYWY5ZS1lNmE2LT"
-    "RmOWUtODA1ZS0wMjk4N2RhZGRmeGQiCiAgICB9LAogICAgIn"
-    "R5cGUiOiAiU2VydmljZUFjY291bnQiCiAgfQp9"
-}
-
 FETCH_BASELINES_RESULT = [
     {
         "id": "ff35596c-f98e-11e9-aea9-98fa9b07d419",
@@ -165,6 +131,7 @@ FETCH_BASELINES_RESULT = [
         "baseline_facts": [{"name": "arch", "value": "golden"}],
     },
 ]
+
 
 FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT = [
     {
