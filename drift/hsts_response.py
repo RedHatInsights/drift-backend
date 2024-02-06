@@ -7,7 +7,7 @@ def register_hsts_response(app):
         """
         app.logger.debug("Including hsts header in response")
 
-        response.headers[
-            "Strict-Transport-Security"
-        ] = "max-age=63072000; includeSubDomains; preload"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=63072000; includeSubDomains; preload"
+        )
         return response

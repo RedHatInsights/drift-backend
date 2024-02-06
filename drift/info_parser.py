@@ -322,9 +322,9 @@ def _create_comparison(systems, info_name, reference_id, system_count, short_cir
         {
             "id": system[SYSTEM_ID_KEY],
             "name": system["name"],
-            "value": "N/A"
-            if system.get(info_name, "N/A") is None
-            else str(system.get(info_name, "N/A")),
+            "value": (
+                "N/A" if system.get(info_name, "N/A") is None else str(system.get(info_name, "N/A"))
+            ),
             "is_obfuscated": system.get("obfuscation", {}).get(info_name, False),
             "is_baseline": system["is_baseline"],
         }
