@@ -1907,20 +1907,20 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "watchtower"
-version = "3.0.1"
+version = "3.1.0"
 description = "Python CloudWatch Logging"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "watchtower-3.0.1-py3-none-any.whl", hash = "sha256:566874a9dee34b90517b9a9b7c2d5e6b15fb9fd00dacb03bff8a7bf4c6295fe0"},
-    {file = "watchtower-3.0.1.tar.gz", hash = "sha256:e60b828e9c368d54044a631466322e8c6f5f9d57da0b69fbaf32ec134697367e"},
+    {file = "watchtower-3.1.0-py3-none-any.whl", hash = "sha256:c9a26d720233ca4fb47acf1218d92a9ab3e52307b31728a407974e89586b70e2"},
+    {file = "watchtower-3.1.0.tar.gz", hash = "sha256:32eacc51cf40b4989a97a181b27c96333466a46cebfb561636e41bbf400a2d10"},
 ]
 
 [package.dependencies]
 boto3 = ">=1.9.253,<2"
 
 [package.extras]
-tests = ["build", "coverage", "flake8", "mypy", "pyyaml", "wheel"]
+tests = ["build", "coverage", "mypy", "pyyaml", "ruff", "wheel"]
 
 [[package]]
 name = "wcwidth"
