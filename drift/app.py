@@ -31,7 +31,7 @@ def create_app():
     create_prometheus_registry_dir()
 
     # set up logging
-    setup_audit_logging(logging.Logger)
+    setup_audit_logging()
 
     register_hsts_response(flask_app)
 
