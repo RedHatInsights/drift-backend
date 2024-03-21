@@ -1,0 +1,486 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "version": "1.0",
+        "title": "Drift Backend Service",
+        "description": "Service that returns differences between systems.",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://console.redhat.com/{{ path_prefix }}{{ app_name }}/v1",
+            "description": "drift production server"
+        }
+    ],
+    "paths": {
+        "/version": {
+            "get": {
+                "summary": "get the service version",
+                "description": "get the service version",
+                "operationId": "drift.views.v1.get_version",
+                "responses": {
+                    "200": {
+                        "description": "a service version",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Version"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/comparison_report": {
+            "get": {
+                "summary": "fetch comparison report",
+                "description": "Fetch a comparison report for given system IDs. This will only fetch the most current system state using data from inventory service.",
+                "operationId": "drift.views.v1.comparison_report_get",
+                "parameters": [
+                    {
+                        "name": "system_ids[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uuid"
+                            }
+                        },
+                        "required": false,
+                        "description": "list of system IDs to generate report for"
+                    },
+                    {
+                        "name": "baseline_ids[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uuid"
+                            }
+                        },
+                        "required": false,
+                        "description": "list of baseline IDs to generate report for"
+                    },
+                    {
+                        "name": "historical_system_profile_ids[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "list of historical system profile IDs to generate report for"
+                    },
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "description": "reference ID (could be system, baseline, or HSP)"
+                    },
+                    {
+                        "name": "short_circuit",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "required": false,
+                        "description": "defaults to False, only True when used internally to trigger Notifications if drift has occurred between a current system checking in and any baselines with which it is associated."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "a comparison report for the given system IDs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ComparisonReport"
+                                },
+                                "examples": {
+                                    "jsonObject": {
+                                        "summary": "A sample comparison report",
+                                        "externalValue": "https://git.io/fhQ00"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "summary": "fetch comparison report",
+                "description": "Fetch a comparison report for given system IDs. This will only fetch the most current system state using data from inventory service.",
+                "operationId": "drift.views.v1.comparison_report_post",
+                "requestBody": {
+                    "required": true,
+                    "description": "list of system IDs to generate report for",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ComparisonRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "a comparison report for the given system IDs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ComparisonReport"
+                                },
+                                "examples": {
+                                    "jsonObject": {
+                                        "summary": "A sample comparison report",
+                                        "externalValue": "https://git.io/fhQ00"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "InternalServerError": {
+                "description": "An internal server error has occurred.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Insufficient permissions to fulfill request.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "BadRequest": {
+                "description": "The server could not process the current request.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "description": "Identity header provided by 3scale",
+                "in": "header",
+                "name": "x-rh-identity",
+                "type": "apiKey"
+            }
+        },
+        "schemas": {
+            "Version": {
+                "required": [
+                    "version"
+                ],
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ComparisonRequest": {
+                "properties": {
+                    "system_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "baseline_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "historical_system_profile_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reference_id": {
+                        "type": "string"
+                    },
+                    "short_circuit": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Error": {
+                "required": [
+                    "detail",
+                    "status",
+                    "title",
+                    "type"
+                ],
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ComparisonReport": {
+                "required": [
+                    "facts",
+                    "systems"
+                ],
+                "properties": {
+                    "facts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FactComparison"
+                        }
+                    },
+                    "systems": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/System"
+                        }
+                    },
+                    "baselines": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Baseline"
+                        }
+                    },
+                    "historical_system_profiles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HistoricalSystemProfile"
+                        }
+                    },
+                    "drift_event_notify": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "FactComparison": {
+                "description": "A list of fact names, states, and systems. This is useful for displaying rows of facts to compare. Note that if the 'comparisons' array is populated, the 'system' field will not be used. The 'comparisons' array is used for creating nested values. If a fact for one system is N/A, it will make the entire status N/A. However, if facts are being grouped and one fact is in DIFFERENT state, then the group's roll-up status will be DIFFERENT.",
+                "required": [
+                    "name",
+                    "state"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "SAME",
+                            "DIFFERENT",
+                            "N/A",
+                            "INCOMPLETE_DATA",
+                            "INCOMPLETE_DATA_OBFUSCATED"
+                        ]
+                    },
+                    "multivalues": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Multivalue"
+                        }
+                    },
+                    "systems": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SystemIdValue"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/SystemIdValueList"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/Multivalue"
+                                }
+                            ]
+                        }
+                    },
+                    "comparisons": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FactComparison"
+                        }
+                    }
+                }
+            },
+            "SystemIdValue": {
+                "required": [
+                    "id",
+                    "value"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "is_obfuscated": {
+                        "type": "boolean"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SystemIdValueList": {
+                "required": [
+                    "id",
+                    "value"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "Multivalue": {
+                "required": [
+                    "state",
+                    "systems"
+                ],
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "SAME",
+                            "DIFFERENT"
+                        ]
+                    },
+                    "systems": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SystemIdValue"
+                        }
+                    }
+                }
+            },
+            "Baseline": {
+                "description": "Display information for the baselines used",
+                "required": [
+                    "display_name",
+                    "id",
+                    "updated"
+                ],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "updated": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "HistoricalSystemProfile": {
+                "description": "Display information for the HSPs used",
+                "required": [
+                    "display_name",
+                    "id",
+                    "updated"
+                ],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "updated": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "System": {
+                "description": "The system ID, display_name, and last updated timestamp for each system in the report. The display_name will try to populate from the inventory service record's display_name, fqdn, and finally ID.",
+                "required": [
+                    "display_name",
+                    "id",
+                    "last_updated",
+                    "system_profile_exists"
+                ],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "system_profile_exists": {
+                        "type": "boolean"
+                    },
+                    "last_updated": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        }
+    }
+}
