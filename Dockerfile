@@ -1,39 +1,89 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+ARG deps="git-core python39-pip tzdata"
+ARG buildDeps="python39-devel gcc"
+ARG poetryVersion="1.6.0"
+
+ARG TEST_IMAGE=false
+
+#######################
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal AS base
+
+ARG deps
+ARG poetryVersion
+
+ENV LC_ALL=C.utf8
+ENV LANG=C.utf8
 
 RUN microdnf update -y && \
-    microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y \
-    git-core python39 python39-pip tzdata libpq-devel && \
-    rpm -qa | sort > packages-before-devel-install.txt && \
-    microdnf install --setopt=tsflags=nodocs -y python39-devel gcc && \
-    rpm -qa | sort > packages-after-devel-install.txt
+    microdnf module enable python39 && \
+    microdnf install --setopt=install_weak_deps=0 --setopt=tsflags=nodocs -y $deps && \
+    microdnf clean all
+RUN pip3 install --force-reinstall poetry~="${poetryVersion}"
 
-RUN adduser --gid 0 -d /opt/app-root --no-create-home insights
+#######################
+
+FROM base AS build
+
+ARG buildDeps
+ARG poetryVersion
 
 ENV LC_ALL=C.utf8
 ENV LANG=C.utf8
 
 ENV APP_ROOT=/opt/app-root
-ENV PIPENV_VENV_IN_PROJECT=1
 
-ENV POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config
-ENV POETRY_DATA_DIR=/opt/app-root/.pypoetry/data
-ENV POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
-
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config \
+    POETRY_DATA_DIR=/opt/app-root/.pypoetry/data \
+    POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
 ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
 
-COPY . ${APP_ROOT}/src
+RUN microdnf install --setopt=tsflags=nodocs -y $buildDeps
+
+USER 1001
 
 WORKDIR ${APP_ROOT}/src
 
-RUN pip3 install --upgrade pip && \
-    pip3 install --force-reinstall poetry~=1.6.0
+# needed for poetry to work properly
+ENV HOME=${APP_ROOT}
 
-RUN chown -R insights:0 /opt/app-root  && \
-    chgrp -R 0 /opt/app-root && \
-    chmod -R g=u /opt/app-root
+COPY --chown=1001:0 pyproject.toml poetry.lock ${APP_ROOT}/src
 
-USER insights
+RUN poetry install --sync --no-root && rm -rf "$POETRY_CACHE_DIR"
 
-RUN poetry install --without dev --sync
+#######################
+
+FROM base AS final
+
+ARG TEST_IMAGE
+
+ENV LC_ALL=C.utf8
+ENV LANG=C.utf8
+
+ENV APP_ROOT=/opt/app-root
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config \
+    POETRY_DATA_DIR=/opt/app-root/.pypoetry/data \
+    POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
+
+ENV UNLEASH_CACHE_DIR=/tmp/unleash_cache
+
+ENV VIRTUAL_ENV_DIR=${APP_ROOT}/src/.venv
+
+USER 1001
+
+WORKDIR ${APP_ROOT}/src
+
+COPY --chown=1001:0 . ${APP_ROOT}/src
+
+COPY --from=build --chown=1001:0 $VIRTUAL_ENV_DIR $VIRTUAL_ENV_DIR
+
+# allows unit tests to run successfully within the container if image is built in "test" environment
+RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
 
 CMD poetry run ./run_app.sh
