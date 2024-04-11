@@ -23,14 +23,14 @@ jobs:
       with:
         token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the push triggers other workflows
     - name: Install poetry
-      run: pipx install poetry~=1.6.0
+      run: pipx install poetry~=1.8.2
     - name: Set up Python 3.9
       uses: actions/setup-python@v5
       with:
         python-version: '3.9'
         cache: 'poetry'
     - name: Install dependencies
-      run: poetry install --with dev --verbose
+      run: poetry install --with dev --sync --no-root --verbose
     - name: Generate manifest
       run: poetry run ./scripts/create-manifest.py
     - name: Configure git

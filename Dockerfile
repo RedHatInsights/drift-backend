@@ -1,6 +1,6 @@
 ARG deps="git-core python39-pip tzdata"
 ARG buildDeps="python39-devel gcc"
-ARG poetryVersion="1.6.0"
+ARG poetryVersion="1.8.2"
 
 ARG TEST_IMAGE=false
 
@@ -35,6 +35,8 @@ ENV APP_ROOT=/opt/app-root
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
     POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_VIRTUALENVS_OPTIONS_NO_PIP=1 \
+    POETRY_VIRTUALENVS_OPTIONS_NO_SETUPTOOLS=1 \
     POETRY_CONFIG_DIR=/opt/app-root/.pypoetry/config \
     POETRY_DATA_DIR=/opt/app-root/.pypoetry/data \
     POETRY_CACHE_DIR=/opt/app-root/.pypoetry/cache
@@ -51,7 +53,7 @@ ENV HOME=${APP_ROOT}
 
 COPY --chown=1001:0 pyproject.toml poetry.lock ${APP_ROOT}/src
 
-RUN poetry install --sync --no-root && rm -rf "$POETRY_CACHE_DIR"
+RUN poetry install --only main --sync --no-root && rm -rf "$POETRY_CACHE_DIR"
 
 #######################
 
