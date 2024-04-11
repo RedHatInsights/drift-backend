@@ -54,7 +54,7 @@ prometheus_client = "*"
 watchtower = "*"
 python-dateutil = "*"
 unleashclient = "*"
-kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.117", develop = true}
+kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.118", develop = true}
 
 
 [tool.poetry.group.dev.dependencies]
