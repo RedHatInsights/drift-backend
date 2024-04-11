@@ -839,8 +839,8 @@ watchtower = "*"
 [package.source]
 type = "git"
 url = "https://github.com/RedHatInsights/kerlescan.git"
-reference = "0.117"
-resolved_reference = "3868fc5f6c4e2ad9014783920442b2d285942ba7"
+reference = "0.118"
+resolved_reference = "20da1cdfdd938e5b97117242f2cb915d345c0216"
 
 [[package]]
 name = "lazy-object-proxy"
@@ -1987,4 +1987,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "689efa53525902b3e8aeedfe065b0b4ce9c36739594d7f22e7abc70dae9c89ce"
+content-hash = "1e404688c0a5df4197a63b64278a1f629926da5dfc5fd9d32e7bbebbe1c64ffe"
