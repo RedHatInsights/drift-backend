@@ -85,7 +85,4 @@ COPY --chown=1001:0 . ${APP_ROOT}/src
 
 COPY --from=build --chown=1001:0 $VIRTUAL_ENV_DIR $VIRTUAL_ENV_DIR
 
-# allows unit tests to run successfully within the container if image is built in "test" environment
-RUN if [ "$TEST_IMAGE" = "true" ]; then chgrp -R 0 $APP_ROOT && chmod -R g=u $APP_ROOT; fi
-
 CMD poetry run ./run_app.sh
