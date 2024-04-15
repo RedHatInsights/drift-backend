@@ -6,7 +6,7 @@ ARG TEST_IMAGE=false
 
 #######################
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal AS base
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9-1161 AS base
 
 ARG deps
 ARG poetryVersion
