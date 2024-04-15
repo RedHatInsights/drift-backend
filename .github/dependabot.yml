@@ -10,3 +10,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "08:00" # UTC
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
