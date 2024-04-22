@@ -1908,13 +1908,13 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "watchtower"
-version = "3.1.0"
+version = "3.2.0"
 description = "Python CloudWatch Logging"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "watchtower-3.1.0-py3-none-any.whl", hash = "sha256:c9a26d720233ca4fb47acf1218d92a9ab3e52307b31728a407974e89586b70e2"},
-    {file = "watchtower-3.1.0.tar.gz", hash = "sha256:32eacc51cf40b4989a97a181b27c96333466a46cebfb561636e41bbf400a2d10"},
+    {file = "watchtower-3.2.0-py3-none-any.whl", hash = "sha256:3c41396e022dd48af2261737d3e78edaaa2d1c60ad59704fc7e2524ddfe50bfb"},
+    {file = "watchtower-3.2.0.tar.gz", hash = "sha256:7d515b2d0ae0d36168d3b32937e7f79c19b3efd25bbd16bcda233a092666b98c"},
 ]
 
 [package.dependencies]
