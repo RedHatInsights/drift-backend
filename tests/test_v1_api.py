@@ -21,98 +21,112 @@ class ApiTests(unittest.TestCase):
         patched_rbac.return_value = None  # validate all RBAC requests
         self.addCleanup(self.stopPatches)
         test_connexion_app = app.create_app()
-        test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
+        # test_flask_app = test_connexion_app.app
+        self.client = test_connexion_app.test_client
 
     def stopPatches(self):
         self.rbac_patcher.stop()
 
     def test_comparison_report_api_no_args_or_header(self):
-        response = self.client.get("api/drift/v1/comparison_report")
+        with self.client() as client:
+            response = client.get("api/drift/v1/comparison_report")
+
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_api_no_header(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
-        )
+        # which header missing?
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+            )
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_api_post(self):
+        # what is this testing?
         data = {
             "system_ids": [
                 "d6bba69a-25a8-11e9-81b8-c85b761454fa",
                 "11b3cbce-25a9-11e9-8457-c85b761454fa",
             ]
         }
-        response = self.client.post("api/drift/v1/comparison_report", data=data)
+        with self.client() as client:
+            response = client.post("api/drift/v1/comparison_report", json=data)
         self.assertEqual(response.status_code, 400)
 
     def test_compare_api_no_account_number(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER_NO_ACCT,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER_NO_ACCT,
+            )
         self.assertEqual(response.status_code, 400)
 
     # this scenario should never happen in real life
     def test_compare_api_no_account_number_but_has_ents(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER_NO_ACCT_BUT_HAS_ENTS,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER_NO_ACCT_BUT_HAS_ENTS,
+            )
         self.assertEqual(response.status_code, 400)
 
     def test_compare_api_no_entitlement(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER_SMART_MGMT_FALSE,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER_SMART_MGMT_FALSE,
+            )
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_duplicate_uuid(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_duplicate_baseline_uuid(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0"
-            "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0"
+                "&baseline_ids[]=ac05734a-6d46-11ea-b0f0-54e1add9c7a0",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 400)
 
     def test_comparison_report_bad_uuid(self):
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454faaaaaa"
-            "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454faaaaaa"
+                "&system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 400)
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_system_metadata_timestamp(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
-        system_metadata = json.loads(response.data)["systems"]
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
+        system_metadata = json.loads(response.content)["systems"]
         timestamps = [s["last_updated"] for s in system_metadata]
         self.assertEqual(
             timestamps,
@@ -126,11 +140,13 @@ class ApiTests(unittest.TestCase):
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_system_metadata_timestamp_captured_date(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_CAPTURED_DATE_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?" "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
-        system_metadata = json.loads(response.data)["systems"]
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
+        system_metadata = json.loads(response.content)["systems"]
         timestamps = [s["last_updated"] for s in system_metadata]
         self.assertEqual(
             timestamps,
@@ -144,14 +160,15 @@ class ApiTests(unittest.TestCase):
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 200)
-        comparisons = json.loads(response.data)
+        comparisons = json.loads(response.content)
         # we hard-code the index lookup since we know the fixture layout
         network_comparisons = comparisons["facts"][14]["comparisons"]
         ipv4_comparison = [
@@ -186,15 +203,16 @@ class ApiTests(unittest.TestCase):
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_csv(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers={**fixtures.AUTH_HEADER, "Accept": "text/csv"},
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers={**fixtures.AUTH_HEADER, "Accept": "text/csv"},
+            )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-type"], "text/csv")
-        csv_data = StringIO(response.data.decode("ascii"))
+        csv_data = StringIO(response.content.decode("ascii"))
         reader = csv.DictReader(csv_data)
         self.assertEqual(
             [
@@ -212,17 +230,18 @@ class ApiTests(unittest.TestCase):
     def test_comparison_report_api_baselines(self, mock_fetch_systems, mock_fetch_baselines):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         mock_fetch_baselines.return_value = fixtures.FETCH_BASELINES_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
-            "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419"
-            "&baseline_ids[]=89df6310-f98e-11e9-8a65-98fa9b07d419",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+                "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419"
+                "&baseline_ids[]=89df6310-f98e-11e9-8a65-98fa9b07d419",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 200)
 
-        returned_comparisons = json.loads(response.data)["facts"]
+        returned_comparisons = json.loads(response.content)["facts"]
         returned_fact_names = set(x["name"] for x in returned_comparisons)
         self.assertNotIn("name", returned_fact_names)
         self.assertEquals("", returned_comparisons[0]["systems"][0]["value"])
@@ -230,34 +249,37 @@ class ApiTests(unittest.TestCase):
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_same_facts(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 200)
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_with_service_account_identity(self, mock_fetch_systems):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_SAME_FACTS_RESULT
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER_SERVICE_ACCOUNT,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER_SERVICE_ACCOUNT,
+            )
         self.assertEqual(response.status_code, 200)
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_missing_system_uuid(self, mock_fetch_systems):
         mock_fetch_systems.side_effect = ItemNotReturned("oops")
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 404)
 
     @mock.patch("drift.views.v1.fetch_baselines")
@@ -267,24 +289,26 @@ class ApiTests(unittest.TestCase):
     ):
         mock_fetch_systems.return_value = fixtures.FETCH_SYSTEMS_WITH_PROFILES_RESULT
         mock_fetch_baselines.side_effect = ItemNotReturned("oops")
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
-            "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+                "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 404)
 
     @mock.patch("drift.views.v1.fetch_systems_with_profiles")
     def test_comparison_report_api_500_backend(self, mock_fetch_systems):
         mock_fetch_systems.side_effect = ServiceError("oops")
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 500)
 
     @mock.patch("drift.views.v1.fetch_baselines")
@@ -294,13 +318,14 @@ class ApiTests(unittest.TestCase):
     ):
         mock_fetch_systems.side_effect = ItemNotReturned("oops")
         mock_fetch_baselines.side_effect = ServiceError("oops")
-        response = self.client.get(
-            "api/drift/v1/comparison_report?"
-            "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
-            "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
-            "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
-            headers=fixtures.AUTH_HEADER,
-        )
+        with self.client() as client:
+            response = client.get(
+                "api/drift/v1/comparison_report?"
+                "system_ids[]=d6bba69a-25a8-11e9-81b8-c85b761454fa"
+                "&system_ids[]=11b3cbce-25a9-11e9-8457-c85b761454fa"
+                "&baseline_ids[]=ff35596c-f98e-11e9-aea9-98fa9b07d419",
+                headers=fixtures.AUTH_HEADER,
+            )
         self.assertEqual(response.status_code, 500)
 
 
@@ -311,8 +336,9 @@ class DebugLoggingApiTests(unittest.TestCase):
         patched_rbac.return_value = None  # validate all RBAC requests
 
         test_connexion_app = app.create_app()
+        self.client = test_connexion_app.test_client
+
         test_flask_app = test_connexion_app.app
-        self.client = test_flask_app.test_client()
 
         self.stream = StringIO()
         self.handler = logging.StreamHandler(self.stream)
@@ -325,7 +351,8 @@ class DebugLoggingApiTests(unittest.TestCase):
     @mock.patch("drift.views.v1.get_key_from_headers")
     def test_username_logging_on_debug_no_key(self, mock_get_key):
         mock_get_key.return_value = None
-        self.client.get("api/drift/v1/comparison_report")
+        with self.client() as client:
+            client.get("api/drift/v1/comparison_report")
         self.handler.flush()
 
         result = self.stream.getvalue()
@@ -335,7 +362,8 @@ class DebugLoggingApiTests(unittest.TestCase):
     @mock.patch("kerlescan.view_helpers.get_key_from_headers")
     def test_username_logging_on_debug_with_key(self, mock_get_key):
         mock_get_key.return_value = fixtures.AUTH_HEADER["X-RH-IDENTITY"]
-        self.client.get("api/drift/v1/comparison_report")
+        with self.client() as client:
+            client.get("api/drift/v1/comparison_report")
         self.handler.flush()
 
         result = self.stream.getvalue()

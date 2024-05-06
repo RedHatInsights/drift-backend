@@ -9,7 +9,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: "https://console.redhat.com/{{ path_prefix }}{{ app_name }}/v1"
+  - url: "https://console.redhat.com/{{ path_prefix }}/{{ app_name }}/v1"
     description: drift production server
 
 paths:
@@ -84,6 +84,7 @@ paths:
                 jsonObject:
                   summary: A sample comparison report
                   externalValue: "https://git.io/fhQ00"
+            text/csv: {}
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -114,6 +115,7 @@ paths:
                 jsonObject:
                   summary: A sample comparison report
                   externalValue: "https://git.io/fhQ00"
+            text/csv: {}
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':

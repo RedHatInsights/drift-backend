@@ -9,7 +9,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: "{{ path_prefix }}{{ app_name }}/admin"
+  - url: "/{{ path_prefix }}/{{ app_name }}/admin"
 
 
 paths:
