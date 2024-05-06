@@ -1,8 +1,7 @@
 import logging
 import os
 
-import connexion
-
+from connexion import FlaskApp
 from kerlescan import config
 from kerlescan.audit_logging import setup_audit_logging
 from kerlescan.cloudwatch import setup_cw_logging
@@ -15,23 +14,31 @@ from drift.views import v1
 
 
 def create_app():
-    """
-    Creates the flask app, loading blueprints and the configuration.
-    :return:    flask app
-    :rtype:     Flask
-    """
     app_name = os.getenv("APP_NAME", "drift")
-    openapi_args = {"path_prefix": config.path_prefix, "app_name": app_name}
-    connexion_app = connexion.App(__name__, specification_dir="openapi/", arguments=openapi_args)
-    connexion_app.add_api("api.spec.yaml", validate_responses=True, strict_validation=True)
-    connexion_app.add_api("mgmt_api.spec.yaml")
-    connexion_app.add_api("admin_api.spec.yaml", validate_responses=True, strict_validation=True)
-    flask_app = connexion_app.app
+    openapi_args = {"path_prefix": config.path_prefix.strip("/"), "app_name": app_name.strip("/")}
 
     create_prometheus_registry_dir()
 
     # set up logging
     setup_audit_logging()
+
+    connexion_app = FlaskApp(__name__, specification_dir="openapi/")
+    connexion_app.add_api("mgmt_api.spec.yaml")
+    connexion_app.add_api(
+        "api.spec.yaml", arguments=openapi_args, validate_responses=True, strict_validation=True
+    )
+    connexion_app.add_api(
+        "admin_api.spec.yaml",
+        arguments=openapi_args,
+        validate_responses=True,
+        strict_validation=True,
+    )
+
+    connexion_app.add_error_handler(HTTPError, handle_http_error)
+
+    flask_app = connexion_app.app
+
+    flask_app.register_blueprint(v1.section)
 
     register_hsts_response(flask_app)
 
@@ -42,6 +49,4 @@ def create_app():
         flask_app.logger, logging.getLogger("gunicorn.access"), logging.getLogger("gunicorn.error")
     )
 
-    flask_app.register_blueprint(v1.section)
-    flask_app.register_error_handler(HTTPError, handle_http_error)
     return connexion_app

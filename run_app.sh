@@ -30,7 +30,7 @@ if [ -z "$ACG_CONFIG" ]; then
     then GUNICORN_REQUEST_FIELD_LIMIT=16380
   fi
 
-  prometheus_multiproc_dir=$TEMPDIR gunicorn wsgi -w $NUM_WORKERS --threads $THREADS -b 0.0.0.0:$PORT --log-level=$LOG_LEVEL --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config ./gunicorn.conf.py
+  prometheus_multiproc_dir=$TEMPDIR gunicorn wsgi --worker-class uvicorn.workers.UvicornWorker  -w $NUM_WORKERS --threads $THREADS -b 0.0.0.0:$PORT --log-level=$LOG_LEVEL --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config ./gunicorn.conf.py
 
   rm -rf $TEMPDIR
 else
@@ -39,5 +39,5 @@ else
   METRICS_PORT=9000
   GUNICORN_REQUEST_FIELD_LIMIT=16380
   APP_CONFIG='gunicorn.conf.py'
-  exec gunicorn wsgi --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config "$APP_CONFIG"
+  exec gunicorn wsgi --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:$PORT --bind=0.0.0.0:$METRICS_PORT --limit-request-field_size=$GUNICORN_REQUEST_FIELD_LIMIT --access-logfile=- --config "$APP_CONFIG"
 fi
