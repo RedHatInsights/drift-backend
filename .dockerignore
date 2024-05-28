@@ -1,2 +1,7 @@
 # ignores .bonfire_venv from https://github.com/RedHatInsights/cicd-tools/blob/main/bootstrap.sh#L76
 .bonfire_venv/
+
+# Ignore the internal configuration directories that might contain secrets.
+.docker
+.kube
+.podman
