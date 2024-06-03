@@ -415,13 +415,13 @@ files = [
 
 [[package]]
 name = "connexion"
-version = "3.0.6"
+version = "3.1.0"
 description = "Connexion - API first applications with OpenAPI/Swagger"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "connexion-3.0.6-py3-none-any.whl", hash = "sha256:9172600de1fd315ca368d6005f6cd56672559f4c7a3b5b239f0b3d473a10758f"},
-    {file = "connexion-3.0.6.tar.gz", hash = "sha256:6dba2e3d3920653a16d41b373ee8b104281d078c2a3916b773b575c8e919eb1b"},
+    {file = "connexion-3.1.0-py3-none-any.whl", hash = "sha256:e92b6d0412eb54b3b69f2516b93d982a06b0e23f6d5c1ab94257c55d365f63ce"},
+    {file = "connexion-3.1.0.tar.gz", hash = "sha256:66a44580991f53955b6e409a84fa9fa65c7ca4db52dc217b49cd35c201066083"},
 ]
 
 [package.dependencies]
@@ -431,18 +431,19 @@ flask = {version = ">=2.2", extras = ["async"], optional = true, markers = "extr
 httpx = ">=0.23"
 inflection = ">=0.3.1"
 Jinja2 = ">=3.0.0"
-jsonschema = ">=4.0.1"
+jsonschema = ">=4.17.3"
 python-multipart = ">=0.0.5"
 PyYAML = ">=5.1"
 requests = ">=2.27"
 starlette = ">=0.35"
 swagger-ui-bundle = {version = ">=1.1.0", optional = true, markers = "extra == \"swagger-ui\""}
-typing-extensions = ">=4"
+typing-extensions = ">=4.6.1"
 uvicorn = {version = ">=0.17.6", extras = ["standard"], optional = true, markers = "extra == \"uvicorn\""}
 werkzeug = ">=2.2.1"
 
 [package.extras]
 flask = ["a2wsgi (>=1.7)", "flask[async] (>=2.2)"]
+mock = ["jsf (>=0.10.0)"]
 swagger-ui = ["swagger-ui-bundle (>=1.1.0)"]
 uvicorn = ["uvicorn[standard] (>=0.17.6)"]
 
