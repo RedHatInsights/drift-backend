@@ -55,7 +55,7 @@ watchtower = "*"
 python-dateutil = "*"
 unleashclient = "*"
 kerlescan = {git = "https://github.com/RedHatInsights/kerlescan.git", rev = "0.119", develop = true}
-uvicorn = "^0.29.0"
+uvicorn = "^0.30.1"
 
 
 [tool.poetry.group.dev.dependencies]
