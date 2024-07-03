@@ -15,10 +15,9 @@ jobs:
         run: sudo apt-get install -y skopeo
       - name: Check change
         run: |
-          skopeo inspect "docker://$(grep -Po '(?<=FROM )([^"]+)' Dockerfile)" | grep -Po '(?<="Digest": ")([^"]+)' > .baseimagedigest
           docker run --rm --entrypoint sh -u 0 quay.io/cloudservices/drift-backend:latest -c \
             'microdnf upgrade -y > /dev/null; rpm -qa | sort | sha256sum' \
-            >> .baseimagedigest
+            > .baseimagedigest
       - name: Do change if the digest changed
         run: |
           git config user.name 'Update-a-Bot'
