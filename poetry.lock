@@ -2166,13 +2166,13 @@ devenv = ["check-manifest", "pytest (>=4.3)", "pytest-cov", "pytest-mock (>=3.3)
 
 [[package]]
 name = "unleashclient"
-version = "5.12.1"
+version = "5.12.2"
 description = "Python client for the Unleash feature toggle system!"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "UnleashClient-5.12.1-py3-none-any.whl", hash = "sha256:858bad6abd94e4c5d197c09114e336069953d64c2c3ed510af136e7f8f2bd6da"},
-    {file = "unleashclient-5.12.1.tar.gz", hash = "sha256:45987efa420bf5ea6aa25eaef25fceae83072bd6388cd048734b69b4523d41f8"},
+    {file = "UnleashClient-5.12.2-py3-none-any.whl", hash = "sha256:7300efe706233670618f945765f5687c815f0a0a9999c63a9b258cc7a6151ceb"},
+    {file = "unleashclient-5.12.2.tar.gz", hash = "sha256:a4698b746fe76fc8be32bba4c1e5c3a3022275cb4e31f6ef1dcfda268a6f2a3f"},
 ]
 
 [package.dependencies]
