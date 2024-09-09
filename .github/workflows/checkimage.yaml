@@ -25,7 +25,7 @@ jobs:
           git add .baseimagedigest
           git commit -m "chore(image): update and rebuild image" || echo "No new changes"
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           title: 'chore(image): update base image'
           token: ${{ secrets.GH_PAT }} # uses Personal Access Token so the creation of PR triggers other workflows
