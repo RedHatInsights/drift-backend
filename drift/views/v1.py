@@ -383,6 +383,10 @@ def comparison_report_post():
     """
     small wrapper over comparison_report for POSTs
     """
+
+    # RHINENG-12490
+    raise HTTPError(HTTPStatus.METHOD_NOT_ALLOWED, message="Access Denied.")
+
     system_ids = request.json.get("system_ids", [])
     baseline_ids = request.json.get("baseline_ids", [])
     historical_sys_profile_ids = request.json.get("historical_system_profile_ids", [])
